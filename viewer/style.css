@@ -1,0 +1,33 @@
+:root { --bg:#14171c; --panel:#1d222a; --ink:#e6e9ee; --dim:#8b95a5; --s0:#4aa3ff; --s1:#ff9a3c; --line:#2b323d; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.4 system-ui, sans-serif; }
+header { display:flex; gap:16px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); }
+h1 { margin:0; font-size:18px; letter-spacing:.08em; }
+h3 { margin:0 0 4px; font-size:13px; color:var(--dim); text-transform:uppercase; letter-spacing:.06em; }
+#title { color:var(--dim); }
+.file { background:var(--panel); border:1px solid var(--line); padding:5px 10px; border-radius:6px; cursor:pointer; }
+.file input { display:none; }
+#warn { margin:8px 16px; padding:8px 12px; background:#3a2a12; border:1px solid #7a5a1c; border-radius:6px; }
+code { background:#0006; padding:0 4px; border-radius:3px; }
+main { display:flex; flex-wrap:wrap; gap:16px; padding:16px; align-items:flex-start; }
+#board { background:#0d0f13; border:1px solid var(--line); border-radius:4px; max-width:100%; height:auto; }
+#controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; width:640px; max-width:100%; }
+#controls button { background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:5px 10px; cursor:pointer; min-width:34px; }
+#controls button:hover { border-color:var(--dim); }
+#scrub { flex:1 1 200px; }
+#tickLabel { font-variant-numeric:tabular-nums; color:var(--dim); min-width:110px; }
+select { background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:4px; }
+#panel { width:300px; display:flex; flex-direction:column; gap:12px; }
+#result { padding:8px 12px; border-radius:6px; background:var(--panel); border:1px solid var(--line); display:none; }
+#result.on { display:block; }
+#sides { display:flex; flex-direction:column; gap:12px; }
+.side { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--c); border-radius:6px; padding:8px 12px; }
+.side h2 { margin:0 0 6px; font-size:15px; color:var(--c); }
+.side .big { display:flex; gap:20px; margin-bottom:6px; }
+.side .big div span { display:block; font-size:11px; color:var(--dim); text-transform:uppercase; }
+.side .big div b { font-size:20px; font-variant-numeric:tabular-nums; }
+.side table { width:100%; border-collapse:collapse; }
+.side td { padding:1px 0; }
+.side td:last-child { text-align:right; font-variant-numeric:tabular-nums; }
+#legend { color:var(--dim); font-size:12px; }
+#legend p { margin:0; }

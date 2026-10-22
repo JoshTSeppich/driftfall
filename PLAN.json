@@ -1,0 +1,253 @@
+{
+  "version": 2,
+  "spec": "ENV-SPEC.md",
+  "rules": [
+    "Only edit files you own. If you need a change in someone else's file, ask in the chat.",
+    "Tests use node --test, import the real env modules, and never stub the thing under test.",
+    "Every number comes from env/stats.mjs; tests read it from there instead of hard-coding.",
+    "No Math.random, Date, timers or async inside env/* except referee.mjs."
+  ],
+  "modules": [
+    {
+      "id": "map",
+      "files": [
+        "env/rng.mjs",
+        "env/map.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Seeded random stream and map generation: 32x32 grid, fixed Cores, Workers and crystal fields from spec section 2, 24 mirrored rock pairs placed by rejection so the map stays connected and nothing sits within distance 2 of a Core, Worker start or crystal. Export generateMap, mirror, isConnected."
+    },
+    {
+      "id": "path",
+      "files": [
+        "env/path.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Breadth-first shortest path on a 4-directional grid with a caller-supplied blocked(x,y) test. Fixed neighbour order up, right, down, left. Option within=N stops at the nearest tile within distance N of the goal (distance is max of dx,dy). Returns steps excluding the start, or null if unreachable."
+    },
+    {
+      "id": "log",
+      "files": [
+        "env/log.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Build, append to, finish and validate a match log exactly as spec section 12 describes, with per-tick timing stored in a separate top-level list. validateLog returns a list of plain-English problems and an empty list for a good log. comparable(log) returns the log without timing for determinism checks."
+    },
+    {
+      "id": "viewer",
+      "files": [
+        "viewer/replay.mjs",
+        "viewer/index.html",
+        "viewer/viewer.mjs",
+        "viewer/style.css"
+      ],
+      "owner": "sonnet",
+      "task": "replay.mjs is a pure module (no DOM) that rebuilds the state tick by tick from log events. index.html plus viewer.mjs load a log file in the browser, draw the grid on a canvas, and offer play, pause, step, scrub and a side panel with Shards, value and unit counts."
+    },
+    {
+      "id": "stats",
+      "files": [
+        "env/stats.mjs"
+      ],
+      "owner": "haiku",
+      "task": "The single stats table: every number from spec sections 3, 4, 5 and 11 (costs, hp, damage, range, speed, train and build ticks, carry amount, mining ticks, start Shards, unit cap, queue size, max ticks, think limits). Also valueOf(entity) and sideValue(state, player) using cost as value, Core and unfinished sites as 0."
+    },
+    {
+      "id": "state",
+      "files": [
+        "env/state.mjs"
+      ],
+      "owner": "haiku",
+      "task": "State creation and helpers: createInitialState(seed) using generateMap and the id order from spec section 13, createTestState for hand-built test maps, entity lookup, per-side lists, isPassable, isFree, distance, allocId, emit, and observe(state, player) which returns a deep copy shaped as in spec section 10."
+    },
+    {
+      "id": "commands",
+      "files": [
+        "env/commands.mjs"
+      ],
+      "owner": "haiku",
+      "task": "Validate and apply one side's command list per spec section 10: set orders, spend Shards, place construction sites, extend training queues, enforce the 100-command and unit-cap limits, and emit a reject event with the right reason for anything illegal. Never throws on bad input. Also exports nothing about side order: sim.mjs decides which side goes first each tick."
+    },
+    {
+      "id": "combat",
+      "files": [
+        "env/combat.mjs"
+      ],
+      "owner": "haiku",
+      "task": "Combat phase per spec section 7: who attacks (ordered, idle combat units, complete Turrets), nearest-enemy choice with lowest-id tie break, simultaneous damage summed then applied, Brute double damage to structures, deaths removed with their orders and queues, hit and die events."
+    },
+    {
+      "id": "economy",
+      "files": [
+        "env/economy.mjs"
+      ],
+      "owner": "fable",
+      "task": "Production and gathering phases per spec sections 3 and 4: training queues count down and spawn on the nearest free tile in the fixed search order, construction progress and hp growth when an own Worker is adjacent, mining ticks and pickup, delivery next to the own Core, retargeting when a crystal tile runs dry. Emits spawn, progress, done, queue, mine, deliver events."
+    },
+    {
+      "id": "movement",
+      "files": [
+        "env/movement.mjs"
+      ],
+      "owner": "fable",
+      "task": "Movement phase per spec section 6: destinationOf works out where each unit wants to be for its order (move tile, within range of attack target, adjacent to crystal, Core or site), then units step in id order along a fresh BFS path, wait when the next tile is taken, respect Brute speed, finish move orders on arrival and clear unreachable ones with a blocked event. Honour the odd-tick reversal of id order from spec section 8."
+    },
+    {
+      "id": "sim",
+      "files": [
+        "env/sim.mjs"
+      ],
+      "owner": "fable",
+      "task": "The tick loop: createMatch(seed), step(state, [cmds0, cmds1]) running the six phases in spec section 8 with the odd-tick reversal of side and id order, returning the tick events, and checkEnd(state) implementing spec section 9 (both Cores, one Core, timeout by value, draw on exact tie)."
+    },
+    {
+      "id": "referee",
+      "files": [
+        "env/referee.mjs",
+        "env/player-worker.mjs",
+        "env/run-match.mjs",
+        "players/sample-player.mjs"
+      ],
+      "owner": "fable",
+      "task": "Run a match between two player modules per spec section 11: each player lives in its own worker thread (player-worker.mjs loads the module and answers observation messages), the referee times each reply against the 50 ms limit, discards late commands, treats throws and non-arrays as empty, terminates and forfeits a player that gives no reply within 1000 ms or throws 50 times, and writes the log through env/log.mjs with timing kept separate. run-match.mjs is the command-line entry. sample-player.mjs is a minimal legal player used only by tests (it gathers and trains a few workers; it is not a real competitor)."
+    }
+  ],
+  "tests": [
+    {
+      "id": "map-generation",
+      "files": [
+        "tests/map-generation.test.mjs"
+      ],
+      "owner": "haiku",
+      "task": "Same seed gives the identical map twice, different seeds differ, every rock has its mirror, exactly 48 rocks when placement succeeds, all open tiles connected, no rock within distance 2 of Cores, starting Workers or crystals, crystal fields and Cores at the spec coordinates."
+    },
+    {
+      "id": "stats-table",
+      "files": [
+        "tests/stats-table.test.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Every unit and structure kind has every required field with a positive number, costs match the spec tables, valueOf gives cost for units and complete structures and 0 for the Core and unfinished sites, sideValue adds Shards plus units plus buildings."
+    },
+    {
+      "id": "path-finding",
+      "files": [
+        "tests/path-finding.test.mjs"
+      ],
+      "owner": "fable",
+      "task": "Straight-line paths have the right length, paths go around a wall, within=1 stops next to a blocked goal, within=4 stops at range, unreachable goals return null, the same question always returns the same path, and a path never steps on a blocked tile."
+    },
+    {
+      "id": "combat-damage",
+      "files": [
+        "tests/combat-damage.test.mjs"
+      ],
+      "owner": "fable",
+      "task": "Using createTestState: an ordered attacker in range deals its table damage, out of range deals none, idle units in range attack and idle units out of range stay put, two units can kill each other on the same tick, damage from several attackers adds up and every hit event shows the hp after all damage that tick, Brutes deal double to structures and sites and normal to units, an unfinished site can be attacked and destroyed, dead units are removed and their orders and queues are gone, die events follow hit events."
+    },
+    {
+      "id": "combat-targeting",
+      "files": [
+        "tests/combat-targeting.test.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Idle combat units attack the nearest enemy in range and pick the lower id on ties, Workers and units with move, gather or build orders never auto-attack, complete Turrets attack and unfinished ones do not, an attack order clears when its target dies."
+    },
+    {
+      "id": "combat-counters",
+      "files": [
+        "tests/combat-counters.test.mjs"
+      ],
+      "owner": "haiku",
+      "task": "Run small open-field duels through the real sim: a Lancer beats a Grunt starting 4 tiles apart, a Brute beats three Grunts, a Brute beats a Turret, a Turret beats a Grunt, and a Lancer that keeps stepping away survives a Brute for at least 40 ticks. If balance changes break these, the test says which counter broke."
+    },
+    {
+      "id": "commands-validation",
+      "files": [
+        "tests/commands-validation.test.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Every reject reason in spec section 10 can be triggered and is logged with the right reason, malformed input (null, strings, missing fields) never throws, commands for the enemy's units are rejected, the 101st command is rejected as too-many, a legal command sets the order or spends the Shards exactly once. On an odd tick side 1 commands are applied before side 0 (check with two sides both trying to build on the same tile)."
+    },
+    {
+      "id": "economy-gather",
+      "files": [
+        "tests/economy-gather.test.mjs"
+      ],
+      "owner": "haiku",
+      "task": "A Worker ordered to gather walks next to the tile, mines for the table number of ticks, carries 10, delivers next to its Core and the side's Shards rise by 10, the tile's amount falls, a tile running dry gives a partial load and the Worker retargets the nearest tile with Shards, and a Worker with no tiles left goes idle. Mine and deliver events match."
+    },
+    {
+      "id": "economy-build-train",
+      "files": [
+        "tests/economy-build-train.test.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Build pays the cost on accept and places a site with hp 1, progress only rises while an own Worker is adjacent, hp grows and the structure completes after buildTicks, a destroyed site refunds nothing, train pays on accept and queues up to 5, the unit spawns on the nearest free tile in the fixed search order after trainTicks, spawning waits when all tiles are taken, and the unit cap of 40 is enforced counting queued units."
+    },
+    {
+      "id": "movement-order",
+      "files": [
+        "tests/movement-order.test.mjs"
+      ],
+      "owner": "haiku",
+      "task": "Units move in id order: on an even tick the lower id wins a contested tile and the other waits, on an odd tick the higher id wins; a Brute moves only on even ticks; a unit routes around a standing unit on the next tick; two units head-on in a one-tile gap both wait; a move order ends on arrival; an unreachable target clears the order with a blocked event; no two units ever share a tile after a step."
+    },
+    {
+      "id": "sim-determinism",
+      "files": [
+        "tests/sim-determinism.test.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "Run a full match twice with the same seed and the sample player and check the logs are byte-identical after removing the timing field; check timing is the only field that may differ; run with two different seeds and check they differ; check no env file except referee.mjs and player-worker.mjs contains Math.random, Date.now, setTimeout or new Date by scanning the source text."
+    },
+    {
+      "id": "sim-end-conditions",
+      "files": [
+        "tests/sim-end-conditions.test.mjs"
+      ],
+      "owner": "haiku",
+      "task": "Using createTestState: a side whose Core dies loses with reason core, both Cores dying on the same tick is a draw with reason both-cores, reaching maxTicks with a higher value wins with reason timeout, an exact value tie is a draw, and nothing is reported before any of these happen."
+    },
+    {
+      "id": "referee-limits",
+      "files": [
+        "tests/referee-limits.test.mjs"
+      ],
+      "owner": "fable",
+      "task": "With small in-test player modules: a player that is late loses that tick commands and the match continues with a late event, a player that throws gets an empty tick with an error event, a player that never replies is terminated and forfeits within about a second, a player that fails to load forfeits at tick 0, a player returning garbage is treated as empty, observations given to players are copies so mutating them changes nothing."
+    },
+    {
+      "id": "log-format",
+      "files": [
+        "tests/log-format.test.mjs"
+      ],
+      "owner": "fable",
+      "task": "A log from a real match passes validateLog, breaking any required field makes validateLog name the problem, every tick entry has the tick number, both command lists and an events array, timing is a top-level list with one pair per tick, and replaying all events with viewer/replay.mjs ends with the same ids, owners, kinds, tiles, hp, carrying, structure progress and queues, Shards and crystal amounts as the simulation final state (orders are not compared)."
+    },
+    {
+      "id": "viewer-replay",
+      "files": [
+        "tests/viewer-replay.test.mjs"
+      ],
+      "owner": "haiku",
+      "task": "applyTick handles every event kind from spec section 12 on a hand-built state: spawn adds, move relocates, hit sets hp, die removes, mine and deliver update crystals and Shards, progress and done update sites, queue and order replace fields; unknown events are ignored; replayTo(log, 0) equals the initial state and replayTo never mutates the log."
+    },
+    {
+      "id": "state-helpers",
+      "files": [
+        "tests/state-helpers.test.mjs"
+      ],
+      "owner": "sonnet",
+      "task": "createInitialState matches spec section 2 and the id order in section 13, allocId never repeats, isPassable ignores units while isFree does not, distance is max of dx and dy, observe returns a deep copy with the right you field and no hidden state, and createTestState builds exactly what it is given."
+    },
+    {
+      "id": "full-match-smoke",
+      "files": [
+        "tests/full-match-smoke.test.mjs"
+      ],
+      "owner": "fable",
+      "task": "Run a complete sample-player versus sample-player match through run-match.mjs as a child process: it exits 0, writes a log file that validates, the result has a winner or a draw with a known reason, no unit ever shares a tile in the replayed states, and the whole match finishes in under 5 seconds."
+    }
+  ]
+}

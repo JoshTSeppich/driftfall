@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Driftfall viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Driftfall</h1>
+    <label class="file">Open match log
+      <input id="file" type="file" accept=".json,application/json">
+    </label>
+    <span id="title">No log loaded. Choose a match file, or drop one on this page.</span>
+  </header>
+  <p id="warn" hidden>This page uses ES modules, which browsers block when opened straight from disk.
+    Start a tiny server in the project folder (for example <code>python3 -m http.server</code>)
+    and open <code>http://localhost:8000/viewer/</code>. You can also add <code>?log=../match.json</code>.</p>
+  <main>
+    <section id="stage">
+      <canvas id="board" width="640" height="640"></canvas>
+      <div id="controls">
+        <button id="first" title="Back to tick 0">⏮</button>
+        <button id="back" title="Step back (left arrow)">◀</button>
+        <button id="play" title="Play / pause (space)">Play</button>
+        <button id="step" title="Step forward (right arrow)">▶</button>
+        <button id="last" title="Jump to the end">⏭</button>
+        <input id="scrub" type="range" min="0" max="0" value="0" step="1">
+        <span id="tickLabel">tick 0 / 0</span>
+        <label>speed
+          <select id="speed">
+            <option value="2">slow</option>
+            <option value="10" selected>normal</option>
+            <option value="30">fast</option>
+            <option value="100">very fast</option>
+          </select>
+        </label>
+      </div>
+    </section>
+    <aside id="panel">
+      <div id="result"></div>
+      <div id="sides"></div>
+      <div id="legend">
+        <h3>Legend</h3>
+        <p>Circle = Worker, square = Grunt, triangle = Lancer, big square = Brute.
+        Diamond = Core, hexagon = Forge, ring = Turret. Dashed outline = building site.
+        Bar under a unit = health. Red flash = hit this tick.</p>
+      </div>
+    </aside>
+  </main>
+  <script>if (location.protocol === 'file:') document.getElementById('warn').hidden = false;</script>
+  <script type="module" src="viewer.mjs"></script>
+</body>
+</html>
