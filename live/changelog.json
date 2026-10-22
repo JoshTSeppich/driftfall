@@ -1,0 +1,5210 @@
+{
+  "version": 1,
+  "nextId": 17,
+  "started": true,
+  "files": {
+    "ART-GUIDE.md": {
+      "hash": "9901262a9974ef486676928e28f1b9907c5b4d5c",
+      "mtime": 1792691472000,
+      "size": 6676,
+      "lines": 94
+    },
+    "ENV-SPEC.md": {
+      "hash": "8433c7551a2706acdd99d6dfbc56ed0476f7d540",
+      "mtime": 1792690218000,
+      "size": 18695,
+      "lines": 274
+    },
+    "MISSION.md": {
+      "hash": "2c28f1889227afc71fdd9b9ae47ada5edccaa575",
+      "mtime": 1792689702000,
+      "size": 2628,
+      "lines": 39
+    },
+    "PLAN.json": {
+      "hash": "f2c281f8244d5ba6f4ff74795df882366088f40f",
+      "mtime": 1792690207000,
+      "size": 14859,
+      "lines": 253
+    },
+    "UNITS.md": {
+      "hash": "8c72fec23f481144e08bb87eb570c9749c84596a",
+      "mtime": 1792691468000,
+      "size": 3170,
+      "lines": 39
+    },
+    "VISUAL-3D.md": {
+      "hash": "ec5653c60c3ed0a04353e38b34716efcf906adfb",
+      "mtime": 1792690987000,
+      "size": 3945,
+      "lines": 50
+    },
+    "assets/LICENSES.md": {
+      "hash": "f18ae31a36c7da46e036b53228093457e0810207",
+      "mtime": 1792690957000,
+      "size": 1486,
+      "lines": 16
+    },
+    "assets/audio/LICENSES.md": {
+      "hash": "c62c22bb4f28add540740e860d24edb3362f0ad7",
+      "mtime": 1792690981000,
+      "size": 3223,
+      "lines": 43
+    },
+    "assets/audio/MANIFEST.json": {
+      "hash": "c7715aca7ee8d1b93baf6ed857426e1d96166bcb",
+      "mtime": 1792690983000,
+      "size": 1580,
+      "lines": 22
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_carpet_000.ogg": {
+      "hash": "276c765fb75f4b956e98c9e13a0ad80ece0fa1d2",
+      "mtime": 1574206016000,
+      "size": 6353,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_carpet_001.ogg": {
+      "hash": "c4715c0c4033348a2a5a4e02fb9dabe761306ad7",
+      "mtime": 1574206016000,
+      "size": 6411,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_carpet_002.ogg": {
+      "hash": "c4715c0c4033348a2a5a4e02fb9dabe761306ad7",
+      "mtime": 1574206016000,
+      "size": 6411,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_carpet_003.ogg": {
+      "hash": "31cb48590c8d561cb179ea25b740d26eab9d2c43",
+      "mtime": 1574206018000,
+      "size": 6301,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_carpet_004.ogg": {
+      "hash": "31cb48590c8d561cb179ea25b740d26eab9d2c43",
+      "mtime": 1574206018000,
+      "size": 6301,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_concrete_000.ogg": {
+      "hash": "c144d8610790e6992aa67af44179533165997da2",
+      "mtime": 1574206018000,
+      "size": 5808,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_concrete_001.ogg": {
+      "hash": "3dc77bc2b102655abed871335b31ab3bfa79ecfd",
+      "mtime": 1574206018000,
+      "size": 6308,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_concrete_002.ogg": {
+      "hash": "4c2cd897d93d91445d5e88a50731d36b8e866948",
+      "mtime": 1574206020000,
+      "size": 6255,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_concrete_003.ogg": {
+      "hash": "980f476aa4953a5e339620d90db0eef0b47aeb93",
+      "mtime": 1574206020000,
+      "size": 5805,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_concrete_004.ogg": {
+      "hash": "e582e1cfbb0a64f9efb6ec1b898ce1c9282949f5",
+      "mtime": 1574206020000,
+      "size": 5912,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_grass_000.ogg": {
+      "hash": "c087600e0cf894a5b7b1bd02e39124e67db38b2a",
+      "mtime": 1574206020000,
+      "size": 8290,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_grass_001.ogg": {
+      "hash": "2a5515acedf713032285c9fdf0bb03170090d476",
+      "mtime": 1574206020000,
+      "size": 8313,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_grass_002.ogg": {
+      "hash": "955c4d6011700381ca05b70a721ef5cb53c1b895",
+      "mtime": 1574206022000,
+      "size": 8278,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_grass_003.ogg": {
+      "hash": "ae41046908fcfb9502991a769830fd367fc92dff",
+      "mtime": 1574206022000,
+      "size": 8129,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_grass_004.ogg": {
+      "hash": "c3041dfec8152fcbb802c4fd933bee16ee58de69",
+      "mtime": 1574206022000,
+      "size": 7800,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_snow_000.ogg": {
+      "hash": "2d2102d24e131cd0ea7097942ddf451713dd5972",
+      "mtime": 1574206022000,
+      "size": 7880,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_snow_001.ogg": {
+      "hash": "e89eff89644311bd8f27b904a03ca99d38fe7fea",
+      "mtime": 1574206022000,
+      "size": 7794,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_snow_002.ogg": {
+      "hash": "0d42e724aed5b62f0ae3687b0753cb6280babf52",
+      "mtime": 1574206022000,
+      "size": 7694,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_snow_003.ogg": {
+      "hash": "971246ae8e18e1ca26eb2424c692e3c3a1952d9c",
+      "mtime": 1574206022000,
+      "size": 7860,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_snow_004.ogg": {
+      "hash": "379b553ca9e035d9e3f5005c881459da86233c92",
+      "mtime": 1574206022000,
+      "size": 7630,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_wood_000.ogg": {
+      "hash": "29e445f211300a0ba806c1067b68fed5ef8fddf5",
+      "mtime": 1574206024000,
+      "size": 5949,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_wood_001.ogg": {
+      "hash": "97d14f2c1b7e11b0ef2deccb238932815da99a38",
+      "mtime": 1574206024000,
+      "size": 5929,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_wood_002.ogg": {
+      "hash": "48cbc28880d37b8d1222d226dc882834c4d60304",
+      "mtime": 1574206024000,
+      "size": 5895,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_wood_003.ogg": {
+      "hash": "b73d7745dfe447bc9ad51c222e8600d1b29c4974",
+      "mtime": 1574206024000,
+      "size": 6207,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/footstep_wood_004.ogg": {
+      "hash": "57146f14571f985116cb60d28890e2fd159adb73",
+      "mtime": 1574206024000,
+      "size": 5799,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactBell_heavy_000.ogg": {
+      "hash": "5c86171ca9b942e1329431c86132fc3c709113b6",
+      "mtime": 1574206024000,
+      "size": 13915,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactBell_heavy_001.ogg": {
+      "hash": "b72c83cca0b2a4bb8060f25a0ca21e44399b3dee",
+      "mtime": 1574206024000,
+      "size": 15577,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactBell_heavy_002.ogg": {
+      "hash": "d524dd68ec52ed7d8cb510eedb44f60e0d9db664",
+      "mtime": 1574206026000,
+      "size": 9252,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactBell_heavy_003.ogg": {
+      "hash": "d34e6ae7868609b0a87f3847713be2963f56dcdf",
+      "mtime": 1574206026000,
+      "size": 9429,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactBell_heavy_004.ogg": {
+      "hash": "4b27976b6ae00dc34ae9b9eb1cac6e538116e300",
+      "mtime": 1574206026000,
+      "size": 6529,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGeneric_light_000.ogg": {
+      "hash": "6820c95a585606e597458df81cc4b4d690ee19f6",
+      "mtime": 1574206026000,
+      "size": 5827,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGeneric_light_001.ogg": {
+      "hash": "96828ef699f1f8275a12268683eb55deb47dbb33",
+      "mtime": 1574206026000,
+      "size": 5636,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGeneric_light_002.ogg": {
+      "hash": "9e6eb51a9d432eb9388011823607f9b7512b76db",
+      "mtime": 1574206026000,
+      "size": 5795,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGeneric_light_003.ogg": {
+      "hash": "18b2b1f167454f6a188209384fe20dc3b75d6eb9",
+      "mtime": 1574206026000,
+      "size": 5792,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGeneric_light_004.ogg": {
+      "hash": "df8e8197e86e5e777330168bfa4952bd0a5bb81f",
+      "mtime": 1574206028000,
+      "size": 5747,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_heavy_000.ogg": {
+      "hash": "c56e309f9c163544d4da13affc65abff7354b4b1",
+      "mtime": 1574206028000,
+      "size": 7403,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_heavy_001.ogg": {
+      "hash": "ece66431f90a41f6dabad50ddb6ba50d6c2fc1d4",
+      "mtime": 1574206028000,
+      "size": 8946,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_heavy_002.ogg": {
+      "hash": "dc02a1ace09a8256561f323448b1079d24327f98",
+      "mtime": 1574206028000,
+      "size": 7661,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_heavy_003.ogg": {
+      "hash": "261c3a6abcd7df5129f4ae63a33f06a86418df0f",
+      "mtime": 1574206028000,
+      "size": 6956,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_heavy_004.ogg": {
+      "hash": "64d308d34136b4f08fe2b25ec9c4ee8f01b2fa05",
+      "mtime": 1574206028000,
+      "size": 8300,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_light_000.ogg": {
+      "hash": "50b1e337cae411d6aaaf4ba60cce3a31243502cd",
+      "mtime": 1574206028000,
+      "size": 6526,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_light_001.ogg": {
+      "hash": "9bbca5ab626cb4d771c343d9f4a20383d3975600",
+      "mtime": 1574206030000,
+      "size": 6544,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_light_002.ogg": {
+      "hash": "4021d2a9f91b13a8edb904610ae4672c7a4d6fee",
+      "mtime": 1574206030000,
+      "size": 6562,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_light_003.ogg": {
+      "hash": "4be3d9c44760b940a0d895c24d8c9a3b6984ef24",
+      "mtime": 1574206030000,
+      "size": 6618,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_light_004.ogg": {
+      "hash": "159af7adef946ae4177bea63fae427d8d75546de",
+      "mtime": 1574206030000,
+      "size": 6641,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_medium_000.ogg": {
+      "hash": "1720bed01b9433e5b906ba1bcb5c1989ffec9eca",
+      "mtime": 1574206030000,
+      "size": 8400,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_medium_001.ogg": {
+      "hash": "849c6d180e503f0ffbb38568bed56faced846a25",
+      "mtime": 1574206030000,
+      "size": 8605,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_medium_002.ogg": {
+      "hash": "e1c03abd6e17500599eebc5975694fc5f1bf9ac8",
+      "mtime": 1574206032000,
+      "size": 8341,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_medium_003.ogg": {
+      "hash": "84cb5e5b988d6d8c7ade222ca36117b108f234d9",
+      "mtime": 1574206032000,
+      "size": 8596,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactGlass_medium_004.ogg": {
+      "hash": "adcaf4ff20ae0b5fb372ed40ac31f75a8937de76",
+      "mtime": 1574206032000,
+      "size": 8397,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_heavy_000.ogg": {
+      "hash": "af145ddb661aeeff671659ecedddecb1f117abf3",
+      "mtime": 1574206032000,
+      "size": 6110,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_heavy_001.ogg": {
+      "hash": "d86571ae1b4a9d2014371d2a8b65143461f602e0",
+      "mtime": 1574206032000,
+      "size": 7279,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_heavy_002.ogg": {
+      "hash": "a79b511bbf7ec790d0ff5e02f78eb9c30ae87517",
+      "mtime": 1574206032000,
+      "size": 5634,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_heavy_003.ogg": {
+      "hash": "ebfb151fc24efeff2e3e605a4a881ec6374a43d7",
+      "mtime": 1574206032000,
+      "size": 6209,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_heavy_004.ogg": {
+      "hash": "60b06c7125969b43ea1ffeab178a9f0c7d20a9f4",
+      "mtime": 1574206032000,
+      "size": 5788,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_light_000.ogg": {
+      "hash": "476f05efdee083ed781e7d7d106add2f55080292",
+      "mtime": 1574206034000,
+      "size": 7651,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_light_001.ogg": {
+      "hash": "0542120bb5f5997c6511ef430a00be000ec09f0a",
+      "mtime": 1574206034000,
+      "size": 6967,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_light_002.ogg": {
+      "hash": "9773a0477fc90024deda5314a69d47db259ed5d6",
+      "mtime": 1574206034000,
+      "size": 6804,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_light_003.ogg": {
+      "hash": "bda169bf09867ff4840ec889eec35c2c6e6e94df",
+      "mtime": 1574206034000,
+      "size": 9023,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_light_004.ogg": {
+      "hash": "2e90397b65858e50db41ca68b974c97260de5f86",
+      "mtime": 1574206034000,
+      "size": 6675,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_medium_000.ogg": {
+      "hash": "763f6d873e3f489731bf9bb6a93273a8f5e0c631",
+      "mtime": 1574206034000,
+      "size": 7117,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_medium_001.ogg": {
+      "hash": "be8390c4d2ce68ef65b28d1377519ad573855573",
+      "mtime": 1574206036000,
+      "size": 6151,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_medium_002.ogg": {
+      "hash": "ae42e64c8bd4cc594a67357f78aca7b0d2b24e77",
+      "mtime": 1574206036000,
+      "size": 5857,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_medium_003.ogg": {
+      "hash": "88d7a1dedd5a738b3c58a6d7f94b679cd710ae5e",
+      "mtime": 1574206036000,
+      "size": 6964,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMetal_medium_004.ogg": {
+      "hash": "ea856107c727d6daaa054adbe27dbccd618f66c7",
+      "mtime": 1574206036000,
+      "size": 5744,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMining_000.ogg": {
+      "hash": "97ce13f67b7b9029df0a0ced35f6c112b7d28664",
+      "mtime": 1574206036000,
+      "size": 12035,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMining_001.ogg": {
+      "hash": "a0ccab4e4c2b6ad116cbb232a3180bfb16eda5de",
+      "mtime": 1574206036000,
+      "size": 11481,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMining_002.ogg": {
+      "hash": "5851515150e03e6f25aa61a6d225f50d42fd7dc1",
+      "mtime": 1574206038000,
+      "size": 11235,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMining_003.ogg": {
+      "hash": "e87550f8ad63afff42a491417b46ed15d918ee4f",
+      "mtime": 1574206038000,
+      "size": 12160,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactMining_004.ogg": {
+      "hash": "22ef2741fcd43105c24dfdae3d200ee07de0b578",
+      "mtime": 1574206038000,
+      "size": 11668,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlank_medium_000.ogg": {
+      "hash": "2b2a669e55d2ca2667a9068c97f3cfa0e034d9c8",
+      "mtime": 1574206038000,
+      "size": 12016,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlank_medium_001.ogg": {
+      "hash": "3a5285db9ae01d4bfc6b550c0109875998303544",
+      "mtime": 1574206038000,
+      "size": 12082,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlank_medium_002.ogg": {
+      "hash": "7c3d0938e9c5298150e527bb3ebd46a844983eec",
+      "mtime": 1574206038000,
+      "size": 12313,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlank_medium_003.ogg": {
+      "hash": "3cddf41ed835869df460c53effa93090debb94f5",
+      "mtime": 1574206038000,
+      "size": 12138,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlank_medium_004.ogg": {
+      "hash": "23fe3ac2709b62a6f49aac2346c9a261dd482e7d",
+      "mtime": 1574206038000,
+      "size": 12084,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_heavy_000.ogg": {
+      "hash": "43f09da21528f11bff996093392bb8592aaabff8",
+      "mtime": 1574206040000,
+      "size": 10032,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_heavy_001.ogg": {
+      "hash": "5b0f6ea35f183e03ca8c8e3d180fb0bf124fd421",
+      "mtime": 1574206040000,
+      "size": 8713,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_heavy_002.ogg": {
+      "hash": "30408ac1a0057377e9fe6d27673e49de46b0b6c8",
+      "mtime": 1574206040000,
+      "size": 10188,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_heavy_003.ogg": {
+      "hash": "c32d4816c566efae8c944627b6e36b50d449c02b",
+      "mtime": 1574206040000,
+      "size": 8490,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_heavy_004.ogg": {
+      "hash": "5e30b019ce4d115a8095c1c9ecb4e3acef2efea8",
+      "mtime": 1574206040000,
+      "size": 11092,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_light_000.ogg": {
+      "hash": "df8c1eddb77ba062cb63fb988108735ea33de382",
+      "mtime": 1574206040000,
+      "size": 10474,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_light_001.ogg": {
+      "hash": "802ac0127c7576119435707ffa2152d6784e0df6",
+      "mtime": 1574206040000,
+      "size": 11730,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_light_002.ogg": {
+      "hash": "30ff02ae4b106c7a8cc5b9315d3311d76726832c",
+      "mtime": 1574206042000,
+      "size": 9932,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_light_003.ogg": {
+      "hash": "75174239085d007a85a8ba25434e85b6cdad2de8",
+      "mtime": 1574206042000,
+      "size": 10626,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_light_004.ogg": {
+      "hash": "7a9c199363960cffbce214142ce01553a466bc04",
+      "mtime": 1574206042000,
+      "size": 11928,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_medium_000.ogg": {
+      "hash": "5443292c0e7dfd6662e0feaecee4e00964a2622f",
+      "mtime": 1574206042000,
+      "size": 10921,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_medium_001.ogg": {
+      "hash": "ee9a5c63c55039264ad6f678ac8004c340de6ce5",
+      "mtime": 1574206042000,
+      "size": 11491,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_medium_002.ogg": {
+      "hash": "1e8494eaddf0c8e1211552caacc88ed5c8034b1f",
+      "mtime": 1574206042000,
+      "size": 10250,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_medium_003.ogg": {
+      "hash": "7c2968ec3ad17e9bdb5d4a28b3774fb366973a9b",
+      "mtime": 1574206042000,
+      "size": 11616,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPlate_medium_004.ogg": {
+      "hash": "815e3adb149ecec8ccfa491427e27828fa6362c8",
+      "mtime": 1574206042000,
+      "size": 10803,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_heavy_000.ogg": {
+      "hash": "f8c949a60a44d0862fb50ba4e8a0a77aabb389d0",
+      "mtime": 1574206044000,
+      "size": 11617,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_heavy_001.ogg": {
+      "hash": "a969184798d8aeb6788d054d72a8b593e28627b0",
+      "mtime": 1574206044000,
+      "size": 10861,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_heavy_002.ogg": {
+      "hash": "08a073fd8c00c82870f15108cc020590bf942677",
+      "mtime": 1574206044000,
+      "size": 9025,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_heavy_003.ogg": {
+      "hash": "ebfb1d7b70dea7b76ff054bd4a0a2285983c8e7c",
+      "mtime": 1574206044000,
+      "size": 10029,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_heavy_004.ogg": {
+      "hash": "498f6bae984a976bf24b93c0ba5bdded3bc960d4",
+      "mtime": 1574206044000,
+      "size": 10452,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_medium_000.ogg": {
+      "hash": "8ebb49e58245497a4fd50ca856c35e62be53d82b",
+      "mtime": 1574206044000,
+      "size": 8800,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_medium_001.ogg": {
+      "hash": "e169c71d67d4441b3ec968fcb06f0a212e637b7b",
+      "mtime": 1574206044000,
+      "size": 8701,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_medium_002.ogg": {
+      "hash": "836dab5826c7ae5fa1cdb3a614aa82f45e880bda",
+      "mtime": 1574206046000,
+      "size": 10399,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_medium_003.ogg": {
+      "hash": "23239319ee2a8411593e043b30b8809469e6b1b2",
+      "mtime": 1574206046000,
+      "size": 9509,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactPunch_medium_004.ogg": {
+      "hash": "75510f5e333e1fe12b94a84cea38dedb0c25b6ff",
+      "mtime": 1574206046000,
+      "size": 10032,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_heavy_000.ogg": {
+      "hash": "b2b75f013ecb675cea6df9fc424dbae7a39f5a7a",
+      "mtime": 1574206046000,
+      "size": 6570,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_heavy_001.ogg": {
+      "hash": "c61b666955b1efc248c1acb8d6f8614d575c2ad6",
+      "mtime": 1574206048000,
+      "size": 6689,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_heavy_002.ogg": {
+      "hash": "0b8df7ffc157a0fe0923ca0f266d95dd028ec1a5",
+      "mtime": 1574206048000,
+      "size": 6749,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_heavy_003.ogg": {
+      "hash": "5bcbb39ebee0088c6dfd4f1b3ae20070cfee2248",
+      "mtime": 1574206048000,
+      "size": 6665,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_heavy_004.ogg": {
+      "hash": "57eae8421d903d4a9d50abc7d0ec66d8fd67ed43",
+      "mtime": 1574206048000,
+      "size": 6478,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_medium_000.ogg": {
+      "hash": "7575b6e5cc59a73cca00ed3e8c2d7b440afd1898",
+      "mtime": 1574206048000,
+      "size": 5351,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_medium_001.ogg": {
+      "hash": "020c492fbe661bf40b63b6b0ed0b43c9a8b7c6ec",
+      "mtime": 1574206048000,
+      "size": 5506,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_medium_002.ogg": {
+      "hash": "321c2c769ea7300431e2799eb3684a791d835f53",
+      "mtime": 1574206048000,
+      "size": 5358,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_medium_003.ogg": {
+      "hash": "5a8254aa00b4462f791b031bc111fa96b3a8acc2",
+      "mtime": 1574206050000,
+      "size": 5392,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactSoft_medium_004.ogg": {
+      "hash": "93830d97ac16922b44ee2fef6c4c91bf4acf3140",
+      "mtime": 1574206050000,
+      "size": 5438,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactTin_medium_000.ogg": {
+      "hash": "709dcd6e7c02266b6c6a387fc30426eec3475bec",
+      "mtime": 1574206050000,
+      "size": 6509,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactTin_medium_001.ogg": {
+      "hash": "dfba90e2fd17b03007f00e364608e10b38b54343",
+      "mtime": 1574206050000,
+      "size": 6603,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactTin_medium_002.ogg": {
+      "hash": "02872c3e6ac3c199c68599d1549db4137bbd0ea1",
+      "mtime": 1574206050000,
+      "size": 6156,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactTin_medium_003.ogg": {
+      "hash": "3e9d9597d07f6a71befe8ccf4506d9af094a4fea",
+      "mtime": 1574206050000,
+      "size": 6541,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactTin_medium_004.ogg": {
+      "hash": "3dcd475a7ea8d7679cb211628badba1c5d4f5687",
+      "mtime": 1574206050000,
+      "size": 6362,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_heavy_000.ogg": {
+      "hash": "fd6cbe0bb73ce1186ad89617eaf5af22373d7b78",
+      "mtime": 1574206050000,
+      "size": 6233,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_heavy_001.ogg": {
+      "hash": "24a5c2fb1f71fbc2a4693516b826da437e002566",
+      "mtime": 1574206052000,
+      "size": 6239,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_heavy_002.ogg": {
+      "hash": "87ac8662f5347592f5e6cb66433910aecc13673a",
+      "mtime": 1574206052000,
+      "size": 6146,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_heavy_003.ogg": {
+      "hash": "89baaffdfc1b97956e7e2edcec494d312ce39cf4",
+      "mtime": 1574206052000,
+      "size": 6181,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_heavy_004.ogg": {
+      "hash": "afb3a3444e199601106e2028aa9590c08eb1488e",
+      "mtime": 1574206052000,
+      "size": 6253,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_light_000.ogg": {
+      "hash": "198e7b73922d7f2790c26fb33c579be74e6fb08e",
+      "mtime": 1574206052000,
+      "size": 6343,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_light_001.ogg": {
+      "hash": "443b058642bccf15ef87456aabe52e43e9ce64a7",
+      "mtime": 1574206054000,
+      "size": 6373,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_light_002.ogg": {
+      "hash": "9130f8516038dddaba308acf41bc6ed06c102a8a",
+      "mtime": 1574206054000,
+      "size": 6366,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_light_003.ogg": {
+      "hash": "2bee923de088319f847c2fed44e9efb304cf8913",
+      "mtime": 1574206054000,
+      "size": 6381,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_light_004.ogg": {
+      "hash": "16a16bd30defcd3e0deec6d9cfa960955f10fd88",
+      "mtime": 1574206054000,
+      "size": 6395,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_medium_000.ogg": {
+      "hash": "894be07d2029526c4583b04b484a8fd15bd1f82f",
+      "mtime": 1574206054000,
+      "size": 6575,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_medium_001.ogg": {
+      "hash": "cddbb1b87ab7ad72e721e56b826ba6119534f476",
+      "mtime": 1574206054000,
+      "size": 6555,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_medium_002.ogg": {
+      "hash": "25c33c00e35a6d39496037b72f13fd3d053b83e4",
+      "mtime": 1574206054000,
+      "size": 6607,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_medium_003.ogg": {
+      "hash": "ff0220050643ce70f74ca59ed2a4efe2a82f002a",
+      "mtime": 1574206054000,
+      "size": 6598,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-impact/x/Audio/impactWood_medium_004.ogg": {
+      "hash": "495427a16de72dde81106b31785ad0e70aa551f4",
+      "mtime": 1574206056000,
+      "size": 6481,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES00.ogg": {
+      "hash": "8e4f2372168fb387d6b851ae3cd0228ee0d43738",
+      "mtime": 1395071582000,
+      "size": 39948,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES01.ogg": {
+      "hash": "3d8fc7dd66554e8ca5c643d1f8f804c35e134afe",
+      "mtime": 1395071582000,
+      "size": 11758,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES02.ogg": {
+      "hash": "61e8f931be2ddf68fa77a21fe2702ac5329e2407",
+      "mtime": 1395071582000,
+      "size": 11743,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES03.ogg": {
+      "hash": "01f4d531c11c63a5f6e67b5666ab77bfbb686b30",
+      "mtime": 1395071582000,
+      "size": 16573,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES04.ogg": {
+      "hash": "38f53cba145655dbff04e13e0106614e883770b3",
+      "mtime": 1395071582000,
+      "size": 16796,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES05.ogg": {
+      "hash": "0dc2a87c7c7975c2dbb3fff1466068b6c95cda54",
+      "mtime": 1395071582000,
+      "size": 21439,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES06.ogg": {
+      "hash": "829ef623216493e3a247487bb4f0ed76809c2051",
+      "mtime": 1395071582000,
+      "size": 19138,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES07.ogg": {
+      "hash": "2aaa2e07a987a6e5a9c8bffbf4b470411b619ce0",
+      "mtime": 1395071582000,
+      "size": 18971,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES08.ogg": {
+      "hash": "31984eec0afaab3f7c60489b31204e03d548ef9a",
+      "mtime": 1395071582000,
+      "size": 16534,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES09.ogg": {
+      "hash": "44853ab98ef935a702c076629aab96401fad1d9f",
+      "mtime": 1395071582000,
+      "size": 11934,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES10.ogg": {
+      "hash": "4cb2027b605e25b2aef462b4503b9025fafb4892",
+      "mtime": 1395071582000,
+      "size": 12001,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES11.ogg": {
+      "hash": "609fc258fea43646f6bd5fb52174bee02ff8b4c9",
+      "mtime": 1395071582000,
+      "size": 21177,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES12.ogg": {
+      "hash": "055f068806fc36fd756fcd034703ac6b5c40ab17",
+      "mtime": 1395071582000,
+      "size": 21202,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES13.ogg": {
+      "hash": "ed244e8c409e3b3d69151c56d31dbe9000b91772",
+      "mtime": 1395071584000,
+      "size": 25177,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES14.ogg": {
+      "hash": "d081abf6717bd2ccc152158f88e0d95da282bd55",
+      "mtime": 1395071584000,
+      "size": 11717,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES15.ogg": {
+      "hash": "0cad766117bff19e5ea364a5b2d8ab773a3a6a86",
+      "mtime": 1395071584000,
+      "size": 11849,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/8-Bit jingles/jingles_NES16.ogg": {
+      "hash": "3b1d3e723866502ba95a1d57e06efa9d1d7457e6",
+      "mtime": 1395071584000,
+      "size": 14057,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT00.ogg": {
+      "hash": "38a550bdf3c9ea61942eb28f9ebbeebaaa3ded7a",
+      "mtime": 1395071876000,
+      "size": 8650,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT01.ogg": {
+      "hash": "35da668dd95265a6650051ec9aa0c3b17ab3f05e",
+      "mtime": 1395071876000,
+      "size": 11681,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT02.ogg": {
+      "hash": "fa495095c14605149b2d5ff7d0e32b7b29a5befd",
+      "mtime": 1395071876000,
+      "size": 11735,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT03.ogg": {
+      "hash": "59926cd380431d9a2be8306e6aa5b9434bcd66d4",
+      "mtime": 1395071878000,
+      "size": 13944,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT04.ogg": {
+      "hash": "db217621e352ea467748c6066bf6c1dad6a68ea7",
+      "mtime": 1395071878000,
+      "size": 11424,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT05.ogg": {
+      "hash": "a382f1b3a90a95234db8da8ef1c36413af0ccdfb",
+      "mtime": 1395071878000,
+      "size": 13868,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT06.ogg": {
+      "hash": "2a95346551ca6d6efa00a6ff0f69b9e8b3e862fe",
+      "mtime": 1395071878000,
+      "size": 11854,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT07.ogg": {
+      "hash": "9982cf8414e7b07cf5075f3a217ad5986c022888",
+      "mtime": 1395071878000,
+      "size": 8707,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT08.ogg": {
+      "hash": "bddda6901bf4f43906dd1a4a17252328d6e0021c",
+      "mtime": 1395071878000,
+      "size": 8613,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT09.ogg": {
+      "hash": "90f780eeb23c6778994df85e9b9db492ef82c984",
+      "mtime": 1395071878000,
+      "size": 15477,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT10.ogg": {
+      "hash": "b0011b9039e8f5fb586e760fed5f95e4b1575443",
+      "mtime": 1395071878000,
+      "size": 15019,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT11.ogg": {
+      "hash": "72d479af7ba8a1f765972138bea4a721f8672b83",
+      "mtime": 1395071878000,
+      "size": 17932,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT12.ogg": {
+      "hash": "3ecccff31b6a897ffcb4faf4bcd06cf15a6be309",
+      "mtime": 1395071878000,
+      "size": 8666,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT13.ogg": {
+      "hash": "81d0de2daf9fafd554fd623bbe9447fd6d048f2a",
+      "mtime": 1395071878000,
+      "size": 8577,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT14.ogg": {
+      "hash": "a1af0cb36ae396c7a3239767fbde2e4476eaf6bc",
+      "mtime": 1395071878000,
+      "size": 10099,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT15.ogg": {
+      "hash": "9cd7fa7141130ceec19792e61b6148094ce316fb",
+      "mtime": 1395071876000,
+      "size": 19626,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Hit jingles/jingles_HIT16.ogg": {
+      "hash": "33035821fed0dbb7bf8e989abceba0db193c0384",
+      "mtime": 1395071876000,
+      "size": 8445,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI00.ogg": {
+      "hash": "5d4d81c110fbdc12862a18d4766d6d78b0a6988b",
+      "mtime": 1395071976000,
+      "size": 10382,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI01.ogg": {
+      "hash": "46238ef0ac759f7c8159f19316eadedbb9b7da7b",
+      "mtime": 1395071976000,
+      "size": 16579,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI02.ogg": {
+      "hash": "c8e50872f9a5738c45c8a8d427543cc36bdd0ab4",
+      "mtime": 1395071976000,
+      "size": 16360,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI03.ogg": {
+      "hash": "3231cf364a61736f6ecf3844a663cab4c14b7462",
+      "mtime": 1395071976000,
+      "size": 16981,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI04.ogg": {
+      "hash": "9ae0dbf96622ad52bc6d0afbe8d2cb07219d2fa5",
+      "mtime": 1395071976000,
+      "size": 11052,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI05.ogg": {
+      "hash": "2d5574647a369bfd105b30970f6b0ebcba314b73",
+      "mtime": 1395071976000,
+      "size": 10291,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI06.ogg": {
+      "hash": "a0670ea4c944eba2881a824e36b278adfcb0f3c6",
+      "mtime": 1395071976000,
+      "size": 11867,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI07.ogg": {
+      "hash": "0ed62ec52b5d3c28062e0c21989a2b904036128a",
+      "mtime": 1395071976000,
+      "size": 19137,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI08.ogg": {
+      "hash": "082f9d036b6863eeaa9ee9bf8ad8362c161f3b53",
+      "mtime": 1395071976000,
+      "size": 10825,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI09.ogg": {
+      "hash": "d699ce62d8a2e097cc208d27b246da56588a85fd",
+      "mtime": 1395071976000,
+      "size": 10872,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI10.ogg": {
+      "hash": "cf8f52094068f8427d00f9bfd2527cec075e64f2",
+      "mtime": 1395071976000,
+      "size": 14004,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI11.ogg": {
+      "hash": "118bd38de142ca61164d3a9146495b4035b235d3",
+      "mtime": 1395071976000,
+      "size": 13830,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI12.ogg": {
+      "hash": "78bc17dcad1cd9687e160a9d491f7d643307c64b",
+      "mtime": 1395071976000,
+      "size": 15969,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI13.ogg": {
+      "hash": "92f138d1101786e0bc26883d88b1b0d99cad982e",
+      "mtime": 1395071976000,
+      "size": 14644,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI14.ogg": {
+      "hash": "af87013b05b62661182ac8231d0f178dab5e7c2e",
+      "mtime": 1395071976000,
+      "size": 15212,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI15.ogg": {
+      "hash": "6ff1e14703d3deed5e0b7b7a2501851ffc64b3f5",
+      "mtime": 1395071976000,
+      "size": 13905,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Pizzicato jingles/jingles_PIZZI16.ogg": {
+      "hash": "2c08333726e25ab84149ae200dd49e119dfd9f8f",
+      "mtime": 1395071976000,
+      "size": 10201,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX00.ogg": {
+      "hash": "e447f052db76ff4f9e5096927c7fcd6105cf5256",
+      "mtime": 1395071678000,
+      "size": 10335,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX01.ogg": {
+      "hash": "29820022366019c81068f665f502e347436f012d",
+      "mtime": 1395071678000,
+      "size": 17409,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX02.ogg": {
+      "hash": "4c716a660492a33e60c34f36c4204ede75649e15",
+      "mtime": 1395071678000,
+      "size": 17112,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX03.ogg": {
+      "hash": "bd6793e2fdec3638f93036d5ec94cfabbfdb3fdd",
+      "mtime": 1395071678000,
+      "size": 19785,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX04.ogg": {
+      "hash": "705e85bf084def09b1b0c8e846f1067f993cd1fc",
+      "mtime": 1395071678000,
+      "size": 9786,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX05.ogg": {
+      "hash": "3842656d905f35a62421da877dd1083ded52b708",
+      "mtime": 1395071678000,
+      "size": 10183,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX06.ogg": {
+      "hash": "a052241fe5762ab895357bfeceeb2ca187431c51",
+      "mtime": 1395071678000,
+      "size": 11167,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX07.ogg": {
+      "hash": "b210ecad8c3afd9d80e398fedeb30c9ab4cfbd6d",
+      "mtime": 1395071678000,
+      "size": 30900,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX08.ogg": {
+      "hash": "612139af9f77dc27a906905cbc976b22b1980289",
+      "mtime": 1395071678000,
+      "size": 9989,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX09.ogg": {
+      "hash": "d6768e3c1732105b465c5143b5f4a7c85cc4fb1b",
+      "mtime": 1395071678000,
+      "size": 10023,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX10.ogg": {
+      "hash": "a7a57169d2c55f8ffd253b6066eebdf772356098",
+      "mtime": 1395071678000,
+      "size": 13565,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX11.ogg": {
+      "hash": "c9e4534796eb83d0b3e63ea3ec54e4be0f2dd27f",
+      "mtime": 1395071678000,
+      "size": 13737,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX12.ogg": {
+      "hash": "84663ad8140270b0efc1e0a102b7bff4c69264e8",
+      "mtime": 1395071678000,
+      "size": 16903,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX13.ogg": {
+      "hash": "c5ceda4f53a709509afa127bc2664301a0892af9",
+      "mtime": 1395071678000,
+      "size": 15654,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX14.ogg": {
+      "hash": "26613803820049dcdefd395b0dbdd6d6d4df9e91",
+      "mtime": 1395071678000,
+      "size": 15119,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX15.ogg": {
+      "hash": "afd4ae2081b87af6fe63ed8e15d40a2d69731a1c",
+      "mtime": 1395071678000,
+      "size": 13560,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Sax jingles/jingles_SAX16.ogg": {
+      "hash": "dc6828f8e069d5a5dbd32cc810cc628c8d01d4a6",
+      "mtime": 1395071678000,
+      "size": 10588,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL00.ogg": {
+      "hash": "310d3e5f1799c40fefdfbf6945f2bf2927587e6a",
+      "mtime": 1395071776000,
+      "size": 15691,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL01.ogg": {
+      "hash": "c125e1913403c2b175d76f151f24c2a1421e398d",
+      "mtime": 1395071776000,
+      "size": 21019,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL02.ogg": {
+      "hash": "a422fef5beb01afdf40ea2460aeee9ed6c701b40",
+      "mtime": 1395071776000,
+      "size": 21919,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL03.ogg": {
+      "hash": "49ecdd03e68d5a2f9728aec33316590073f305c9",
+      "mtime": 1395071776000,
+      "size": 19117,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL04.ogg": {
+      "hash": "088a085083d5fc2f62e709b3291610973580265c",
+      "mtime": 1395071776000,
+      "size": 14951,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL05.ogg": {
+      "hash": "5838fc9ba3a735121d78c13fabff9482b12d9665",
+      "mtime": 1395071776000,
+      "size": 15082,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL06.ogg": {
+      "hash": "c0438deab9df394fc32597bdac60eb7d7b6b5c35",
+      "mtime": 1395071776000,
+      "size": 18893,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL07.ogg": {
+      "hash": "dde1ff3c8122273b5f64a6c565998acf182ad9a8",
+      "mtime": 1395071776000,
+      "size": 22460,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL08.ogg": {
+      "hash": "f409a7a768230cf725e71bac8d3d0b7b16085610",
+      "mtime": 1395071776000,
+      "size": 13885,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL09.ogg": {
+      "hash": "a697c2e1e54cc418af4065e1864d4a36355d7d6d",
+      "mtime": 1395071776000,
+      "size": 11145,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL10.ogg": {
+      "hash": "b5e20fe3873850d82e12c47150df1964d4da960c",
+      "mtime": 1395071776000,
+      "size": 16151,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL11.ogg": {
+      "hash": "8ee39a0f738e2b8865ba10aefe03d3ac67289f10",
+      "mtime": 1395071776000,
+      "size": 14615,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL12.ogg": {
+      "hash": "b4b895d2098d50943d51654fe108f1aaed87343d",
+      "mtime": 1395071776000,
+      "size": 18971,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL13.ogg": {
+      "hash": "8efbdfcff45dd287e047ff1b1ec0f5fbf4dc4413",
+      "mtime": 1395071776000,
+      "size": 17122,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL14.ogg": {
+      "hash": "436e2321c7e7426c7046da90dfefa93bf56717ad",
+      "mtime": 1395071776000,
+      "size": 20532,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL15.ogg": {
+      "hash": "5157f1d50e64a701d3735fa5b93683c4f9dbc154",
+      "mtime": 1395071776000,
+      "size": 16113,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Audio/Steel jingles/jingles_STEEL16.ogg": {
+      "hash": "5b1d9349b305c877646163d23b08329a51e2c2d1",
+      "mtime": 1395071776000,
+      "size": 15473,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-jingles/x/Preview.ogg": {
+      "hash": "b5d252492d22c414bb112261463ea5aebca0b738",
+      "mtime": 1509177078000,
+      "size": 155244,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/computerNoise_000.ogg": {
+      "hash": "d16f6e381c65aa9dfb9ae14aeb3c8b7eea3ed35a",
+      "mtime": 1601190224000,
+      "size": 119024,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/computerNoise_001.ogg": {
+      "hash": "06a3add093114628e99dfa098e08eac0825b3912",
+      "mtime": 1601190224000,
+      "size": 120178,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/computerNoise_002.ogg": {
+      "hash": "d1cddef8ab5637d56dc07aef4f0e88c17edb294e",
+      "mtime": 1601190224000,
+      "size": 130861,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/computerNoise_003.ogg": {
+      "hash": "68bc14c6afc2d36f60a8a71cd6793f07480acbe2",
+      "mtime": 1601190226000,
+      "size": 123515,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/doorClose_000.ogg": {
+      "hash": "e8565b2fb7212d33ad4a1b848bdbd4007cf7d7ec",
+      "mtime": 1602451394000,
+      "size": 20369,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/doorClose_001.ogg": {
+      "hash": "606526c2679b68b4923d83d461584ba4e38d3fd9",
+      "mtime": 1602451396000,
+      "size": 21561,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/doorClose_002.ogg": {
+      "hash": "364d6442136027a677ebf92adcf3c6ffa8216b7a",
+      "mtime": 1602451396000,
+      "size": 20530,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/doorOpen_000.ogg": {
+      "hash": "a6b9a6b561bc52709c39b67de3ce97a3c6ff0310",
+      "mtime": 1602451446000,
+      "size": 19616,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/doorOpen_001.ogg": {
+      "hash": "0a23c8e4ffe96db666c2b3a723baccf05d33d318",
+      "mtime": 1602451446000,
+      "size": 21442,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/doorOpen_002.ogg": {
+      "hash": "07fa7708fb264313efc8d3b50a319483bca3ebf4",
+      "mtime": 1602451448000,
+      "size": 19864,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/engineCircular_000.ogg": {
+      "hash": "3f7fea25bba3e4cb024572eb7f016364901119ad",
+      "mtime": 1601328088000,
+      "size": 177470,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/engineCircular_001.ogg": {
+      "hash": "b7895dc45f4fbbb8ad43c3b07597bb053375972c",
+      "mtime": 1601328088000,
+      "size": 199100,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/engineCircular_002.ogg": {
+      "hash": "05a70e838c0220c92e75e6642999ce7c67d688b2",
+      "mtime": 1601328090000,
+      "size": 188542,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/engineCircular_003.ogg": {
+      "hash": "73b0d135e6fedf6ccf5397d0a0dfaff091fa8c2f",
+      "mtime": 1601328090000,
+      "size": 184193,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/engineCircular_004.ogg": {
+      "hash": "39decaecf79ca900ef8bacbdfa47607a8ebd9fc4",
+      "mtime": 1601328090000,
+      "size": 180870,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/explosionCrunch_000.ogg": {
+      "hash": "433cb93ac5f8b2983f514d659efad55e5095af6d",
+      "mtime": 1602449952000,
+      "size": 28274,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/explosionCrunch_001.ogg": {
+      "hash": "6e467976afbd316785fcc0b7dd9f21ff90fd372f",
+      "mtime": 1602449954000,
+      "size": 47916,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/explosionCrunch_002.ogg": {
+      "hash": "2483f5c1f9c1037df1a4ed0b563a6a8c4214eef6",
+      "mtime": 1602449954000,
+      "size": 47907,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/explosionCrunch_003.ogg": {
+      "hash": "cefc87485a0c638561c910b681bd62ab2469483e",
+      "mtime": 1602449954000,
+      "size": 54824,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/explosionCrunch_004.ogg": {
+      "hash": "80c4ad503a20639678dc388f135729a0a1b52d66",
+      "mtime": 1602449954000,
+      "size": 79250,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/forceField_000.ogg": {
+      "hash": "b2638df96fdebf120f5244e80d4f34b9386483d8",
+      "mtime": 1601107136000,
+      "size": 25672,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/forceField_001.ogg": {
+      "hash": "5403de565b7c566e5d83ec4cb88d300309b324d8",
+      "mtime": 1601107138000,
+      "size": 28947,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/forceField_002.ogg": {
+      "hash": "09322e53f6c0fb024064e98954e13d5bd7a7454a",
+      "mtime": 1601107138000,
+      "size": 27647,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/forceField_003.ogg": {
+      "hash": "6c0db14d59eeec8ea5bbba0bec47f9dc88ad8fd4",
+      "mtime": 1601107138000,
+      "size": 23938,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/forceField_004.ogg": {
+      "hash": "ab3aba85e403d03fda6c33c44aea9d3cdd96a114",
+      "mtime": 1601107140000,
+      "size": 26885,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/impactMetal_000.ogg": {
+      "hash": "d242ec58219f88d34c8c390439f0ba6665daf1e4",
+      "mtime": 1602450164000,
+      "size": 15491,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/impactMetal_001.ogg": {
+      "hash": "565aff60cac4a63aea516b5bdde4c4d50d596ac9",
+      "mtime": 1602450164000,
+      "size": 15305,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/impactMetal_002.ogg": {
+      "hash": "3796bbbc845ef8cf7f200b9c8573a1859b2f22b7",
+      "mtime": 1602450166000,
+      "size": 12708,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/impactMetal_003.ogg": {
+      "hash": "74956b6e6ccc94acf12b1efdf54997d20931094c",
+      "mtime": 1602450166000,
+      "size": 17303,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/impactMetal_004.ogg": {
+      "hash": "4eafeed58b37b85ab6d8fb4eb29092eeef206968",
+      "mtime": 1602450166000,
+      "size": 11290,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserLarge_000.ogg": {
+      "hash": "f39f1d22316efdfab3e058c98869447b9d297ac6",
+      "mtime": 1601327848000,
+      "size": 25566,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserLarge_001.ogg": {
+      "hash": "2242017a2295dcef6098457d36aafe9e77d88384",
+      "mtime": 1601327848000,
+      "size": 26220,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserLarge_002.ogg": {
+      "hash": "a6104858c0f888c04cef41d19e9274a9b3d046a1",
+      "mtime": 1601327848000,
+      "size": 27440,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserLarge_003.ogg": {
+      "hash": "ba1643de25c81f7d1f625ce1f56c3e2263759663",
+      "mtime": 1601327850000,
+      "size": 26104,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserLarge_004.ogg": {
+      "hash": "03db38e98fe3a190ab99820c5378936dc92402b5",
+      "mtime": 1601327850000,
+      "size": 26283,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserRetro_000.ogg": {
+      "hash": "06c2b8b41f2d77b24ea753ceef013e042f6eaacc",
+      "mtime": 1602449790000,
+      "size": 12588,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserRetro_001.ogg": {
+      "hash": "eb6011de608992016c5fcac01eac9a8eb6999e4d",
+      "mtime": 1602449790000,
+      "size": 12732,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserRetro_002.ogg": {
+      "hash": "8b9ea3a105d4c0fc9b243150a9376997f8cfc2e5",
+      "mtime": 1602449792000,
+      "size": 13130,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserRetro_003.ogg": {
+      "hash": "76160ad0603241eee92b619963693d64549293b8",
+      "mtime": 1602449792000,
+      "size": 14271,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserRetro_004.ogg": {
+      "hash": "47687c8894205e837484ade2bf3e8c7d40b3af13",
+      "mtime": 1602449792000,
+      "size": 12701,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserSmall_000.ogg": {
+      "hash": "deea65949ac0f3dc2b406bc25f23b36ab3ea331c",
+      "mtime": 1574797088000,
+      "size": 7286,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserSmall_001.ogg": {
+      "hash": "0b42fb557029f566675a4863bf212e22b8692fbb",
+      "mtime": 1574797088000,
+      "size": 7448,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserSmall_002.ogg": {
+      "hash": "832429efbfd511e70fb5813e9f706d0e370db017",
+      "mtime": 1574797088000,
+      "size": 8973,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserSmall_003.ogg": {
+      "hash": "406dbeb24d7ba4040f317cd7f7dc544a25aff5b2",
+      "mtime": 1574797090000,
+      "size": 8179,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/laserSmall_004.ogg": {
+      "hash": "039aa98edb83f8959b6097f896633a0b82bf0c42",
+      "mtime": 1574797090000,
+      "size": 8632,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/lowFrequency_explosion_000.ogg": {
+      "hash": "a68400a48d69c4a94d2499224481d107bef9a1f2",
+      "mtime": 1574797090000,
+      "size": 14317,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/lowFrequency_explosion_001.ogg": {
+      "hash": "fd9bb1b0e5f9b18ba44e9afef32df1d4dfaf9acb",
+      "mtime": 1574797090000,
+      "size": 9408,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/slime_000.ogg": {
+      "hash": "e91c69023a6adce2d6916815b0d694f464c53178",
+      "mtime": 1601189272000,
+      "size": 20870,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/slime_001.ogg": {
+      "hash": "d09421afa81e429971bec86e38773d8005d00475",
+      "mtime": 1601189272000,
+      "size": 159177,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLarge_000.ogg": {
+      "hash": "3dae862fe4b8030cae8fc895461f209d5365ccbe",
+      "mtime": 1601190226000,
+      "size": 189900,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLarge_001.ogg": {
+      "hash": "a60a7351058376bcd399432638b3ea0235a5ba40",
+      "mtime": 1601190226000,
+      "size": 212818,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLarge_002.ogg": {
+      "hash": "bf8f21478b1dec01edddb323ad26482f5213e735",
+      "mtime": 1601190226000,
+      "size": 214424,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLarge_003.ogg": {
+      "hash": "3c7aaaf1793e24b5642dd566b90b36f8e2b1fb3b",
+      "mtime": 1601190228000,
+      "size": 214580,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLarge_004.ogg": {
+      "hash": "ed4c10eb3c7f914859f1f484d262e7125562bd91",
+      "mtime": 1601190228000,
+      "size": 210809,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLow_000.ogg": {
+      "hash": "6a9bd05867a5e680f9939942e41221898e08d23c",
+      "mtime": 1601189272000,
+      "size": 99760,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLow_001.ogg": {
+      "hash": "434c7faf023d6ff63241903a629f55ed6e573025",
+      "mtime": 1601189274000,
+      "size": 99120,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLow_002.ogg": {
+      "hash": "292e0cd41e455bcdb6f7e3ed7cc0a8069045a233",
+      "mtime": 1601189274000,
+      "size": 72688,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLow_003.ogg": {
+      "hash": "7587710a486aa937c4fa51f44f5d2321d69b0930",
+      "mtime": 1601189274000,
+      "size": 85760,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineLow_004.ogg": {
+      "hash": "9070ac87b6d16f488fe98f8186a5737015889d32",
+      "mtime": 1601189274000,
+      "size": 100444,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineSmall_000.ogg": {
+      "hash": "ab724a6470b8e5cfd67e6f46ec6fc42fcb0ff5a6",
+      "mtime": 1601109212000,
+      "size": 116880,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineSmall_001.ogg": {
+      "hash": "4e6364d7987f65dd7a1a70e3413f316ea5c7b102",
+      "mtime": 1601109214000,
+      "size": 133181,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineSmall_002.ogg": {
+      "hash": "5c85779b53ee63880232f5747957ad3ab2a27d92",
+      "mtime": 1601109214000,
+      "size": 120467,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineSmall_003.ogg": {
+      "hash": "056712b7e36435358c3a0136e0723e93e159c7a0",
+      "mtime": 1601109214000,
+      "size": 129935,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngineSmall_004.ogg": {
+      "hash": "ccd44ecad8ee452f9e6abfa611de9784337349ee",
+      "mtime": 1601109216000,
+      "size": 130520,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngine_000.ogg": {
+      "hash": "e2a186628ab2f33f14a8124d6be68664ceb56ec5",
+      "mtime": 1574797090000,
+      "size": 109059,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngine_001.ogg": {
+      "hash": "8c92173ca22a26413f69bf2fe9daa1b18230cbb8",
+      "mtime": 1574797092000,
+      "size": 121385,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngine_002.ogg": {
+      "hash": "b51bfa298bfc9068c0cce5f10bf0425b37bdf36b",
+      "mtime": 1574797092000,
+      "size": 111072,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/spaceEngine_003.ogg": {
+      "hash": "598c06d1f855cb453b9358dcd5a233408331ccba",
+      "mtime": 1574797092000,
+      "size": 67503,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/thrusterFire_000.ogg": {
+      "hash": "d8474f92866ed0ceff714c8e0ffc950d3ad4f755",
+      "mtime": 1601189276000,
+      "size": 201216,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/thrusterFire_001.ogg": {
+      "hash": "7cd727ce920a3796eb4742b42db3504bb9cd91d2",
+      "mtime": 1601189276000,
+      "size": 204218,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/thrusterFire_002.ogg": {
+      "hash": "03fbb8addb1142e04e730ebb683f193000c8a9c6",
+      "mtime": 1601189276000,
+      "size": 205657,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/thrusterFire_003.ogg": {
+      "hash": "4a972f1d2d1330bdeab8f4f857b31c940390bf83",
+      "mtime": 1601189276000,
+      "size": 196273,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-scifi/x/Audio/thrusterFire_004.ogg": {
+      "hash": "0f69f8e72abd2e34d0be1f49b66be6f502f550d3",
+      "mtime": 1601189278000,
+      "size": 209339,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/back_001.ogg": {
+      "hash": "2089986dce98337d28b017c871a56da012355ea8",
+      "mtime": 1581900208000,
+      "size": 6997,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/back_002.ogg": {
+      "hash": "5b7341e24908dffae21e6ab2698ab6702ad67dfa",
+      "mtime": 1581900208000,
+      "size": 7029,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/back_003.ogg": {
+      "hash": "006b0825ffb720fdee5e0a8511c8f47b69286eaf",
+      "mtime": 1581900208000,
+      "size": 7208,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/back_004.ogg": {
+      "hash": "034d9d896e3c17ea617709fdc7c531c44caf06eb",
+      "mtime": 1581900208000,
+      "size": 6923,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/bong_001.ogg": {
+      "hash": "4d3c5683f8fa99177c1f7633836a0e0399cbfc16",
+      "mtime": 1574796984000,
+      "size": 4848,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/click_001.ogg": {
+      "hash": "3fd39a5bc24c0f10ccb6d4778f01326d06144198",
+      "mtime": 1574796984000,
+      "size": 4876,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/click_002.ogg": {
+      "hash": "7bc0eb2c71afe88c77d066b35a0bc75c5ef80fd4",
+      "mtime": 1574796986000,
+      "size": 4275,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/click_003.ogg": {
+      "hash": "8a98433086900aae8d0206244a6328be8c8451f1",
+      "mtime": 1574796986000,
+      "size": 4371,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/click_004.ogg": {
+      "hash": "dba410368e60b719799696e36f3fcf95c18217e2",
+      "mtime": 1574796986000,
+      "size": 4486,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/click_005.ogg": {
+      "hash": "0c40c6f49286d41626dfd08a922cbe4f041cc4da",
+      "mtime": 1574796986000,
+      "size": 4410,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/close_001.ogg": {
+      "hash": "827837c5a4ace73efa05d2b02613dec3653d85f6",
+      "mtime": 1581889118000,
+      "size": 9915,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/close_002.ogg": {
+      "hash": "57805b5d918a02488a2659165da307f7473da2b1",
+      "mtime": 1581889118000,
+      "size": 14752,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/close_003.ogg": {
+      "hash": "ed175d6639529e8a9411c3c23c3eaff741939cf3",
+      "mtime": 1581889118000,
+      "size": 15648,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/close_004.ogg": {
+      "hash": "32238eb051ca96ef06fb2ea2ed3cc9d0b82fb34d",
+      "mtime": 1581889118000,
+      "size": 16263,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/confirmation_001.ogg": {
+      "hash": "778f174aeb2eb8c2e456bfdb9ab5b50bb766a911",
+      "mtime": 1581888920000,
+      "size": 8968,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/confirmation_002.ogg": {
+      "hash": "a029b4209574c526c9bb9888979fdf3ee89de719",
+      "mtime": 1581888920000,
+      "size": 14169,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/confirmation_003.ogg": {
+      "hash": "2ac8b7f588ad2d037383a82a6fdb95ada7dedc1d",
+      "mtime": 1581888920000,
+      "size": 9535,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/confirmation_004.ogg": {
+      "hash": "fd4503fa1d5443b63ff3c28b94c5a69d8bef7274",
+      "mtime": 1581888920000,
+      "size": 12391,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/drop_001.ogg": {
+      "hash": "ca174bba4dae74838326e3d705efa353b250f8bc",
+      "mtime": 1574796986000,
+      "size": 5859,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/drop_002.ogg": {
+      "hash": "c0f735670be0a38a98d2bc3701a4993d0a063c6f",
+      "mtime": 1574796988000,
+      "size": 6411,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/drop_003.ogg": {
+      "hash": "5f9486ed86d9313be532f21f2bc38d8802efc304",
+      "mtime": 1574796988000,
+      "size": 6288,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/drop_004.ogg": {
+      "hash": "3df9e035aeccc6cf03697ff5a1e8fb9ef7cff433",
+      "mtime": 1574796988000,
+      "size": 7230,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_001.ogg": {
+      "hash": "82b764e3bcaf2c0ae3b4d17e469f662e94aa9818",
+      "mtime": 1574796988000,
+      "size": 7373,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_002.ogg": {
+      "hash": "0c2b938b6b720dbcb63a891a63566e10834b738f",
+      "mtime": 1574796990000,
+      "size": 7369,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_003.ogg": {
+      "hash": "338e14456a5eeb40a2435787d96082d3e9d2540a",
+      "mtime": 1574796990000,
+      "size": 12256,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_004.ogg": {
+      "hash": "bd0b82b245c5464462f314e7e2561def12283e39",
+      "mtime": 1574796990000,
+      "size": 6393,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_005.ogg": {
+      "hash": "9b652283a55852d0673c38135b37960fe7de5eb6",
+      "mtime": 1574796990000,
+      "size": 7266,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_006.ogg": {
+      "hash": "35f5a9de6ec528f0d89cc0e89ff3343ad279a273",
+      "mtime": 1574796990000,
+      "size": 8288,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_007.ogg": {
+      "hash": "93e2d2883d0078286e72d41e771067c9148d0ecc",
+      "mtime": 1581407664000,
+      "size": 10225,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/error_008.ogg": {
+      "hash": "1e32690ca942170fd52518b58a14735cd66805f7",
+      "mtime": 1581895148000,
+      "size": 9215,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glass_001.ogg": {
+      "hash": "c5b5ead09ac7c957a2044ad64608f6fe3ffae59c",
+      "mtime": 1574796990000,
+      "size": 6103,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glass_002.ogg": {
+      "hash": "1844c75b2434ab4d388a56f0841b2cf9dadf962e",
+      "mtime": 1574796992000,
+      "size": 4917,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glass_003.ogg": {
+      "hash": "1bb35e92134a3ede394e44ff623e01515540555f",
+      "mtime": 1574796992000,
+      "size": 5732,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glass_004.ogg": {
+      "hash": "2781852b49129186b4cc5617166cc37b21b11f9d",
+      "mtime": 1574796992000,
+      "size": 8323,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glass_005.ogg": {
+      "hash": "d861612057edd254bc0dc42fca7ad6b11f3309e3",
+      "mtime": 1581895148000,
+      "size": 6206,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glass_006.ogg": {
+      "hash": "8f61637a2d1245bc5f947196d29b1306eba3826f",
+      "mtime": 1581895150000,
+      "size": 6956,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glitch_001.ogg": {
+      "hash": "fbc7c169016afcce643f21729076a5fbef93bad2",
+      "mtime": 1574796992000,
+      "size": 5121,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glitch_002.ogg": {
+      "hash": "6078e14ca1ff7fec864c4e40c75d79f0072cd1b4",
+      "mtime": 1574796992000,
+      "size": 5473,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glitch_003.ogg": {
+      "hash": "0bf2b9fe2f44dd9cfc9d8f1340f3355712b5950f",
+      "mtime": 1574796992000,
+      "size": 4915,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/glitch_004.ogg": {
+      "hash": "4e34e9241985f7d9f209ab9a90f2fe749e099e5d",
+      "mtime": 1574796992000,
+      "size": 5225,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_001.ogg": {
+      "hash": "0b4b11b40ad04369fe6bb8fc4838c3e87f024a49",
+      "mtime": 1581888652000,
+      "size": 12111,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_002.ogg": {
+      "hash": "8cd33079afb1a7496d61d86404812c64aee80ad6",
+      "mtime": 1581888652000,
+      "size": 9915,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_003.ogg": {
+      "hash": "52ed51e56c2a893f7c1e0b4c20ef8c013831b5c7",
+      "mtime": 1581888652000,
+      "size": 11748,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_004.ogg": {
+      "hash": "ec24a71cbe7bd0c485a33413ae63f5fdcf270d09",
+      "mtime": 1581888652000,
+      "size": 17723,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_005.ogg": {
+      "hash": "8bf0916cbce26387fd845a59a052ad18c6b457a4",
+      "mtime": 1581888652000,
+      "size": 20900,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_006.ogg": {
+      "hash": "6a8a3fa389713c4d53d9aa605b6077ad02f8cbf5",
+      "mtime": 1581900326000,
+      "size": 11618,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_007.ogg": {
+      "hash": "37e36b691711b2f019bcc05462fe49201cff5c3b",
+      "mtime": 1581900326000,
+      "size": 8097,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_008.ogg": {
+      "hash": "7dbfd14d80ef1ba56ae0c7dd337cdd0f8c18a154",
+      "mtime": 1581900326000,
+      "size": 9085,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/maximize_009.ogg": {
+      "hash": "2e5727266051d7ff6550a34b2117ba5ece3ece1a",
+      "mtime": 1581900326000,
+      "size": 7650,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_001.ogg": {
+      "hash": "fff6d3e123067ecd6980b44430c9af7a26cd073c",
+      "mtime": 1581888624000,
+      "size": 11924,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_002.ogg": {
+      "hash": "8d2b013dadbc85bf8a72ff87774af55f26f34285",
+      "mtime": 1581888624000,
+      "size": 9441,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_003.ogg": {
+      "hash": "607a613fe7cacac9f766a08b0bd753f696535279",
+      "mtime": 1581888624000,
+      "size": 11739,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_004.ogg": {
+      "hash": "30766c4acae75c312a477946908b344f968dc826",
+      "mtime": 1581888624000,
+      "size": 17099,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_005.ogg": {
+      "hash": "0de9efcc35fdd3b1a668ce9aaaf60f7c479c10c2",
+      "mtime": 1581888626000,
+      "size": 19501,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_006.ogg": {
+      "hash": "21cae791efd9df714138b3a2f10ef52f8b3712e6",
+      "mtime": 1581900338000,
+      "size": 11292,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_007.ogg": {
+      "hash": "2862c583588d12d34d82953122e782737e237080",
+      "mtime": 1581900338000,
+      "size": 7677,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_008.ogg": {
+      "hash": "c6ad59a432382afe6a5c930273da8447c8884c77",
+      "mtime": 1581900338000,
+      "size": 9298,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/minimize_009.ogg": {
+      "hash": "9080d8d25e0412a92f6415de25462b6a60c9e44a",
+      "mtime": 1581900340000,
+      "size": 7665,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/open_001.ogg": {
+      "hash": "3a6618eb9346042410a3081404d4696593539b5e",
+      "mtime": 1581889132000,
+      "size": 9834,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/open_002.ogg": {
+      "hash": "3a3f24cb9a3d926fb648c87752291015278db41e",
+      "mtime": 1581889132000,
+      "size": 14975,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/open_003.ogg": {
+      "hash": "aeaf38ef13f6a6f2d15548589c930b593035b7c0",
+      "mtime": 1581889132000,
+      "size": 15046,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/open_004.ogg": {
+      "hash": "7b77563ebbb953a72a775419c5f74918b03eea3d",
+      "mtime": 1581889132000,
+      "size": 15879,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/pluck_001.ogg": {
+      "hash": "c658b24e88542f4cb04029cd3fef0bda8959ecc7",
+      "mtime": 1574796992000,
+      "size": 6317,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/pluck_002.ogg": {
+      "hash": "8b3c2210f0c00affebb5796a3a200f0a02ea5d2d",
+      "mtime": 1574796994000,
+      "size": 6941,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/question_001.ogg": {
+      "hash": "fcf5f69154431e52fc6a2250c3f40a6678853d89",
+      "mtime": 1581888920000,
+      "size": 11700,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/question_002.ogg": {
+      "hash": "c6bc47d3bc5122a03e1b56a063de8bd2cef899f2",
+      "mtime": 1581888920000,
+      "size": 9455,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/question_003.ogg": {
+      "hash": "1c3986e022a6e5658b11299cf39ea909dc11482c",
+      "mtime": 1581888920000,
+      "size": 8233,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/question_004.ogg": {
+      "hash": "f4ca01d9f65affcef7c6bc9ef6d61b91b4b121d6",
+      "mtime": 1581888922000,
+      "size": 9821,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scratch_001.ogg": {
+      "hash": "36918596e6fef34ebffbefd291e99571a67e0d83",
+      "mtime": 1581900520000,
+      "size": 8989,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scratch_002.ogg": {
+      "hash": "5214ff08aba99514f68e01d44578d6712b9add21",
+      "mtime": 1581900520000,
+      "size": 9319,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scratch_003.ogg": {
+      "hash": "5b8f56d9b5a7b4a7635a95137bb6f36942323d2e",
+      "mtime": 1581900520000,
+      "size": 8849,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scratch_004.ogg": {
+      "hash": "77d041d48a82616bfeab1f249197c2da992e4972",
+      "mtime": 1581900520000,
+      "size": 16478,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scratch_005.ogg": {
+      "hash": "188a7e6074b10451d72895adad30407121296619",
+      "mtime": 1581900520000,
+      "size": 15824,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scroll_001.ogg": {
+      "hash": "023d30da6d7665dafa13b6d79f31ab63b2542bbc",
+      "mtime": 1581407664000,
+      "size": 21633,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scroll_002.ogg": {
+      "hash": "eff0c6f98f2b550e903081f9baba4045a8118bf8",
+      "mtime": 1581407666000,
+      "size": 24628,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scroll_003.ogg": {
+      "hash": "f799fc6489bd34cf671483ddbfb42e0bc826ac58",
+      "mtime": 1581407666000,
+      "size": 29488,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scroll_004.ogg": {
+      "hash": "0f117c369fb753cebd37886dc6c62bbed73f7db4",
+      "mtime": 1581407666000,
+      "size": 20348,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/scroll_005.ogg": {
+      "hash": "7a3163a62f118f72d24979543098a85549c9039e",
+      "mtime": 1581407666000,
+      "size": 20448,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_001.ogg": {
+      "hash": "bf7df59bc763af6857738979a9890ed34fe472c3",
+      "mtime": 1574796994000,
+      "size": 5468,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_002.ogg": {
+      "hash": "e506cc4758bb7fb121cb81a5c1e427c40a68776d",
+      "mtime": 1574796994000,
+      "size": 5463,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_003.ogg": {
+      "hash": "b4b5e960e4ea7074bb2481a64e9358e33e6f6d71",
+      "mtime": 1574796994000,
+      "size": 6901,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_004.ogg": {
+      "hash": "2ffcfe74034f0dfeaa49af3400df622592d55ff6",
+      "mtime": 1574796994000,
+      "size": 6909,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_005.ogg": {
+      "hash": "c796f9ebe511cfbc536d2298d5233bf1ad3da241",
+      "mtime": 1574796994000,
+      "size": 6767,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_006.ogg": {
+      "hash": "d1a5fd22605d5c2fa2f25641cadca514bb209a38",
+      "mtime": 1574796994000,
+      "size": 8101,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_007.ogg": {
+      "hash": "add1c8bc26c72647c52aabc1d7533eaeedf0217b",
+      "mtime": 1581407666000,
+      "size": 6580,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/select_008.ogg": {
+      "hash": "16b6625251dfabcff9447dd27714f47492ceac32",
+      "mtime": 1581407666000,
+      "size": 6339,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_001.ogg": {
+      "hash": "ff27b5ddf92d6c9131dc80e39542bfd316f3ac25",
+      "mtime": 1581898554000,
+      "size": 6753,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_002.ogg": {
+      "hash": "2b9384b935c3bd923a54335f6ca91347566e71e4",
+      "mtime": 1581898554000,
+      "size": 7097,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_003.ogg": {
+      "hash": "0a7fc8581201c09034c315d0898154b3e7e3e96f",
+      "mtime": 1581898554000,
+      "size": 9653,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_004.ogg": {
+      "hash": "5841296dcf43d1a1938c8d6bf61dd9f58f8e541e",
+      "mtime": 1581898556000,
+      "size": 7248,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_005.ogg": {
+      "hash": "fb7991155b69b9fd2169ca2f7e5b3966d3eff91c",
+      "mtime": 1581898556000,
+      "size": 7814,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_006.ogg": {
+      "hash": "c459cb9e303bf89c644de98571892b12e5be8ae4",
+      "mtime": 1581898556000,
+      "size": 7873,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/switch_007.ogg": {
+      "hash": "1cc073dac263b35537674bc91c914055f66cf443",
+      "mtime": 1581898556000,
+      "size": 7921,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/tick_001.ogg": {
+      "hash": "4a02fc8e21a4db678c3f082f4ea8c4904bcde72c",
+      "mtime": 1574796996000,
+      "size": 4497,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/tick_002.ogg": {
+      "hash": "a357bc7139d7a50cdc12cb854e313ba3bb253fc6",
+      "mtime": 1574796996000,
+      "size": 4514,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/tick_004.ogg": {
+      "hash": "5dde75b602bb2502bee79aac4d1e323ccd945170",
+      "mtime": 1574796996000,
+      "size": 5031,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/toggle_001.ogg": {
+      "hash": "0fab2e6230d8829ce3f71a36b8cd06955b19f246",
+      "mtime": 1581894524000,
+      "size": 7369,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/toggle_002.ogg": {
+      "hash": "88a69391ec030f7aa7c138c55bc5955e04e3a5e3",
+      "mtime": 1581894524000,
+      "size": 8056,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/toggle_003.ogg": {
+      "hash": "f4d966e026a2dceae2812c884337964fda6fe1b9",
+      "mtime": 1581894526000,
+      "size": 8654,
+      "lines": null
+    },
+    "assets/audio/_scratch/kenney-ui/x/Audio/toggle_004.ogg": {
+      "hash": "f55696b4b231217a7796e7709393bf79f897ac64",
+      "mtime": 1581894526000,
+      "size": 6695,
+      "lines": null
+    },
+    "assets/audio/_scratch/oga-space/x/MyVeryOwnDeadShip.ogg": {
+      "hash": "ec216bc7136b516048d7179bf97a14e2ebec969a",
+      "mtime": 1337919730000,
+      "size": 4571806,
+      "lines": null
+    },
+    "assets/audio/kenney-impact/impactMetal_heavy_000.ogg": {
+      "hash": "af145ddb661aeeff671659ecedddecb1f117abf3",
+      "mtime": 1792690923000,
+      "size": 6110,
+      "lines": null
+    },
+    "assets/audio/kenney-impact/impactMining_000.ogg": {
+      "hash": "97ce13f67b7b9029df0a0ced35f6c112b7d28664",
+      "mtime": 1792690923000,
+      "size": 12035,
+      "lines": null
+    },
+    "assets/audio/kenney-impact/impactPunch_medium_000.ogg": {
+      "hash": "8ebb49e58245497a4fd50ca856c35e62be53d82b",
+      "mtime": 1792690923000,
+      "size": 8800,
+      "lines": null
+    },
+    "assets/audio/kenney-jingles/jingles_NES13.ogg": {
+      "hash": "ed244e8c409e3b3d69151c56d31dbe9000b91772",
+      "mtime": 1792690923000,
+      "size": 25177,
+      "lines": null
+    },
+    "assets/audio/kenney-jingles/jingles_SAX13.ogg": {
+      "hash": "c5ceda4f53a709509afa127bc2664301a0892af9",
+      "mtime": 1792690923000,
+      "size": 15654,
+      "lines": null
+    },
+    "assets/audio/kenney-sci-fi/explosionCrunch_000.ogg": {
+      "hash": "433cb93ac5f8b2983f514d659efad55e5095af6d",
+      "mtime": 1792690923000,
+      "size": 28274,
+      "lines": null
+    },
+    "assets/audio/kenney-sci-fi/forceField_000.ogg": {
+      "hash": "b2638df96fdebf120f5244e80d4f34b9386483d8",
+      "mtime": 1792690923000,
+      "size": 25672,
+      "lines": null
+    },
+    "assets/audio/kenney-sci-fi/laserSmall_000.ogg": {
+      "hash": "deea65949ac0f3dc2b406bc25f23b36ab3ea331c",
+      "mtime": 1792690923000,
+      "size": 7286,
+      "lines": null
+    },
+    "assets/audio/kenney-ui/click_002.ogg": {
+      "hash": "7bc0eb2c71afe88c77d066b35a0bc75c5ef80fd4",
+      "mtime": 1792690923000,
+      "size": 4275,
+      "lines": null
+    },
+    "assets/audio/kenney-ui/confirmation_002.ogg": {
+      "hash": "a029b4209574c526c9bb9888979fdf3ee89de719",
+      "mtime": 1792690923000,
+      "size": 14169,
+      "lines": null
+    },
+    "assets/audio/kenney-ui/error_006.ogg": {
+      "hash": "35f5a9de6ec528f0d89cc0e89ff3343ad279a273",
+      "mtime": 1792690923000,
+      "size": 8288,
+      "lines": null
+    },
+    "assets/audio/kenney-ui/select_001.ogg": {
+      "hash": "bf7df59bc763af6857738979a9890ed34fe472c3",
+      "mtime": 1792690923000,
+      "size": 5468,
+      "lines": null
+    },
+    "assets/audio/oga-ambient/MyVeryOwnDeadShip.ogg": {
+      "hash": "ec216bc7136b516048d7179bf97a14e2ebec969a",
+      "mtime": 1792690923000,
+      "size": 4571806,
+      "lines": null
+    },
+    "assets/models/space/alien.glb": {
+      "hash": "51cf2912fc687227740f9d21ba6cafc7e4a5bddb",
+      "mtime": 1792691493000,
+      "size": 27784,
+      "lines": null
+    },
+    "assets/models/space/astronautA.glb": {
+      "hash": "1da0f436939dc2782aaf8b1b49063c16deb2d74a",
+      "mtime": 1792691493000,
+      "size": 27912,
+      "lines": null
+    },
+    "assets/models/space/astronautB.glb": {
+      "hash": "64cf889fcea41ff5598d9a6316b8949fe265931c",
+      "mtime": 1792691493000,
+      "size": 27824,
+      "lines": null
+    },
+    "assets/models/space/barrel.glb": {
+      "hash": "785d1f144cf7c1ce0665421e2022469337fd73a7",
+      "mtime": 1792691493000,
+      "size": 4656,
+      "lines": null
+    },
+    "assets/models/space/barrels.glb": {
+      "hash": "41a822716d70554e741800ff6ca72500208bb50a",
+      "mtime": 1792691493000,
+      "size": 20808,
+      "lines": null
+    },
+    "assets/models/space/bones.glb": {
+      "hash": "d1386d0e87c2c16e98c62a2c65477af78fa35bd8",
+      "mtime": 1792691493000,
+      "size": 14212,
+      "lines": null
+    },
+    "assets/models/space/chimney.glb": {
+      "hash": "2f8acc7341d30d781337b870de0bf634fbe50929",
+      "mtime": 1792691493000,
+      "size": 8920,
+      "lines": null
+    },
+    "assets/models/space/craft_cargoA.glb": {
+      "hash": "2984c4b30cce3d3a2f9692f9fafa3ea4ba002514",
+      "mtime": 1792691493000,
+      "size": 18964,
+      "lines": null
+    },
+    "assets/models/space/craft_cargoB.glb": {
+      "hash": "bbb3ad1d3b1f83f4200688e7dabcb97369d59663",
+      "mtime": 1792691493000,
+      "size": 26308,
+      "lines": null
+    },
+    "assets/models/space/craft_miner.glb": {
+      "hash": "0dee1261d471f540e47824cf19dbdbdc4fd85d51",
+      "mtime": 1792691493000,
+      "size": 26672,
+      "lines": null
+    },
+    "assets/models/space/craft_racer.glb": {
+      "hash": "a4e3b3e6f9685db059923ec2c375931aafed4ff5",
+      "mtime": 1792691493000,
+      "size": 19228,
+      "lines": null
+    },
+    "assets/models/space/craft_speederA.glb": {
+      "hash": "dca276f911472395d6776177524571be7c5dcf69",
+      "mtime": 1792691493000,
+      "size": 20496,
+      "lines": null
+    },
+    "assets/models/space/craft_speederB.glb": {
+      "hash": "348ee3caece26142b824639bf6c93b9d39d0604d",
+      "mtime": 1792691493000,
+      "size": 19140,
+      "lines": null
+    },
+    "assets/models/space/craft_speederC.glb": {
+      "hash": "093b97119f1cf93b09f8036564c5de2c64df021b",
+      "mtime": 1792691493000,
+      "size": 20528,
+      "lines": null
+    },
+    "assets/models/space/craft_speederD.glb": {
+      "hash": "6681a2d91e6cbcc13e31649534d06ee791deae8a",
+      "mtime": 1792691493000,
+      "size": 22876,
+      "lines": null
+    },
+    "assets/models/space/crater.glb": {
+      "hash": "a5e384f0e0ae05dcff642a805797d176fe449729",
+      "mtime": 1792691493000,
+      "size": 5684,
+      "lines": null
+    },
+    "assets/models/space/craterLarge.glb": {
+      "hash": "c56392e907100c949e77a456a52311d3a02d6d14",
+      "mtime": 1792691493000,
+      "size": 5688,
+      "lines": null
+    },
+    "assets/models/space/gate_complex.glb": {
+      "hash": "118ab2decf3c8406d5a83ee5ae529172c8c96725",
+      "mtime": 1792691493000,
+      "size": 29912,
+      "lines": null
+    },
+    "assets/models/space/gate_simple.glb": {
+      "hash": "01916e8e3d4c90eac4f0581674a2ac8b08d835d8",
+      "mtime": 1792691493000,
+      "size": 15052,
+      "lines": null
+    },
+    "assets/models/space/hangar_largeA.glb": {
+      "hash": "06fa24813fecc7df0c683f69acf06bfa851d99a0",
+      "mtime": 1792691493000,
+      "size": 25304,
+      "lines": null
+    },
+    "assets/models/space/hangar_largeB.glb": {
+      "hash": "de9a6e2250778261687fc1661c1a2e6f47dd05c8",
+      "mtime": 1792691493000,
+      "size": 23472,
+      "lines": null
+    },
+    "assets/models/space/hangar_roundA.glb": {
+      "hash": "24a7dea6abda58081822a3f312c2b421359671fc",
+      "mtime": 1792691493000,
+      "size": 12104,
+      "lines": null
+    },
+    "assets/models/space/hangar_roundB.glb": {
+      "hash": "01ea7336194c7f026444208226fe39c3be1cbc64",
+      "mtime": 1792691493000,
+      "size": 12104,
+      "lines": null
+    },
+    "assets/models/space/hangar_roundGlass.glb": {
+      "hash": "e8a7dfcb568d9ca6fd12deedebb1843b6ebef2f2",
+      "mtime": 1792691493000,
+      "size": 10076,
+      "lines": null
+    },
+    "assets/models/space/hangar_smallA.glb": {
+      "hash": "c179830991f95be52b58bde580ea8c82fff56afe",
+      "mtime": 1792691493000,
+      "size": 18860,
+      "lines": null
+    },
+    "assets/models/space/hangar_smallB.glb": {
+      "hash": "7afac231d1fab115a8f68d3e07f61f8483144612",
+      "mtime": 1792691493000,
+      "size": 19148,
+      "lines": null
+    },
+    "assets/models/space/machine_barrel.glb": {
+      "hash": "a0dcfe1f91d39387b1a17642c42cdc7f5ec49fbe",
+      "mtime": 1792691493000,
+      "size": 23960,
+      "lines": null
+    },
+    "assets/models/space/machine_generator.glb": {
+      "hash": "b8731dd2d75553476197803f3f28f43dae50df7c",
+      "mtime": 1792691493000,
+      "size": 28044,
+      "lines": null
+    },
+    "assets/models/space/machine_generatorLarge.glb": {
+      "hash": "5ee5c4052973a9e5c033557315e7e8842d2c2feb",
+      "mtime": 1792691493000,
+      "size": 10220,
+      "lines": null
+    },
+    "assets/models/space/machine_wireless.glb": {
+      "hash": "22db70a175d1f72fd3441657b6fef3534906d479",
+      "mtime": 1792691493000,
+      "size": 13420,
+      "lines": null
+    },
+    "assets/models/space/meteor.glb": {
+      "hash": "c530e2523b71dc5e1185eeb7cb16c8569ac568c7",
+      "mtime": 1792691493000,
+      "size": 6496,
+      "lines": null
+    },
+    "assets/models/space/meteor_detailed.glb": {
+      "hash": "75e07216def8134c507bb595a2870f6e1a913544",
+      "mtime": 1792691493000,
+      "size": 14208,
+      "lines": null
+    },
+    "assets/models/space/meteor_half.glb": {
+      "hash": "a5dd464aaef0182865bd18a49456c11cd703e4a1",
+      "mtime": 1792691493000,
+      "size": 4680,
+      "lines": null
+    },
+    "assets/models/space/pipe_straight.glb": {
+      "hash": "d2f6210e17bcd5a5153b08765f13f3e362f8a750",
+      "mtime": 1792691493000,
+      "size": 6492,
+      "lines": null
+    },
+    "assets/models/space/platform_large.glb": {
+      "hash": "06e7bf079c2e29c0755465b55e2ea75fed6c015c",
+      "mtime": 1792691493000,
+      "size": 6272,
+      "lines": null
+    },
+    "assets/models/space/platform_small.glb": {
+      "hash": "c2fd4cd4b93facf6f6d0370f8ae3e64df86267db",
+      "mtime": 1792691493000,
+      "size": 6280,
+      "lines": null
+    },
+    "assets/models/space/rock.glb": {
+      "hash": "7aea9d91e015271d72f5bad4ac1d51da26ac5057",
+      "mtime": 1792691493000,
+      "size": 13172,
+      "lines": null
+    },
+    "assets/models/space/rock_crystals.glb": {
+      "hash": "505e26f11e31d3cebc3483664a71648252ea948a",
+      "mtime": 1792691493000,
+      "size": 25156,
+      "lines": null
+    },
+    "assets/models/space/rock_crystalsLargeA.glb": {
+      "hash": "2d23b6dd709802018adcc5e2aa7e91820faf847d",
+      "mtime": 1792691493000,
+      "size": 26160,
+      "lines": null
+    },
+    "assets/models/space/rock_crystalsLargeB.glb": {
+      "hash": "d4fab7eaf1fd03676d1f2305ee8242f6209ee6bf",
+      "mtime": 1792691493000,
+      "size": 25924,
+      "lines": null
+    },
+    "assets/models/space/rock_largeA.glb": {
+      "hash": "6219da5ca0e3b39228f1d64e25a38df6065ac40f",
+      "mtime": 1792691493000,
+      "size": 13224,
+      "lines": null
+    },
+    "assets/models/space/rock_largeB.glb": {
+      "hash": "acab67a6fe5bafea26f6abacea80d02243081ebd",
+      "mtime": 1792691493000,
+      "size": 12984,
+      "lines": null
+    },
+    "assets/models/space/rocket_baseA.glb": {
+      "hash": "b4db5c06435241a78842a3a3dcf57b310fd38090",
+      "mtime": 1792691493000,
+      "size": 21232,
+      "lines": null
+    },
+    "assets/models/space/rocket_topA.glb": {
+      "hash": "cef23c388f66e5ff423c07c1b82f41e55a5949db",
+      "mtime": 1792691493000,
+      "size": 6432,
+      "lines": null
+    },
+    "assets/models/space/rocks_smallA.glb": {
+      "hash": "e9e0cfd8d2af1bd44e82b47ec359ae375edb4e21",
+      "mtime": 1792691493000,
+      "size": 6044,
+      "lines": null
+    },
+    "assets/models/space/rocks_smallB.glb": {
+      "hash": "514818e5b9bcfd3a89c2e8ee985833b5826827bc",
+      "mtime": 1792691493000,
+      "size": 5132,
+      "lines": null
+    },
+    "assets/models/space/rover.glb": {
+      "hash": "256098a3030b2ec66d3e4f012485a8824b1a748a",
+      "mtime": 1792691493000,
+      "size": 13384,
+      "lines": null
+    },
+    "assets/models/space/satelliteDish.glb": {
+      "hash": "11fe49a8b2296a1a994556f803a0867ef685f3df",
+      "mtime": 1792691493000,
+      "size": 19528,
+      "lines": null
+    },
+    "assets/models/space/satelliteDish_detailed.glb": {
+      "hash": "057b08917cb9e5f214791d073328e71b0699f4bf",
+      "mtime": 1792691493000,
+      "size": 26044,
+      "lines": null
+    },
+    "assets/models/space/satelliteDish_large.glb": {
+      "hash": "7e0a0b175670f86ec4aaba64d7193967b8da7aa6",
+      "mtime": 1792691493000,
+      "size": 13948,
+      "lines": null
+    },
+    "assets/models/space/structure.glb": {
+      "hash": "2a281e78600457a32fa076fcebcb14fb1c9e3c57",
+      "mtime": 1792691493000,
+      "size": 11060,
+      "lines": null
+    },
+    "assets/models/space/structure_detailed.glb": {
+      "hash": "550b55551216ad6e796aad112ae7920cd20df3c8",
+      "mtime": 1792691493000,
+      "size": 13944,
+      "lines": null
+    },
+    "assets/models/space/supports_high.glb": {
+      "hash": "a6a516def569f3ff8135f668f1473066aa10dcae",
+      "mtime": 1792691493000,
+      "size": 20544,
+      "lines": null
+    },
+    "assets/models/space/terrain.glb": {
+      "hash": "eaf8337110f2ce4542f673714eb6f4f65ca11ac7",
+      "mtime": 1792691493000,
+      "size": 1556,
+      "lines": null
+    },
+    "assets/models/space/terrain_ramp.glb": {
+      "hash": "50a210d1405db037f2e86783226e232b4a99a3cd",
+      "mtime": 1792691493000,
+      "size": 2224,
+      "lines": null
+    },
+    "assets/models/space/terrain_rampLarge.glb": {
+      "hash": "9e1b888d50f634ee2645dcb30f02e449f7ff274f",
+      "mtime": 1792691493000,
+      "size": 2232,
+      "lines": null
+    },
+    "assets/models/space/terrain_roadCorner.glb": {
+      "hash": "721c2f9602e490674dbdb73c5453cabb247b5eed",
+      "mtime": 1792691493000,
+      "size": 4864,
+      "lines": null
+    },
+    "assets/models/space/terrain_roadStraight.glb": {
+      "hash": "a7ced1cb8fd47c2e23bf7dff1308613acba9564b",
+      "mtime": 1792691493000,
+      "size": 2376,
+      "lines": null
+    },
+    "assets/models/space/terrain_side.glb": {
+      "hash": "2257993c7074ddbcca55d1c21cab386439ae675a",
+      "mtime": 1792691493000,
+      "size": 1572,
+      "lines": null
+    },
+    "assets/models/space/terrain_sideCliff.glb": {
+      "hash": "aba50cec3b340778fe7406b67c946c2449f99d58",
+      "mtime": 1792691493000,
+      "size": 2644,
+      "lines": null
+    },
+    "assets/models/space/terrain_sideCorner.glb": {
+      "hash": "eec377d59f4c93385a48f8ce43061c2f36f717b9",
+      "mtime": 1792691493000,
+      "size": 2624,
+      "lines": null
+    },
+    "assets/models/space/terrain_sideCornerInner.glb": {
+      "hash": "406c1bc9a8a4be09897b861acc81f820be6cdeee",
+      "mtime": 1792691493000,
+      "size": 2372,
+      "lines": null
+    },
+    "assets/models/space/turret_double.glb": {
+      "hash": "a33f43316988c72d82e98032ac2a13d16425ac5c",
+      "mtime": 1792691493000,
+      "size": 50484,
+      "lines": null
+    },
+    "assets/models/space/turret_single.glb": {
+      "hash": "2092c7ce5de80d329c602f8684fded2708c7c14f",
+      "mtime": 1792691493000,
+      "size": 38940,
+      "lines": null
+    },
+    "assets/models/space/weapon_gun.glb": {
+      "hash": "815a94fa41efbdca1654f6384436b6b0f9b81af6",
+      "mtime": 1792691493000,
+      "size": 7088,
+      "lines": null
+    },
+    "assets/models/space/weapon_rifle.glb": {
+      "hash": "0e4302fc8985a327bc38945dd6257d1622c73204",
+      "mtime": 1792691493000,
+      "size": 8740,
+      "lines": null
+    },
+    "assets/models/td/Textures/colormap.png": {
+      "hash": "250b69cd27c8b02dc37734c74aaca2a00414a1e6",
+      "mtime": 1792691506000,
+      "size": 11787,
+      "lines": null
+    },
+    "assets/models/td/detail-crystal-large.glb": {
+      "hash": "ea10b5c0c4fb88d3d5648160439b64a88718df8a",
+      "mtime": 1792691493000,
+      "size": 44828,
+      "lines": null
+    },
+    "assets/models/td/detail-crystal.glb": {
+      "hash": "8624fdddf0811ec052109f6913af88850f30dd21",
+      "mtime": 1792691493000,
+      "size": 8996,
+      "lines": null
+    },
+    "assets/models/td/detail-dirt.glb": {
+      "hash": "a09c26ecde5a49de874deba9eba5154471fdc528",
+      "mtime": 1792691493000,
+      "size": 22888,
+      "lines": null
+    },
+    "assets/models/td/detail-rocks-large.glb": {
+      "hash": "92ed694a1d8e6339d80dca55656ac64b31aa6e04",
+      "mtime": 1792691493000,
+      "size": 22884,
+      "lines": null
+    },
+    "assets/models/td/detail-rocks.glb": {
+      "hash": "a39257fb510fa7e8e766c0c463b2041670391b68",
+      "mtime": 1792691493000,
+      "size": 18552,
+      "lines": null
+    },
+    "assets/models/td/enemy-ufo-a.glb": {
+      "hash": "0d8c44453dd78d78b62ce1ad5c483f4a50702691",
+      "mtime": 1792691493000,
+      "size": 42688,
+      "lines": null
+    },
+    "assets/models/td/enemy-ufo-b.glb": {
+      "hash": "f868ac79e1a6ad56b3b518a89ee3cfbe6bdacdd7",
+      "mtime": 1792691493000,
+      "size": 37736,
+      "lines": null
+    },
+    "assets/models/td/enemy-ufo-beam.glb": {
+      "hash": "ee4f3807bc442e35a12dbf7ae345bcaa7a84f1d5",
+      "mtime": 1792691493000,
+      "size": 6636,
+      "lines": null
+    },
+    "assets/models/td/enemy-ufo-c.glb": {
+      "hash": "774ef60eccee1869fc9c354e3260a65728f3e661",
+      "mtime": 1792691493000,
+      "size": 35240,
+      "lines": null
+    },
+    "assets/models/td/enemy-ufo-d.glb": {
+      "hash": "778bd5454be43fe5b2c12c34577554b73a44c7e0",
+      "mtime": 1792691493000,
+      "size": 45320,
+      "lines": null
+    },
+    "assets/models/td/selection-a.glb": {
+      "hash": "2944c9579d0ac256dff9253635a057239a62761a",
+      "mtime": 1792691493000,
+      "size": 19056,
+      "lines": null
+    },
+    "assets/models/td/selection-b.glb": {
+      "hash": "30d71f429c0156706ba17917f947dc404a0f6c52",
+      "mtime": 1792691493000,
+      "size": 4960,
+      "lines": null
+    },
+    "assets/models/td/spawn-round.glb": {
+      "hash": "a2a5439e6fc5f17cdba986871196a9aab837c32e",
+      "mtime": 1792691493000,
+      "size": 18988,
+      "lines": null
+    },
+    "assets/models/td/spawn-square.glb": {
+      "hash": "220857b0467038abd8571a06f9bb45d41752dd92",
+      "mtime": 1792691493000,
+      "size": 14080,
+      "lines": null
+    },
+    "assets/models/td/tile-bump.glb": {
+      "hash": "4da242046ad85794817dedd0974043486f249eba",
+      "mtime": 1792691493000,
+      "size": 28976,
+      "lines": null
+    },
+    "assets/models/td/tile-crystal.glb": {
+      "hash": "7c3be6941a621daaa20f135bc91b317e01846b59",
+      "mtime": 1792691493000,
+      "size": 47112,
+      "lines": null
+    },
+    "assets/models/td/tile-dirt.glb": {
+      "hash": "13b7cc9e7200a4f1fffee8750e7fb5d04a31c916",
+      "mtime": 1792691493000,
+      "size": 4040,
+      "lines": null
+    },
+    "assets/models/td/tile-hill.glb": {
+      "hash": "792002225a568052261f9882b1cd561a9a6d4845",
+      "mtime": 1792691493000,
+      "size": 36224,
+      "lines": null
+    },
+    "assets/models/td/tile-rock.glb": {
+      "hash": "5cb559e5e31101b06790a6be1d440be763c5fbc7",
+      "mtime": 1792691493000,
+      "size": 36228,
+      "lines": null
+    },
+    "assets/models/td/tile-slope.glb": {
+      "hash": "f6e250689e5847258bb17c3483fc5d1f980bf65a",
+      "mtime": 1792691493000,
+      "size": 4040,
+      "lines": null
+    },
+    "assets/models/td/tile-straight.glb": {
+      "hash": "f4c639c37e638e6da3de87414b52c428f6e2c886",
+      "mtime": 1792691493000,
+      "size": 15880,
+      "lines": null
+    },
+    "assets/models/td/tile.glb": {
+      "hash": "52abb50d37b483ab800c9418f81c111e0823388a",
+      "mtime": 1792691493000,
+      "size": 4024,
+      "lines": null
+    },
+    "assets/models/td/tower-round-base.glb": {
+      "hash": "028f3d92b336f9f166fa00555f995abf746ac9f9",
+      "mtime": 1792691493000,
+      "size": 37208,
+      "lines": null
+    },
+    "assets/models/td/tower-round-bottom-a.glb": {
+      "hash": "f2115a7acfeb056769d9e455d8e62f434b6a49d6",
+      "mtime": 1792691493000,
+      "size": 35824,
+      "lines": null
+    },
+    "assets/models/td/tower-round-build-a.glb": {
+      "hash": "560e162535d407ed5a6c75a2bd04d189a8a15148",
+      "mtime": 1792691493000,
+      "size": 50572,
+      "lines": null
+    },
+    "assets/models/td/tower-round-build-b.glb": {
+      "hash": "18b8de48c9588a28cdf145a5c025eac8178706df",
+      "mtime": 1792691493000,
+      "size": 62516,
+      "lines": null
+    },
+    "assets/models/td/tower-round-build-c.glb": {
+      "hash": "c70ac77e620863dc73bf1cefa2b66f6c773eda9e",
+      "mtime": 1792691493000,
+      "size": 74448,
+      "lines": null
+    },
+    "assets/models/td/tower-round-build-d.glb": {
+      "hash": "037edeccceb76e0de503b5c6505f7806ba089d55",
+      "mtime": 1792691493000,
+      "size": 78888,
+      "lines": null
+    },
+    "assets/models/td/tower-round-build-e.glb": {
+      "hash": "ca38c31343baa478b5b7132cc1cdbba2eb11713a",
+      "mtime": 1792691493000,
+      "size": 88524,
+      "lines": null
+    },
+    "assets/models/td/tower-round-build-f.glb": {
+      "hash": "42051ee1ccaa53f5227d88c408f57352d91d7168",
+      "mtime": 1792691493000,
+      "size": 102764,
+      "lines": null
+    },
+    "assets/models/td/tower-round-crystals.glb": {
+      "hash": "bf9b0aeb145f6a88679e9023b4aac3af90bbc75b",
+      "mtime": 1792691493000,
+      "size": 71488,
+      "lines": null
+    },
+    "assets/models/td/tower-round-middle-a.glb": {
+      "hash": "a41e62999aef2fcbab25d2444d786babe11ee3ad",
+      "mtime": 1792691493000,
+      "size": 61072,
+      "lines": null
+    },
+    "assets/models/td/tower-round-roof-a.glb": {
+      "hash": "27391657bf9f34e98dfa177fd6609bd79b613714",
+      "mtime": 1792691493000,
+      "size": 72876,
+      "lines": null
+    },
+    "assets/models/td/tower-round-top-a.glb": {
+      "hash": "8cb84f845dff1aba9180b8442f66e80fb2100adc",
+      "mtime": 1792691493000,
+      "size": 44552,
+      "lines": null
+    },
+    "assets/models/td/tower-square-bottom-a.glb": {
+      "hash": "dd8daee8424bd60e2b5320a53016b6ad45cf3b23",
+      "mtime": 1792691493000,
+      "size": 12936,
+      "lines": null
+    },
+    "assets/models/td/tower-square-build-a.glb": {
+      "hash": "6fa62f6fa1bcdd3e1bbb0d94b2bd90fc69e3b279",
+      "mtime": 1792691493000,
+      "size": 75984,
+      "lines": null
+    },
+    "assets/models/td/tower-square-build-b.glb": {
+      "hash": "e212a1a37752fcfbde976b31ce4da343cf473bed",
+      "mtime": 1792691493000,
+      "size": 79436,
+      "lines": null
+    },
+    "assets/models/td/tower-square-build-c.glb": {
+      "hash": "7da7825abd40a3fa5cf1ae45965befd368871276",
+      "mtime": 1792691493000,
+      "size": 69052,
+      "lines": null
+    },
+    "assets/models/td/tower-square-build-d.glb": {
+      "hash": "1f36605452be226af1e4a187b11079c6455a5f6a",
+      "mtime": 1792691493000,
+      "size": 85384,
+      "lines": null
+    },
+    "assets/models/td/tower-square-build-e.glb": {
+      "hash": "5ed4ddb38755a7adb9ed7a1391106b66c88eb2ce",
+      "mtime": 1792691493000,
+      "size": 89244,
+      "lines": null
+    },
+    "assets/models/td/tower-square-build-f.glb": {
+      "hash": "6ad2670967c4adf6914e0984befe30cb194b6d29",
+      "mtime": 1792691493000,
+      "size": 78452,
+      "lines": null
+    },
+    "assets/models/td/tower-square-middle-a.glb": {
+      "hash": "b3a6ef922b9472a721015066f365f30b604bc686",
+      "mtime": 1792691493000,
+      "size": 45332,
+      "lines": null
+    },
+    "assets/models/td/tower-square-roof-a.glb": {
+      "hash": "13e71bc6c322a48a94856fc0680aaa60cac7fa74",
+      "mtime": 1792691493000,
+      "size": 75588,
+      "lines": null
+    },
+    "assets/models/td/tower-square-top-a.glb": {
+      "hash": "be4d712775a94d3a1b7c610b0f97e2fd1f2054c6",
+      "mtime": 1792691493000,
+      "size": 66184,
+      "lines": null
+    },
+    "assets/models/td/weapon-ammo-bullet.glb": {
+      "hash": "a12125ab226adcd0d7745418c9e2026e4a968404",
+      "mtime": 1792691493000,
+      "size": 16640,
+      "lines": null
+    },
+    "assets/models/td/weapon-ammo-cannonball.glb": {
+      "hash": "5c67c5ffb2e399e1345245d7c8a07b7c75ee560a",
+      "mtime": 1792691493000,
+      "size": 19688,
+      "lines": null
+    },
+    "assets/models/td/weapon-ballista.glb": {
+      "hash": "b41e544135dedda87cdf04cd475e341ad39a64b2",
+      "mtime": 1792691493000,
+      "size": 58676,
+      "lines": null
+    },
+    "assets/models/td/weapon-cannon.glb": {
+      "hash": "6be771f91a86e2de43c32f14761ff7db336b20c0",
+      "mtime": 1792691493000,
+      "size": 58876,
+      "lines": null
+    },
+    "assets/models/td/weapon-turret.glb": {
+      "hash": "6ffefe155cdf742bd103b4c06d516506e654b881",
+      "mtime": 1792691493000,
+      "size": 59996,
+      "lines": null
+    },
+    "assets/models/td/wood-structure.glb": {
+      "hash": "bd501a480388674d6b935d19cfd5ccab9cbb03d5",
+      "mtime": 1792691493000,
+      "size": 17996,
+      "lines": null
+    },
+    "assets/sprites/MANIFEST.json": {
+      "hash": "b9479a08acc4734324d0d0cf9f76fa31bb4db539",
+      "mtime": 1792690963000,
+      "size": 2001,
+      "lines": 38
+    },
+    "assets/sprites/game/brute-s0.png": {
+      "hash": "6f1964a8fd30cb6d2d95bd6798563f6333a2f17d",
+      "mtime": 1792690939000,
+      "size": 2034,
+      "lines": null
+    },
+    "assets/sprites/game/brute-s1.png": {
+      "hash": "bacbbff06b90ac34584b79d6f94e7c178755d235",
+      "mtime": 1792690939000,
+      "size": 2032,
+      "lines": null
+    },
+    "assets/sprites/game/core.png": {
+      "hash": "f3be2598212f7ca0df00602d55b8338e3e889040",
+      "mtime": 1792690940000,
+      "size": 1566,
+      "lines": null
+    },
+    "assets/sprites/game/explosion.png": {
+      "hash": "53327f5fa2d25154f74f4314456cdbffbdc0831a",
+      "mtime": 1792690944000,
+      "size": 99891,
+      "lines": null
+    },
+    "assets/sprites/game/forge.png": {
+      "hash": "aab10ada28afcf0a6fef51f0295366e62c885aec",
+      "mtime": 1792690940000,
+      "size": 1380,
+      "lines": null
+    },
+    "assets/sprites/game/ground.png": {
+      "hash": "b5f78bd2f6c74625eb0282b3022b23449c63247e",
+      "mtime": 1792690943000,
+      "size": 1115,
+      "lines": null
+    },
+    "assets/sprites/game/grunt-s0.png": {
+      "hash": "5366e68d4661625ff1262f69f63ad4b59bdf48ce",
+      "mtime": 1792690936000,
+      "size": 1379,
+      "lines": null
+    },
+    "assets/sprites/game/grunt-s1.png": {
+      "hash": "9d774031a29c9e47bdc0723ebeb2386d7ad244c4",
+      "mtime": 1792690937000,
+      "size": 1393,
+      "lines": null
+    },
+    "assets/sprites/game/lancer-s0.png": {
+      "hash": "597166117dd411b576617ebc3aa7aa76ce8d3da8",
+      "mtime": 1792690937000,
+      "size": 1521,
+      "lines": null
+    },
+    "assets/sprites/game/lancer-s1.png": {
+      "hash": "4b8c6879c9999d6fbc4baad3411a6e8bb6fde31e",
+      "mtime": 1792690938000,
+      "size": 1500,
+      "lines": null
+    },
+    "assets/sprites/game/muzzle.png": {
+      "hash": "c2dcf682b1331e8202f767d712341afd50b90749",
+      "mtime": 1792690945000,
+      "size": 81811,
+      "lines": null
+    },
+    "assets/sprites/game/projectile.png": {
+      "hash": "c084d56243d0f2106ed4851d16eaa0f205768d2b",
+      "mtime": 1792690944000,
+      "size": 95070,
+      "lines": null
+    },
+    "assets/sprites/game/rock.png": {
+      "hash": "bee94dbbf7ca0a88f57ca60e7774c25e708c8dd5",
+      "mtime": 1792690942000,
+      "size": 1913,
+      "lines": null
+    },
+    "assets/sprites/game/shard-field.png": {
+      "hash": "7d6d3f357fab3ae685e5179637cfb85d0eba6bab",
+      "mtime": 1792690942000,
+      "size": 2093,
+      "lines": null
+    },
+    "assets/sprites/game/smoke.png": {
+      "hash": "5c5edc0db9dc13780ca1038a83ae9d022b391a2f",
+      "mtime": 1792690945000,
+      "size": 97452,
+      "lines": null
+    },
+    "assets/sprites/game/turret.png": {
+      "hash": "b667da4a5dcdc859ad01af16bd4fb8e7488ea083",
+      "mtime": 1792690941000,
+      "size": 3944,
+      "lines": null
+    },
+    "assets/sprites/game/worker-s0.png": {
+      "hash": "dc49eaf6fb44b6f3fdf0cbeef5c07d1a6e7ba019",
+      "mtime": 1792690935000,
+      "size": 1437,
+      "lines": null
+    },
+    "assets/sprites/game/worker-s1.png": {
+      "hash": "2be93c1e6da2de12fab593a7184be91738b809b9",
+      "mtime": 1792690935000,
+      "size": 1435,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/circle_02.png": {
+      "hash": "2ec6fdc44f32c502f1bc0e7f626e1d82ffd281dc",
+      "mtime": 1573724150000,
+      "size": 43380,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/fire_01.png": {
+      "hash": "53327f5fa2d25154f74f4314456cdbffbdc0831a",
+      "mtime": 1573724152000,
+      "size": 99891,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/fire_02.png": {
+      "hash": "27910deae80bbc309f31bf425904c92feea0c084",
+      "mtime": 1573724152000,
+      "size": 88453,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/light_01.png": {
+      "hash": "75110331934551122675496364f6ab2be4276262",
+      "mtime": 1573724156000,
+      "size": 93470,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/muzzle_01.png": {
+      "hash": "c2dcf682b1331e8202f767d712341afd50b90749",
+      "mtime": 1573724158000,
+      "size": 81811,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/smoke_01.png": {
+      "hash": "5c5edc0db9dc13780ca1038a83ae9d022b391a2f",
+      "mtime": 1573724164000,
+      "size": 97452,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/spark_01.png": {
+      "hash": "c084d56243d0f2106ed4851d16eaa0f205768d2b",
+      "mtime": 1573724166000,
+      "size": 95070,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/spark_05.png": {
+      "hash": "03f5ba2785950736d270ed0b4c3093668cff1cd0",
+      "mtime": 1573724168000,
+      "size": 64808,
+      "lines": null
+    },
+    "assets/sprites/kenney-particles/PNG (Transparent)/star_01.png": {
+      "hash": "b035f6390287c5f07cac68a949670bffd2edea8e",
+      "mtime": 1573724168000,
+      "size": 42118,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_01.png": {
+      "hash": "c08b3a2e8366c8f4874d681f7aac8d3de889a61e",
+      "mtime": 1480493060000,
+      "size": 2348,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_02.png": {
+      "hash": "93918d9aca705114bedc355707df29bf18c7ca84",
+      "mtime": 1480493060000,
+      "size": 2349,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_03.png": {
+      "hash": "26a83f599fa2eef684ebc46be34ee6002077ce62",
+      "mtime": 1480493060000,
+      "size": 1475,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_04.png": {
+      "hash": "d15b521337922a2f04afa3a0fa5966749f2be48e",
+      "mtime": 1480493060000,
+      "size": 1686,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_05.png": {
+      "hash": "bee94dbbf7ca0a88f57ca60e7774c25e708c8dd5",
+      "mtime": 1480493060000,
+      "size": 1913,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_06.png": {
+      "hash": "c7246bdb62db2728221a7e010499a3beed080f04",
+      "mtime": 1480493060000,
+      "size": 2090,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_07.png": {
+      "hash": "46ae5b441fa142ca4731e455dbe7c104fd2a0505",
+      "mtime": 1480493060000,
+      "size": 2281,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_08.png": {
+      "hash": "93ef39a4c822d6e66edd5ce1b63d83719cfa0561",
+      "mtime": 1480493060000,
+      "size": 2344,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_09.png": {
+      "hash": "4c6f62d4d2656bde4ab64a79ef9e938f5a62e1fd",
+      "mtime": 1480493060000,
+      "size": 1542,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_10.png": {
+      "hash": "8af1a46efe3bd6cdc56c88001ecdb7ebaf93b10f",
+      "mtime": 1480493060000,
+      "size": 1860,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_11.png": {
+      "hash": "963d104dc2dccfffb74dad52cfc49e5474c65370",
+      "mtime": 1480493060000,
+      "size": 1681,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_12.png": {
+      "hash": "7d6d3f357fab3ae685e5179637cfb85d0eba6bab",
+      "mtime": 1480493060000,
+      "size": 2093,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_13.png": {
+      "hash": "29e062134fac9b3f60aa68c1033a67481a6f6ade",
+      "mtime": 1480493060000,
+      "size": 1676,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_14.png": {
+      "hash": "e9a1bc1102ed18d0893a86e7aff5498f00db10ab",
+      "mtime": 1480493060000,
+      "size": 2172,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_15.png": {
+      "hash": "f21b55cbf59657985828b6b204cb52fa9c5c469a",
+      "mtime": 1480493060000,
+      "size": 1346,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_16.png": {
+      "hash": "f15fd134c9acc2c207bc6a34abe3e7429a1be4af",
+      "mtime": 1480493060000,
+      "size": 1591,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_17.png": {
+      "hash": "78193447f29c59465352eac546e09de77c40680b",
+      "mtime": 1480493060000,
+      "size": 1470,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_18.png": {
+      "hash": "247e1f6649aa08bd7962ccfef4c7bba53f83b1a8",
+      "mtime": 1480493060000,
+      "size": 1677,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_19.png": {
+      "hash": "6fb1aadc31eb14084b617a2f70aa1fd889ee8b70",
+      "mtime": 1480493060000,
+      "size": 1884,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Environment/scifiEnvironment_20.png": {
+      "hash": "6f6ee2b4624c7884ceed971ccab67774f3b51856",
+      "mtime": 1480493060000,
+      "size": 2052,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_01.png": {
+      "hash": "aab10ada28afcf0a6fef51f0295366e62c885aec",
+      "mtime": 1480493060000,
+      "size": 1380,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_02.png": {
+      "hash": "e0628c9c1ca6ec4e82b59a1df4f4ab9b4f6bb365",
+      "mtime": 1480493060000,
+      "size": 2460,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_03.png": {
+      "hash": "f1d44de6d29b5fa19ed464fb8bf281c39e4bbb63",
+      "mtime": 1480493060000,
+      "size": 1701,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_04.png": {
+      "hash": "f3be2598212f7ca0df00602d55b8338e3e889040",
+      "mtime": 1480493060000,
+      "size": 1566,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_05.png": {
+      "hash": "ab3d81e24b85a525b7e60ea29e14f9105bf3943b",
+      "mtime": 1480493060000,
+      "size": 1837,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_06.png": {
+      "hash": "bab01bb2896d100ea404802b02c4d1feed4dfdbd",
+      "mtime": 1480493060000,
+      "size": 1636,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_07.png": {
+      "hash": "b3585b7a2b0fb4f9a7846159d00557477ac1574c",
+      "mtime": 1480493060000,
+      "size": 2573,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_08.png": {
+      "hash": "1de5ca51bf5b13c76ffc0fe92eb8f3493941636e",
+      "mtime": 1480493060000,
+      "size": 1489,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_09.png": {
+      "hash": "36800cdf4f0ddbf6e55071b58294d7e030bd43c3",
+      "mtime": 1480493060000,
+      "size": 1417,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_10.png": {
+      "hash": "8db427e9349964f30ddbbf19216a86f63d2964b2",
+      "mtime": 1480493060000,
+      "size": 1296,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_11.png": {
+      "hash": "b8b03f77a4af77d7a9eed9d6420fb25577ef4a7e",
+      "mtime": 1480493060000,
+      "size": 1430,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_12.png": {
+      "hash": "86ec30eb008c1231e8d31edac4f166527902b7ca",
+      "mtime": 1480493060000,
+      "size": 1568,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_13.png": {
+      "hash": "b667da4a5dcdc859ad01af16bd4fb8e7488ea083",
+      "mtime": 1480493060000,
+      "size": 3944,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_14.png": {
+      "hash": "94e6a2ea92e041c9d98ae3ccb30ae8cc36056780",
+      "mtime": 1480493060000,
+      "size": 2265,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_15.png": {
+      "hash": "de5239536ef49483b837f9cfc2eedd77b6eae18f",
+      "mtime": 1480493060000,
+      "size": 1485,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Structure/scifiStructure_16.png": {
+      "hash": "e21746fd1d850dd0fe17a4d751ed58f05fe55f0f",
+      "mtime": 1480493060000,
+      "size": 1544,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_01.png": {
+      "hash": "1fb97376b08726f7b25cbeb35ab7eadb45888bc2",
+      "mtime": 1480493060000,
+      "size": 1690,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_02.png": {
+      "hash": "7e43ae90e8be67a5a3dd6e6a16cce952c0f55a10",
+      "mtime": 1480493060000,
+      "size": 2548,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_03.png": {
+      "hash": "f5c32a5d61e687ac2ed130491902ffb8e6a901c7",
+      "mtime": 1480493060000,
+      "size": 1985,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_04.png": {
+      "hash": "ce60244f6faa3b3729eac256b50ba0b7900562ff",
+      "mtime": 1480493060000,
+      "size": 1884,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_05.png": {
+      "hash": "4a2e7584af8adde45b5b048363775d145c539171",
+      "mtime": 1480493060000,
+      "size": 2126,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_06.png": {
+      "hash": "107f966928adc03773a78e3d6b39fe3efe6b027e",
+      "mtime": 1480493060000,
+      "size": 2012,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_07.png": {
+      "hash": "f0acacdd7f1542020a31b29dac569e1df0f65b6b",
+      "mtime": 1480493060000,
+      "size": 2065,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_08.png": {
+      "hash": "cb369f8d46759c8638e923270259e3697107ae66",
+      "mtime": 1480493060000,
+      "size": 2146,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_09.png": {
+      "hash": "260643b045c9a242cc48c72a7c97ec552c08c060",
+      "mtime": 1480493060000,
+      "size": 1904,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_10.png": {
+      "hash": "6d96cb01e7cd544884a532adbf59c2b6be45d96c",
+      "mtime": 1480493060000,
+      "size": 2476,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_11.png": {
+      "hash": "e658983f94dd29cbebaf8066562a2f0ef8f88a53",
+      "mtime": 1480493060000,
+      "size": 2207,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_12.png": {
+      "hash": "27a600e52706cd530f287fc3e570531d066b9b58",
+      "mtime": 1480493060000,
+      "size": 2264,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_13.png": {
+      "hash": "ace92411f714d07d9347e4bc205e3adb27def241",
+      "mtime": 1480493060000,
+      "size": 1555,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_14.png": {
+      "hash": "55a7eabefaea2762888fe88cf8508fbcca384c56",
+      "mtime": 1480493060000,
+      "size": 1561,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_15.png": {
+      "hash": "adc0875ec0ca98ed90d3a5c245fbb97877d49ec9",
+      "mtime": 1480493060000,
+      "size": 2693,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_16.png": {
+      "hash": "b8beedeac5ad3380d90d8aac542896668d23eaca",
+      "mtime": 1480493060000,
+      "size": 3645,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_17.png": {
+      "hash": "e1fbfd382ec02f24298ba7f7c41de7687705e7ab",
+      "mtime": 1480493060000,
+      "size": 1801,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_18.png": {
+      "hash": "80315b8780f409aeccdf2550e25106ec58f90bcb",
+      "mtime": 1480493060000,
+      "size": 1940,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_19.png": {
+      "hash": "95597fdfe0464bd8fa8524a7fae1571b108696e3",
+      "mtime": 1480493060000,
+      "size": 1956,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_20.png": {
+      "hash": "39d72f21830ce075c244aaa5c9eacd94f0185b07",
+      "mtime": 1480493060000,
+      "size": 2080,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_21.png": {
+      "hash": "b309a009b9de3a9cfb3d9397cf17850819c60c64",
+      "mtime": 1480493060000,
+      "size": 2042,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_22.png": {
+      "hash": "56503c472b170f47660aee3dd5c7b2e08c382f63",
+      "mtime": 1480493060000,
+      "size": 1993,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_23.png": {
+      "hash": "e6831af0f90dbb7e9c7616523a29579eb2a7d6c5",
+      "mtime": 1480493060000,
+      "size": 2135,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_24.png": {
+      "hash": "e458d950a499b4e7e1bd35fc3eb80365e1a47bd4",
+      "mtime": 1480493060000,
+      "size": 2065,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_25.png": {
+      "hash": "12b9fbf62a1ba34fa8ff7625754b495ba7f1fadf",
+      "mtime": 1480493060000,
+      "size": 2381,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_26.png": {
+      "hash": "4a2d3252560795494764b035e7f453b297d8fda0",
+      "mtime": 1480493060000,
+      "size": 2308,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_27.png": {
+      "hash": "c78c29d080c74308bcdcb9622c7d0f432e0d1954",
+      "mtime": 1480493060000,
+      "size": 1670,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_28.png": {
+      "hash": "161abea951c2925261b8035f6d60a6a163a5f8cf",
+      "mtime": 1480493060000,
+      "size": 2647,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_29.png": {
+      "hash": "849be481c881cda9cd28f15d75b20d41ec3a682a",
+      "mtime": 1480493060000,
+      "size": 2729,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_30.png": {
+      "hash": "a5ea4b551d139fbf5dfb80c44eec145447600f0d",
+      "mtime": 1480493060000,
+      "size": 3371,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_31.png": {
+      "hash": "0339334e3ef6dfe1d7627fbc91de3dbcf75dc128",
+      "mtime": 1480493060000,
+      "size": 1958,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_32.png": {
+      "hash": "d3727b64879ea497067144bc03e27aa7769fd71f",
+      "mtime": 1480493060000,
+      "size": 1896,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_33.png": {
+      "hash": "583aa7f647a5698c2c41954ac8049dd7ab1c863b",
+      "mtime": 1480493060000,
+      "size": 1967,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_34.png": {
+      "hash": "26347a56c34685000425ea4e4114f263a5488a56",
+      "mtime": 1480493060000,
+      "size": 2004,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_35.png": {
+      "hash": "35dcd612a009967892838c1ad9348ecea1848bc3",
+      "mtime": 1480493060000,
+      "size": 1984,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_36.png": {
+      "hash": "94c355e2df931e662ff1a1c1593ca291ec4e4179",
+      "mtime": 1480493060000,
+      "size": 2142,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_37.png": {
+      "hash": "f810c164b5f1a7d196c2b31e3ebf997d1e28415e",
+      "mtime": 1480493060000,
+      "size": 2125,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_38.png": {
+      "hash": "cdcb54ba9cab387f233b65ff2705eef4b9a46446",
+      "mtime": 1480493060000,
+      "size": 2107,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_39.png": {
+      "hash": "7a16375e6b99b10c9418b38ebd7396640e457fd0",
+      "mtime": 1480493060000,
+      "size": 2142,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_40.png": {
+      "hash": "4f5019b5faafcb4251a54b5685a419d8c5f4d8ee",
+      "mtime": 1480493060000,
+      "size": 2127,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_41.png": {
+      "hash": "b5f78bd2f6c74625eb0282b3022b23449c63247e",
+      "mtime": 1480493058000,
+      "size": 1115,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Tile/scifiTile_42.png": {
+      "hash": "6db1dfc1ca6a5cfd24f4a015a121ebff7c3ee8a9",
+      "mtime": 1480493058000,
+      "size": 1124,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_01.png": {
+      "hash": "dc49eaf6fb44b6f3fdf0cbeef5c07d1a6e7ba019",
+      "mtime": 1480493060000,
+      "size": 1437,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_02.png": {
+      "hash": "4a3e77f2477bc92a0f4690bad8a51b8bf91baec1",
+      "mtime": 1480493060000,
+      "size": 1428,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_03.png": {
+      "hash": "597166117dd411b576617ebc3aa7aa76ce8d3da8",
+      "mtime": 1480493060000,
+      "size": 1521,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_04.png": {
+      "hash": "8bfefe0617b624a4d41a0fe1a4a8814e3b06fc45",
+      "mtime": 1480493060000,
+      "size": 1572,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_05.png": {
+      "hash": "5366e68d4661625ff1262f69f63ad4b59bdf48ce",
+      "mtime": 1480493060000,
+      "size": 1379,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_06.png": {
+      "hash": "09022d1495f2ad6c4fe1998bb15ff1c0033925a8",
+      "mtime": 1480493060000,
+      "size": 1785,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_07.png": {
+      "hash": "3a0846d9dd7ce18a3c7b3f5c1e42496a5597b5d5",
+      "mtime": 1480493060000,
+      "size": 2173,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_08.png": {
+      "hash": "68de7c4421be4a45cb83f47affb3da9fe7806bde",
+      "mtime": 1480493060000,
+      "size": 1833,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_09.png": {
+      "hash": "6f1964a8fd30cb6d2d95bd6798563f6333a2f17d",
+      "mtime": 1480493060000,
+      "size": 2034,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_10.png": {
+      "hash": "bb483307cf66af7c1a2ed17b9d2275d97eda5a06",
+      "mtime": 1480493060000,
+      "size": 1636,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_11.png": {
+      "hash": "bf3b454ce528334248d5e6afa0a0e27e958a6e91",
+      "mtime": 1480493060000,
+      "size": 2507,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_12.png": {
+      "hash": "5f1ecfd35f9b32168e04785b7ee254ace27b2bc4",
+      "mtime": 1480493060000,
+      "size": 1389,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_13.png": {
+      "hash": "2be93c1e6da2de12fab593a7184be91738b809b9",
+      "mtime": 1480493060000,
+      "size": 1435,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_14.png": {
+      "hash": "d8d46fcb7982e34c31c792004ce4441aeec44860",
+      "mtime": 1480493060000,
+      "size": 1434,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_15.png": {
+      "hash": "4b8c6879c9999d6fbc4baad3411a6e8bb6fde31e",
+      "mtime": 1480493060000,
+      "size": 1500,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_16.png": {
+      "hash": "da8756d1e8357c840192521186f146c41ea4450d",
+      "mtime": 1480493060000,
+      "size": 1558,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_17.png": {
+      "hash": "9d774031a29c9e47bdc0723ebeb2386d7ad244c4",
+      "mtime": 1480493060000,
+      "size": 1393,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_18.png": {
+      "hash": "849140f5f47c8c473016363b05c566019053907f",
+      "mtime": 1480493060000,
+      "size": 1784,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_19.png": {
+      "hash": "aaef000823ac395d833c25439262d4ca33956dac",
+      "mtime": 1480493060000,
+      "size": 2171,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_20.png": {
+      "hash": "c0e9e441e551406b2e30d722fcbf01a93748e8c0",
+      "mtime": 1480493060000,
+      "size": 1837,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_21.png": {
+      "hash": "bacbbff06b90ac34584b79d6f94e7c178755d235",
+      "mtime": 1480493060000,
+      "size": 2032,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_22.png": {
+      "hash": "cc5dedbb22168f2fa781727f4b102da69197faf0",
+      "mtime": 1480493060000,
+      "size": 1635,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_23.png": {
+      "hash": "86d337e855981b1c0cb639d7434bcccdadadca5d",
+      "mtime": 1480493060000,
+      "size": 2508,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_24.png": {
+      "hash": "1a5a663b90d3b0f11ec870aba0ee2accd00257ba",
+      "mtime": 1480493060000,
+      "size": 1388,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_25.png": {
+      "hash": "5b9ae007a45347cdd3082dbd6dfa3c8cc2b7554d",
+      "mtime": 1480493060000,
+      "size": 1437,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_26.png": {
+      "hash": "6bba75b2477c0e616bb9c9d35a2dd62af90efb7b",
+      "mtime": 1480493060000,
+      "size": 1428,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_27.png": {
+      "hash": "d2708e1c6b9db549724861749251bbaba077f1f5",
+      "mtime": 1480493060000,
+      "size": 1512,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_28.png": {
+      "hash": "39787c1467b24d643cc3dfae7b50dfd5e7649939",
+      "mtime": 1480493060000,
+      "size": 1564,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_29.png": {
+      "hash": "0d7c105a3498a85f90a26da694d98cb035f569aa",
+      "mtime": 1480493060000,
+      "size": 1384,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_30.png": {
+      "hash": "e34ffa97a6f586ee91427b4a05a474ca9365bdad",
+      "mtime": 1480493060000,
+      "size": 1789,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_31.png": {
+      "hash": "6c3208d01a4a4e732b4449ef086d6318767e9112",
+      "mtime": 1480493060000,
+      "size": 2161,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_32.png": {
+      "hash": "e594f160f7c3da3aa08eee518848612eadc57822",
+      "mtime": 1480493060000,
+      "size": 1830,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_33.png": {
+      "hash": "a99f8b383fea7726fd5298c5c580142bb6f9f90f",
+      "mtime": 1480493060000,
+      "size": 2047,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_34.png": {
+      "hash": "5c5a118a06b3d8bc63e2425b24d246373ea961b9",
+      "mtime": 1480493060000,
+      "size": 1639,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_35.png": {
+      "hash": "f535bf58973191a8a8a3b3e134509bd06ba319cf",
+      "mtime": 1480493060000,
+      "size": 2505,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_36.png": {
+      "hash": "5a72b6e64b781c921eba3b737c0afb7eb851bee2",
+      "mtime": 1480493060000,
+      "size": 1383,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_37.png": {
+      "hash": "e5888acffe6e2f63de5e148f1606eb25e45036ce",
+      "mtime": 1480493060000,
+      "size": 1440,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_38.png": {
+      "hash": "6a66ef35b85cdabd484bc3d15f9914193b78ea89",
+      "mtime": 1480493060000,
+      "size": 1426,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_39.png": {
+      "hash": "6b7a556e69bb847afcbd2ee2964dfacea6ae4b9c",
+      "mtime": 1480493060000,
+      "size": 1506,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_40.png": {
+      "hash": "2e1d79497353cfff8f66c219c2808bcda22a926c",
+      "mtime": 1480493060000,
+      "size": 1554,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_41.png": {
+      "hash": "04d2ec4762ef6843f6e5c8e1ccff58d41a6babec",
+      "mtime": 1480493060000,
+      "size": 1369,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_42.png": {
+      "hash": "d41a1beb90c025e050fc40eb36a4609a0b4d19a3",
+      "mtime": 1480493060000,
+      "size": 1760,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_43.png": {
+      "hash": "6101be7665ff80c845f29893f7ca5afc2bf03e55",
+      "mtime": 1480493060000,
+      "size": 2142,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_44.png": {
+      "hash": "2f4c9f94794847290fc1f4535d6f91d2d43f01ca",
+      "mtime": 1480493060000,
+      "size": 1810,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_45.png": {
+      "hash": "03c6f896c4281a50b4ef4b98fa6ff813ee1a707e",
+      "mtime": 1480493060000,
+      "size": 2010,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_46.png": {
+      "hash": "b7af07d37cfc1e4dee28fe9c62976658d841a822",
+      "mtime": 1480493060000,
+      "size": 1625,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_47.png": {
+      "hash": "12cde7f9e134561f45bdaadbd3982d02d96787d9",
+      "mtime": 1480493060000,
+      "size": 2504,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/PNG/Default size/Unit/scifiUnit_48.png": {
+      "hash": "bcb9b605249b48d37c08c91144afde158c3cb9ff",
+      "mtime": 1480493060000,
+      "size": 1393,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/Preview.png": {
+      "hash": "bd144603d4d385e3f5b666a6615bc8c8c5d49f34",
+      "mtime": 1480495038000,
+      "size": 109637,
+      "lines": null
+    },
+    "assets/sprites/kenney-scifi-rts/Spritesheet/scifiRTS_spritesheet@2.png": {
+      "hash": "a5b416cd73f382320239c0bb30727925f787fac3",
+      "mtime": 1480494618000,
+      "size": 168792,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_large.png": {
+      "hash": "a009c627c5790b806f7217d9f77fcb3ad046680a",
+      "mtime": 1724112422000,
+      "size": 547,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_large_l.png": {
+      "hash": "bcf2e5c0652430fd5e0fe2f51f1d3dcbbb28611a",
+      "mtime": 1724112422000,
+      "size": 395,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_large_m.png": {
+      "hash": "beb852e255b20955d3f7c354bb238b39f2abe3a6",
+      "mtime": 1724112422000,
+      "size": 126,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_large_r.png": {
+      "hash": "e9a90565c067e431d75481967fd7f22a27e74e64",
+      "mtime": 1724112422000,
+      "size": 393,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_large_square.png": {
+      "hash": "1a65dce906a6a649dd9127e9999dac88e95a452d",
+      "mtime": 1724112422000,
+      "size": 516,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_small.png": {
+      "hash": "b3a20240e14733d5fbba5367a406683fcbb5b1c0",
+      "mtime": 1724112422000,
+      "size": 411,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_small_l.png": {
+      "hash": "db1117d64f3b13ac35b85d6055b14c2095e696a1",
+      "mtime": 1724112422000,
+      "size": 331,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_small_m.png": {
+      "hash": "9d1a5a5825647faa221d677e5cb42b84c51491ef",
+      "mtime": 1724112422000,
+      "size": 123,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_small_r.png": {
+      "hash": "6ba7f45478cc8eedbb2ba31fc6c271a8c08a4773",
+      "mtime": 1724112422000,
+      "size": 333,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_gloss_small_square.png": {
+      "hash": "60dfafa4dc324d4e82df0e94d2ec5fedd459d73c",
+      "mtime": 1724112422000,
+      "size": 387,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_large.png": {
+      "hash": "2560e03c081f87a52bfbd08dddca920d6334a9b0",
+      "mtime": 1724112424000,
+      "size": 508,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_large_l.png": {
+      "hash": "98ce636ce4c20ac43e5923592f796bc4f685a0ab",
+      "mtime": 1724112424000,
+      "size": 373,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_large_m.png": {
+      "hash": "aa2597689f5fabe89e20a950f02f76c3738ee138",
+      "mtime": 1724112424000,
+      "size": 118,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_large_r.png": {
+      "hash": "42b6f8fdeb551da08c120ccada660f3644abdc3b",
+      "mtime": 1724112424000,
+      "size": 371,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_large_square.png": {
+      "hash": "97a369875a701bacc2adae420ab99891ad599f0d",
+      "mtime": 1724112424000,
+      "size": 479,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_small.png": {
+      "hash": "9798d0f9069887b3038b48aa757fb095b58f9037",
+      "mtime": 1724112424000,
+      "size": 395,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_small_l.png": {
+      "hash": "46f6ce23e0097318072583491d0f165f35e92cdf",
+      "mtime": 1724112424000,
+      "size": 320,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_small_m.png": {
+      "hash": "32f2651a26b2adb71c42c0f84ad0b551d1ca432f",
+      "mtime": 1724112424000,
+      "size": 115,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_small_r.png": {
+      "hash": "cbd7b40d06fdda6dbb7bef54ad853133769e9cf2",
+      "mtime": 1724112424000,
+      "size": 319,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_round_small_square.png": {
+      "hash": "39c4ace0eb61c60207693fd87d81e641775a7ddc",
+      "mtime": 1724112424000,
+      "size": 374,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_large.png": {
+      "hash": "305ec5867afe371943187d7562c053a18928e8da",
+      "mtime": 1724112424000,
+      "size": 213,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_large_l.png": {
+      "hash": "b4591acb61adcaed46c68886a5b4f76603c05726",
+      "mtime": 1724112424000,
+      "size": 190,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_large_m.png": {
+      "hash": "beb852e255b20955d3f7c354bb238b39f2abe3a6",
+      "mtime": 1724112424000,
+      "size": 126,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_large_r.png": {
+      "hash": "ab48cf14b18a0855d7c3a83f2574169b2cf8c848",
+      "mtime": 1724112424000,
+      "size": 192,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_large_square.png": {
+      "hash": "a38589174a74a902932bab8d2f5fc548019635a7",
+      "mtime": 1724112424000,
+      "size": 204,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_small.png": {
+      "hash": "343b46cce57db4b7af8161d5540dce0d2ea8f0fe",
+      "mtime": 1724112424000,
+      "size": 209,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_small_l.png": {
+      "hash": "a2abbe6d91eee98c579f896cfa0b56f93b7f6aab",
+      "mtime": 1724112424000,
+      "size": 188,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_small_m.png": {
+      "hash": "9d1a5a5825647faa221d677e5cb42b84c51491ef",
+      "mtime": 1724112424000,
+      "size": 123,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_small_r.png": {
+      "hash": "fa6badcfaa8e85ce7c7613ba35ac950168744d36",
+      "mtime": 1724112424000,
+      "size": 191,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_gloss_small_square.png": {
+      "hash": "298dd26aeed104eae09cbfee71cfcc924897d51e",
+      "mtime": 1724112424000,
+      "size": 203,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_large.png": {
+      "hash": "65c8a171cc8e0c06c2cdb5a7a4ec7d64133528c2",
+      "mtime": 1724112424000,
+      "size": 205,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_large_l.png": {
+      "hash": "480a5a84bc66eb9bd866b399a40b0d8e922adeda",
+      "mtime": 1724112424000,
+      "size": 183,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_large_m.png": {
+      "hash": "aa2597689f5fabe89e20a950f02f76c3738ee138",
+      "mtime": 1724112424000,
+      "size": 118,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_large_r.png": {
+      "hash": "8ac9d5a276ad70129d96ee9041121920b4f33c7d",
+      "mtime": 1724112424000,
+      "size": 184,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_large_square.png": {
+      "hash": "2368a7eba060a67b7071407f1d85e59675ad1272",
+      "mtime": 1724112424000,
+      "size": 196,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_small.png": {
+      "hash": "b8b7dde275c460191c2b08ae167e6f5e67eccc49",
+      "mtime": 1724112424000,
+      "size": 202,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_small_l.png": {
+      "hash": "52879e5208a85c8e617eb9f1ee3d55493aa1c0f8",
+      "mtime": 1724112424000,
+      "size": 181,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_small_m.png": {
+      "hash": "32f2651a26b2adb71c42c0f84ad0b551d1ca432f",
+      "mtime": 1724112424000,
+      "size": 115,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_small_r.png": {
+      "hash": "af8c1280a74d37808ccfbc1f66a0321bbb277316",
+      "mtime": 1724112424000,
+      "size": 184,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/bar_square_small_square.png": {
+      "hash": "07d85e1285838246d9b70727bc5a6c16f7cb96c9",
+      "mtime": 1724112424000,
+      "size": 195,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_blade_rectangle.png": {
+      "hash": "90c2a63cfe3c536e3d9d518e467affca10be94a8",
+      "mtime": 1724112424000,
+      "size": 646,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_blade_rectangle_screws.png": {
+      "hash": "f0d2375c9187562f3c5788d8a540e90b8429f3b5",
+      "mtime": 1724112424000,
+      "size": 695,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_blade_square.png": {
+      "hash": "6fb949ff5626ca28a3225db5e4b8270e7c074134",
+      "mtime": 1724112424000,
+      "size": 616,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_blade_square_screws.png": {
+      "hash": "9154787edb811eb1de0c118295eb858906bba389",
+      "mtime": 1724112424000,
+      "size": 663,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_large_rectangle.png": {
+      "hash": "536b9a8ec2f746f46bdd3aef27f670c5bbfdde52",
+      "mtime": 1724112424000,
+      "size": 428,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_large_rectangle_screws.png": {
+      "hash": "768a5bdc05129c61fd074f9323e20d3ecaed9894",
+      "mtime": 1724112424000,
+      "size": 479,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_large_square.png": {
+      "hash": "98665ef4d7e513cb0cc2eae02a6834ded5564790",
+      "mtime": 1724112424000,
+      "size": 391,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_large_square_screws.png": {
+      "hash": "3296d831959d3c0262afca84754efdad90c81b55",
+      "mtime": 1724112424000,
+      "size": 450,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_notch_rectangle.png": {
+      "hash": "10a505f4e0a919776b503cdd8e10765a2894432c",
+      "mtime": 1724112424000,
+      "size": 542,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_notch_rectangle_screws.png": {
+      "hash": "30b0184312f5a289279b87b3a693d49fbb3cfdb2",
+      "mtime": 1724112424000,
+      "size": 601,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_notch_square.png": {
+      "hash": "dadc5a810fdbcae9fb3ddcaff343f44e5e1f0bff",
+      "mtime": 1724112424000,
+      "size": 511,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_notch_square_screws.png": {
+      "hash": "f28e20e9a8069935595c6704b05a5bdb232839ab",
+      "mtime": 1724112424000,
+      "size": 569,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_small_rectangle.png": {
+      "hash": "471e34fd629ae590b77bec930852a5f1adc8bf3d",
+      "mtime": 1724112426000,
+      "size": 426,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_small_rectangle_screws.png": {
+      "hash": "029441e7f1f71a38b5bf7981e9a9e00753421df7",
+      "mtime": 1724112426000,
+      "size": 476,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_small_square.png": {
+      "hash": "8da2b140ddf37689fbc94606471be5f35c7abbec",
+      "mtime": 1724112426000,
+      "size": 391,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/button_square_header_small_square_screws.png": {
+      "hash": "485e9499de0d7b2159274bfd95e5d48dfae8a006",
+      "mtime": 1724112426000,
+      "size": 449,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/crosshair_color_a.png": {
+      "hash": "84e80f8d92e1ecc916323a3251a83ad1e28e64e0",
+      "mtime": 1724112426000,
+      "size": 553,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/crosshair_color_b.png": {
+      "hash": "a1f42244f35c8f46f7dbfab9f2ac84526f772a40",
+      "mtime": 1724112426000,
+      "size": 530,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/crosshair_color_c.png": {
+      "hash": "5c9764b1e7e2a093f7fc2a5ce5afd041dfbfbb2b",
+      "mtime": 1724112426000,
+      "size": 307,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/PNG/Blue/Default/crosshair_color_d.png": {
+      "hash": "76566fe1a120e0d95b1b59ad8a3c69ad8674506f",
+      "mtime": 1724112426000,
+      "size": 243,
+      "lines": null
+    },
+    "assets/ui/kenney-ui-space/Preview.png": {
+      "hash": "24f6375b7034aaa0abb8391179a5f9b0443cfee0",
+      "mtime": 1724112422000,
+      "size": 24894,
+      "lines": null
+    },
+    "env/combat.mjs": {
+      "hash": "7c079640d103bab82b4300bd81d16739f2348a0b",
+      "mtime": 1792690473000,
+      "size": 4379,
+      "lines": 101
+    },
+    "env/commands.mjs": {
+      "hash": "7e860d5e858cac72ba2ba806cceaeb585e5f8729",
+      "mtime": 1792690408000,
+      "size": 5917,
+      "lines": 147
+    },
+    "env/economy.mjs": {
+      "hash": "f512951dae8786ce208538f7c53380d4304b35db",
+      "mtime": 1792690715000,
+      "size": 8638,
+      "lines": 247
+    },
+    "env/log.mjs": {
+      "hash": "19d5c445e7b876583df3a56ed7cebe014af7249c",
+      "mtime": 1792690351000,
+      "size": 5177,
+      "lines": 154
+    },
+    "env/map.mjs": {
+      "hash": "b230ad6db46ea1204522a253603f5bd9fb5ad011",
+      "mtime": 1792690352000,
+      "size": 2789,
+      "lines": 72
+    },
+    "env/movement.mjs": {
+      "hash": "b195a5aeaefe30f4db72d2a74b58ded29859970d",
+      "mtime": 1792690626000,
+      "size": 6520,
+      "lines": 179
+    },
+    "env/path.mjs": {
+      "hash": "f0c16e8b6a02c37c4abc644aa3ab89b06b37cb0a",
+      "mtime": 1792690343000,
+      "size": 1317,
+      "lines": 36
+    },
+    "env/player-worker.mjs": {
+      "hash": "81e51ac14b82d0c63d7c9bc2b04c4415378f591a",
+      "mtime": 1792690430000,
+      "size": 2647,
+      "lines": 66
+    },
+    "env/referee.mjs": {
+      "hash": "a1813bee5dd686bf579399f68570d3ff7c35d851",
+      "mtime": 1792690547000,
+      "size": 9447,
+      "lines": 245
+    },
+    "env/rng.mjs": {
+      "hash": "22ba47baa3c67b8ef77d7359f1a2fd67813056b3",
+      "mtime": 1792690345000,
+      "size": 420,
+      "lines": 13
+    },
+    "env/run-match.mjs": {
+      "hash": "b4cd24fcbe5757c9db0e2869b222a9e38b3862b8",
+      "mtime": 1792690700000,
+      "size": 3641,
+      "lines": 119
+    },
+    "env/sim.mjs": {
+      "hash": "a846990d1e72bed97ece04f32a53e1b16383de34",
+      "mtime": 1792690399000,
+      "size": 3823,
+      "lines": 105
+    },
+    "env/state.mjs": {
+      "hash": "42e4371007e804e4a7254de878b26c46188e28e1",
+      "mtime": 1792690372000,
+      "size": 5685,
+      "lines": 167
+    },
+    "env/stats.mjs": {
+      "hash": "5fd7971f2c94d19f7aa414bf6682478a471c395e",
+      "mtime": 1792690353000,
+      "size": 3577,
+      "lines": 96
+    },
+    "live/captions.mjs": {
+      "hash": "22b272e2932a8bbd95e9a8c49e8d80429d5f0e6e",
+      "mtime": 1792691481000,
+      "size": 7389,
+      "lines": 194
+    },
+    "live/changelog.mjs": {
+      "hash": "ab8a0c6db3aacb696a7f1919a0637b0707a781ab",
+      "mtime": 1792691583000,
+      "size": 10600,
+      "lines": 281
+    },
+    "live/compile.mjs": {
+      "hash": "ba3163a19ab7da3bdc226e0dd3cbebeefe45edd7",
+      "mtime": 1792691505000,
+      "size": 9423,
+      "lines": 164
+    },
+    "live/decisions.md": {
+      "hash": "8856170c2f1bacc0a91900c0d4ea7fa2371f39a1",
+      "mtime": 1792691582000,
+      "size": 11123,
+      "lines": 41
+    },
+    "live/index.html": {
+      "hash": "92f4bc1060443def36f0fd35782ddac861eb3961",
+      "mtime": 1792691482000,
+      "size": 1364,
+      "lines": 38
+    },
+    "live/starter-tv.html": {
+      "hash": "c9df11170117b779443836d6a176b45674766760",
+      "mtime": 1792691444000,
+      "size": 7980,
+      "lines": 97
+    },
+    "live/style.css": {
+      "hash": "74c8dbac75b73502f8f7d29ea747552b1a4f4583",
+      "mtime": 1792691491000,
+      "size": 4119,
+      "lines": 55
+    },
+    "live/threads.json": {
+      "hash": "63084d392a06f30933f8cdbc715709c5b4709796",
+      "mtime": 1792691582000,
+      "size": 131400,
+      "lines": 1863
+    },
+    "live/threads.mjs": {
+      "hash": "570de98170ab722a8e8ab897a2175a93925b657c",
+      "mtime": 1792691582000,
+      "size": 9922,
+      "lines": 203
+    },
+    "package.json": {
+      "hash": "0db43ee071fcdcb34a7689118de9b9f8c464128e",
+      "mtime": 1792691397000,
+      "size": 52,
+      "lines": 5
+    },
+    "players/sample-player.mjs": {
+      "hash": "a8ca4250e029e8ccb6b8da56b903d716b8b09260",
+      "mtime": 1792690661000,
+      "size": 3126,
+      "lines": 76
+    },
+    "read.mjs": {
+      "hash": "ee08df3af1b9a9144329b90618127c296e092e66",
+      "mtime": 1792689702000,
+      "size": 982,
+      "lines": 13
+    },
+    "roles/ROLES.md": {
+      "hash": "92af7a237e148b9c0e4a53b92d76ec073ec2fd4b",
+      "mtime": 1792691165000,
+      "size": 18114,
+      "lines": 224
+    },
+    "roles/roles.json": {
+      "hash": "304304046422556977378c7bb34f8ed85b636d8e",
+      "mtime": 1792691165000,
+      "size": 31040,
+      "lines": 1068
+    },
+    "say.mjs": {
+      "hash": "4d50d062ff7fe830fc8265117ce251a7ed6b62d9",
+      "mtime": 1792690442000,
+      "size": 523,
+      "lines": 7
+    },
+    "tests/art-smoke.test.mjs": {
+      "hash": "f51d44713227552042caf306ffbc1c9f0b548299",
+      "mtime": 1792691198000,
+      "size": 5835,
+      "lines": 117
+    },
+    "tests/combat-counters.test.mjs": {
+      "hash": "de7df9e903dce6399f1fc634b742bd7711c280d0",
+      "mtime": 1792690434000,
+      "size": 6045,
+      "lines": 176
+    },
+    "tests/combat-damage.test.mjs": {
+      "hash": "a8cc00a88a0aa3481003896b380242c476d1a242",
+      "mtime": 1792690482000,
+      "size": 13196,
+      "lines": 308
+    },
+    "tests/combat-targeting.test.mjs": {
+      "hash": "390de28f8cf4a9ced4a6768acd7ddfd3ffc3260f",
+      "mtime": 1792690460000,
+      "size": 13550,
+      "lines": 322
+    },
+    "tests/commands-validation.test.mjs": {
+      "hash": "20ad001d974761e4d377731847f999665864b0c9",
+      "mtime": 1792690534000,
+      "size": 26715,
+      "lines": 566
+    },
+    "tests/economy-build-train.test.mjs": {
+      "hash": "59ef8fe3232261a89bb156c704aba91cbd0b5211",
+      "mtime": 1792690467000,
+      "size": 23900,
+      "lines": 490
+    },
+    "tests/economy-gather.test.mjs": {
+      "hash": "8b07da35567a28eb51c323ffcc17bd920a8af5e2",
+      "mtime": 1792690428000,
+      "size": 8574,
+      "lines": 195
+    },
+    "tests/full-match-smoke.test.mjs": {
+      "hash": "ac031810f55dd628d661528d751b7f3cfa363187",
+      "mtime": 1792690429000,
+      "size": 12018,
+      "lines": 265
+    },
+    "tests/live-viewer.test.mjs": {
+      "hash": "ea1dbc396377a523eb38e7865189006cc4e523bb",
+      "mtime": 1792691022000,
+      "size": 18703,
+      "lines": 484
+    },
+    "tests/log-format.test.mjs": {
+      "hash": "7379267202b040b21efd499ff3b69c034f14a0cb",
+      "mtime": 1792690745000,
+      "size": 31471,
+      "lines": 605
+    },
+    "tests/map-generation.test.mjs": {
+      "hash": "5575b2cf8bc763a9d7cfbce949fc78a2e6a22273",
+      "mtime": 1792690405000,
+      "size": 11923,
+      "lines": 345
+    },
+    "tests/movement-order.test.mjs": {
+      "hash": "cd31057f10683ba927509bd4ebe31f330443cfdb",
+      "mtime": 1792690429000,
+      "size": 7708,
+      "lines": 199
+    },
+    "tests/path-finding.test.mjs": {
+      "hash": "8f8a3df97d552b8f4927b3c04171ea28c4ff4c65",
+      "mtime": 1792690447000,
+      "size": 14971,
+      "lines": 347
+    },
+    "tests/referee-limits.test.mjs": {
+      "hash": "f3108944fd6f0e08a88a4cfeb4517d5dd65244e2",
+      "mtime": 1792690496000,
+      "size": 13758,
+      "lines": 357
+    },
+    "tests/sim-determinism.test.mjs": {
+      "hash": "1d8138861ec62ff4934713e433ff9b6e7e7dc717",
+      "mtime": 1792690362000,
+      "size": 3749,
+      "lines": 94
+    },
+    "tests/sim-end-conditions.test.mjs": {
+      "hash": "d583250156c6bd34736e7d99a8e970e129024693",
+      "mtime": 1792690408000,
+      "size": 5956,
+      "lines": 182
+    },
+    "tests/state-helpers.test.mjs": {
+      "hash": "c569d4ea7e6c1986d3ecca4c29cb20dfba623ffb",
+      "mtime": 1792690423000,
+      "size": 17431,
+      "lines": 482
+    },
+    "tests/stats-table.test.mjs": {
+      "hash": "a93348dccace477487b9d96310c709c07d4bb99c",
+      "mtime": 1792690383000,
+      "size": 4821,
+      "lines": 125
+    },
+    "tests/viewer-fx-fight.test.mjs": {
+      "hash": "24d94078e3148ae7a3c49d65566c02acd96a3752",
+      "mtime": 1792690783000,
+      "size": 3253,
+      "lines": 71
+    },
+    "tests/viewer-fx-hud.test.mjs": {
+      "hash": "731295d13ed7bc53620ea90409adaca898d1fa61",
+      "mtime": 1792690805000,
+      "size": 5512,
+      "lines": 147
+    },
+    "tests/viewer-hud-mount.test.mjs": {
+      "hash": "71b63047c93dcdd9a39434b3e55602cee3a9cc1f",
+      "mtime": 1792690815000,
+      "size": 2965,
+      "lines": 51
+    },
+    "tests/viewer-replay.test.mjs": {
+      "hash": "5c2723d5d767c7da4a44d3012c98a4c8664f0451",
+      "mtime": 1792690402000,
+      "size": 11793,
+      "lines": 330
+    },
+    "tests/viewer3d-world.test.mjs": {
+      "hash": "a847a16157d7e89a804b1f6f7eea26dd88dc7aa9",
+      "mtime": 1792691510000,
+      "size": 7377,
+      "lines": 200
+    },
+    "viewer/art-preview.html": {
+      "hash": "e83ab86df303d4b8fd19365f66d9c6ff392589d0",
+      "mtime": 1792690889000,
+      "size": 11734,
+      "lines": 203
+    },
+    "viewer/art-render.mjs": {
+      "hash": "ed6c43f0f18e74d6d5debd602beae230c7d2aabe",
+      "mtime": 1792691225000,
+      "size": 20016,
+      "lines": 369
+    },
+    "viewer/art.mjs": {
+      "hash": "e5125ab09e814a2c7e7406eb8b49f9cc504a3bb5",
+      "mtime": 1792691193000,
+      "size": 29489,
+      "lines": 842
+    },
+    "viewer/fx.mjs": {
+      "hash": "c35604c3ef1a5e20ea36714146b43271d4d336e6",
+      "mtime": 1792690801000,
+      "size": 15781,
+      "lines": 383
+    },
+    "viewer/hud.mjs": {
+      "hash": "6a735d9cb4378281f69354873c45aab6b539acdd",
+      "mtime": 1792690743000,
+      "size": 12967,
+      "lines": 275
+    },
+    "viewer/index.html": {
+      "hash": "9372e505fd7e1a4bbf84e9b069f0e94f92ed2a8c",
+      "mtime": 1792690381000,
+      "size": 2258,
+      "lines": 55
+    },
+    "viewer/live.html": {
+      "hash": "9d59abfd48b454360d26a2f68fff14699e482074",
+      "mtime": 1792690976000,
+      "size": 1773,
+      "lines": 33
+    },
+    "viewer/live.mjs": {
+      "hash": "c416a5341e597f37ac35bf333abafcff03735b9e",
+      "mtime": 1792691041000,
+      "size": 27071,
+      "lines": 747
+    },
+    "viewer/replay.mjs": {
+      "hash": "54e6d3c0b9a0475372b99bfd7535a4e44dc50ffe",
+      "mtime": 1792690538000,
+      "size": 7800,
+      "lines": 235
+    },
+    "viewer/style.css": {
+      "hash": "b782cefeb5b78a09c102cd7a9e5706a7cb72987b",
+      "mtime": 1792690386000,
+      "size": 2535,
+      "lines": 33
+    },
+    "viewer/viewer.mjs": {
+      "hash": "0e4a4a84fa15a0cf74ec1879b929a520441d30a3",
+      "mtime": 1792690412000,
+      "size": 9851,
+      "lines": 279
+    },
+    "viewer3d/world.mjs": {
+      "hash": "f5ab3de8d0a26ce036a8c53af0e5cdaaef113b27",
+      "mtime": 1792691520000,
+      "size": 9073,
+      "lines": 230
+    },
+    "assets/models/LICENSES.md": {
+      "hash": "3943aa13143e5706d9111e9d61c4c548ee5e8978",
+      "mtime": 1792691535000,
+      "size": 1500,
+      "lines": 12
+    },
+    "assets/models/MANIFEST.json": {
+      "hash": "f796ab3fd221869b9372b3ea7d0305def56e6444",
+      "mtime": 1792691529000,
+      "size": 7312,
+      "lines": 441
+    },
+    "live/app.mjs": {
+      "hash": "065d379f293a4a07022bfc744d7d4d3140be5ffe",
+      "mtime": 1792691533000,
+      "size": 8736,
+      "lines": 193
+    },
+    "tests/live-page.test.mjs": {
+      "hash": "6a5342cefcf5ff73c8ce6520799af1d9cb796224",
+      "mtime": 1792691544000,
+      "size": 3050,
+      "lines": 49
+    },
+    "tests/viewer3d-terrain.test.mjs": {
+      "hash": "32fce9267791c27e663a3dde65e05b94a9541dd8",
+      "mtime": 1792691535000,
+      "size": 2607,
+      "lines": 54
+    },
+    "viewer3d/audio.mjs": {
+      "hash": "1e30cca844b7b1088fef346495ee114185a479f0",
+      "mtime": 1792691583000,
+      "size": 12926,
+      "lines": 359
+    },
+    "viewer3d/buildings.mjs": {
+      "hash": "6950076e57f8cfc67ad1149de8c315dffc9bc915",
+      "mtime": 1792691583000,
+      "size": 27706,
+      "lines": 698
+    },
+    "viewer3d/camera.mjs": {
+      "hash": "a2f21df742de3338655980f451a7864a0fbe6a69",
+      "mtime": 1792691583000,
+      "size": 16490,
+      "lines": 431
+    },
+    "viewer3d/hud.mjs": {
+      "hash": "ffc5212a6695c0cba4d3283452cf988a6c77ce25",
+      "mtime": 1792691583000,
+      "size": 16098,
+      "lines": 361
+    },
+    "viewer3d/terrain.mjs": {
+      "hash": "a1e4db24a9076a2e7b29ad3166a1014af6c00120",
+      "mtime": 1792691517000,
+      "size": 24091,
+      "lines": 586
+    },
+    "viewer3d/vfx.mjs": {
+      "hash": "96a7b55d86225fffd441a2f180f45ac1dca87da8",
+      "mtime": 1792691583000,
+      "size": 29943,
+      "lines": 642
+    },
+    "tests/viewer3d-director.test.mjs": {
+      "hash": "f2eb687ac99019119dcc841260cf9274b68c2dc8",
+      "mtime": 1792691587952.1575,
+      "size": 14244,
+      "lines": 327
+    }
+  },
+  "entries": [
+    {
+      "id": 16,
+      "at": "2026-10-22T17:53:07.952Z",
+      "seen": "2026-10-22T17:53:10.425Z",
+      "kind": "added",
+      "path": "tests/viewer3d-director.test.mjs",
+      "what": "Added tests/viewer3d-director.test.mjs (327 lines)",
+      "who": "unassigned",
+      "owner": null,
+      "why": "No chat message explains this yet.",
+      "chat": null,
+      "lines": 327,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 15,
+      "at": "2026-10-22T17:53:03.000Z",
+      "seen": "2026-10-22T17:53:07.948Z",
+      "kind": "added",
+      "path": "viewer3d/vfx.mjs",
+      "what": "Added viewer3d/vfx.mjs (642 lines)",
+      "who": "sonnet",
+      "owner": "sonnet",
+      "why": "sonnet (vfx): starting viewer3d/vfx.mjs + tests/viewer3d-vfx.test.mjs. Plan: createVfx(ctx) with pooled additive GPU Points (sparks, glow, smoke/dust), instanced debris chunks, beam quads for lasers, shockwave rings. All driven by frame.ev…",
+      "chat": {
+        "n": 130,
+        "from": "sonnet"
+      },
+      "lines": 642,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 14,
+      "at": "2026-10-22T17:52:00.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "changed",
+      "path": "viewer3d/world.mjs",
+      "what": "Changed viewer3d/world.mjs (+0 lines, now 230)",
+      "who": "sonnet",
+      "owner": "sonnet",
+      "why": "sonnet (3D world): viewer3d/world.mjs is in, 14 tests pass in tests/viewer3d-world.test.mjs (sample-7 plus a hand-made fight). createWorld(log) -> {ticks,start,end,map,stats,players,result,stateAt,frame,facingAt}. frame(t) -> {tick,alpha,p…",
+      "chat": {
+        "n": 149,
+        "from": "sonnet"
+      },
+      "lines": 230,
+      "startLines": 230,
+      "saves": 1
+    },
+    {
+      "id": 13,
+      "at": "2026-10-22T17:51:57.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "viewer3d/terrain.mjs",
+      "what": "Added viewer3d/terrain.mjs (586 lines)",
+      "who": "sonnet",
+      "owner": "sonnet",
+      "why": "sonnet (terrain): viewer3d/terrain.mjs is in with tests/viewer3d-terrain.test.mjs (4 pass). createTerrain(ctx) builds on the first frame from frame.prev/next: basalt plateau tiles with colour patches, sunken plates, glow cracks, drift stre…",
+      "chat": {
+        "n": 151,
+        "from": "sonnet"
+      },
+      "lines": 586,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 12,
+      "at": "2026-10-22T17:52:52.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "viewer3d/hud.mjs",
+      "what": "Added viewer3d/hud.mjs (361 lines)",
+      "who": "haiku",
+      "owner": "haiku",
+      "why": "Fable (art director) on the scouted assets, for sonnet, haiku and the viewer owners. Decision: the game pieces (map, Core, Forge, Turret, four units) stay as the drawn art in viewer/art.mjs. Reasons: the Kenney sci-fi RTS pack is a slanted…",
+      "chat": {
+        "n": 126,
+        "from": "fable"
+      },
+      "lines": 361,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 11,
+      "at": "2026-10-22T17:52:52.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "viewer3d/camera.mjs",
+      "what": "Added viewer3d/camera.mjs (431 lines)",
+      "who": "haiku",
+      "owner": "haiku",
+      "why": "Fable (Lead Engine / Rendering) starting viewer3d/index.html and viewer3d/engine.mjs now. Plan: createEngine(canvas, opts) exactly as VISUAL-3D.md says, with ctx = { THREE, scene, camera, renderer, composer, clock, palette, assets, gridToW…",
+      "chat": {
+        "n": 141,
+        "from": "fable"
+      },
+      "lines": 431,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 10,
+      "at": "2026-10-22T17:52:52.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "viewer3d/buildings.mjs",
+      "what": "Added viewer3d/buildings.mjs (698 lines)",
+      "who": "haiku",
+      "owner": "haiku",
+      "why": "No chat message explains this yet.",
+      "chat": null,
+      "lines": 698,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 9,
+      "at": "2026-10-22T17:52:52.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "viewer3d/audio.mjs",
+      "what": "Added viewer3d/audio.mjs (359 lines)",
+      "who": "haiku",
+      "owner": "haiku",
+      "why": "No chat message explains this yet.",
+      "chat": null,
+      "lines": 359,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 8,
+      "at": "2026-10-22T17:52:15.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "tests/viewer3d-terrain.test.mjs",
+      "what": "Added tests/viewer3d-terrain.test.mjs (54 lines)",
+      "who": "sonnet",
+      "owner": null,
+      "why": "sonnet (terrain): viewer3d/terrain.mjs is in with tests/viewer3d-terrain.test.mjs (4 pass). createTerrain(ctx) builds on the first frame from frame.prev/next: basalt plateau tiles with colour patches, sunken plates, glow cracks, drift stre…",
+      "chat": {
+        "n": 151,
+        "from": "sonnet"
+      },
+      "lines": 54,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 7,
+      "at": "2026-10-22T17:52:24.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "tests/live-page.test.mjs",
+      "what": "Added tests/live-page.test.mjs (49 lines)",
+      "who": "unassigned",
+      "owner": null,
+      "why": "No chat message explains this yet.",
+      "chat": null,
+      "lines": 49,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 6,
+      "at": "2026-10-22T17:52:51.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "changed",
+      "path": "live/threads.mjs",
+      "what": "Changed live/threads.mjs (+1 lines, now 203)",
+      "who": "unassigned",
+      "owner": null,
+      "why": "No chat message explains this yet.",
+      "chat": null,
+      "lines": 203,
+      "startLines": 202,
+      "saves": 1
+    },
+    {
+      "id": 5,
+      "at": "2026-10-22T17:52:51.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "changed",
+      "path": "live/changelog.mjs",
+      "what": "Changed live/changelog.mjs (+1 lines, now 281)",
+      "who": "unassigned",
+      "owner": null,
+      "why": "No chat message explains this yet.",
+      "chat": null,
+      "lines": 281,
+      "startLines": 280,
+      "saves": 1
+    },
+    {
+      "id": 4,
+      "at": "2026-10-22T17:52:13.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "live/app.mjs",
+      "what": "Added live/app.mjs (193 lines)",
+      "who": "sonnet",
+      "owner": null,
+      "why": "Live View Engineer: starting live/index.html, live/app.mjs, live/style.css. One full-screen TV page: match left (3D when ready, else 2D), build status, chat threads, agent wall with live output, captions. Reading the Control Room API shape…",
+      "chat": {
+        "n": 132,
+        "from": "sonnet"
+      },
+      "lines": 193,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 3,
+      "at": "2026-10-22T17:52:09.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "assets/models/MANIFEST.json",
+      "what": "Added assets/models/MANIFEST.json (441 lines)",
+      "who": "sonnet",
+      "owner": "sonnet",
+      "why": "Sonnet (3D scout) DONE first pass: assets/models/ now has 116 CC0 GLB files (Kenney Space Kit 66 in space/, Kenney Tower Defense Kit 50 in td/ plus td/Textures/colormap.png, which the td models need next to them). LICENSES.md and MANIFEST.…",
+      "chat": {
+        "n": 150,
+        "from": "sonnet"
+      },
+      "lines": 441,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 2,
+      "at": "2026-10-22T17:52:15.000Z",
+      "seen": "2026-10-22T17:52:55.915Z",
+      "kind": "added",
+      "path": "assets/models/LICENSES.md",
+      "what": "Added assets/models/LICENSES.md (12 lines)",
+      "who": "sonnet",
+      "owner": "sonnet",
+      "why": "Sonnet (3D scout) DONE first pass: assets/models/ now has 116 CC0 GLB files (Kenney Space Kit 66 in space/, Kenney Tower Defense Kit 50 in td/ plus td/Textures/colormap.png, which the td models need next to them). LICENSES.md and MANIFEST.…",
+      "chat": {
+        "n": 150,
+        "from": "sonnet"
+      },
+      "lines": 12,
+      "startLines": null,
+      "saves": 1
+    },
+    {
+      "id": 1,
+      "at": "2026-10-22T17:51:57.411Z",
+      "seen": "2026-10-22T17:51:57.411Z",
+      "kind": "start",
+      "path": null,
+      "what": "Changelog started, tracking 810 project files",
+      "who": "live view",
+      "owner": null,
+      "why": "The Build Changelog Writer began watching the folder.",
+      "chat": null,
+      "lines": null,
+      "startLines": null,
+      "saves": 1
+    }
+  ],
+  "updated": "2026-10-22T17:53:10.425Z",
+  "tracked": 822
+}

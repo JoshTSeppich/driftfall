@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Driftfall art preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --bg:#14171c; --panel:#1d222a; --ink:#e6e9ee; --dim:#8b95a5; --line:#2b323d; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.4 system-ui, sans-serif; }
+    header { display:flex; flex-wrap:wrap; gap:16px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); }
+    h1 { margin:0; font-size:18px; letter-spacing:.08em; }
+    h2 { margin:18px 0 6px; font-size:13px; color:var(--dim); text-transform:uppercase; letter-spacing:.06em; }
+    #title { color:var(--dim); }
+    main { padding:8px 16px 32px; }
+    .row { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 8px 4px; text-align:center; }
+    .card canvas { display:block; margin:0 auto; background:#0f1318; border-radius:3px; image-rendering:auto; }
+    .card span { display:block; font-size:11px; color:var(--dim); margin-top:3px; white-space:nowrap; }
+    label { color:var(--dim); }
+    input[type=range] { vertical-align:middle; }
+    select, button { background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:4px; padding:3px 8px; }
+    #warn { margin:8px 16px; padding:8px 12px; background:#3a2a12; border:1px solid #7a5a1c; border-radius:6px; }
+    code { background:#0006; padding:0 4px; border-radius:3px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Driftfall art preview</h1>
+    <span id="title">Every sprite and state from viewer/art.mjs, drawn live.</span>
+    <label>cell size <input id="size" type="range" min="12" max="64" value="32" step="4"> <b id="sizeLabel">32</b> px</label>
+    <label><input id="animate" type="checkbox" checked> animate</label>
+    <label><input id="hit" type="checkbox"> show hit flash</label>
+  </header>
+  <p id="warn" hidden>This page uses ES modules, which browsers block when opened straight from disk.
+    Start a tiny server in the project folder (for example <code>python3 -m http.server</code>)
+    and open <code>http://localhost:8000/viewer/art-preview.html</code>.</p>
+  <main>
+    <h2>Map sample (ground, rocks, Shard fields full and empty) at the real viewer scale, 20 px per tile</h2>
+    <div class="row" id="map"></div>
+    <h2>Structures, both sides: complete, building at 25% and 75%, and with a training queue</h2>
+    <div class="row" id="structures"></div>
+    <h2>Units, both sides: idle, moving, attacking, dying (early and late), worker carrying Shards</h2>
+    <div class="row" id="units"></div>
+    <h2>Facing: the same Grunt turned in eight directions</h2>
+    <div class="row" id="facing"></div>
+    <h2>Readability check: a crowded corner at 20 px, as the match viewer shows it</h2>
+    <div class="row" id="scene"></div>
+  </main>
+  <script>if (location.protocol === 'file:') document.getElementById('warn').hidden = false;</script>
+  <script type="module">
+    import * as art from './art.mjs';
+
+    const $ = (id) => document.getElementById(id);
+    const cards = []; // { canvas, draw(ctx, time, cell) , fixedCell }
+
+    function card(parent, label, draw, { tiles = 1, fixedCell = null } = {}) {
+      const box = document.createElement('div');
+      box.className = 'card';
+      const canvas = document.createElement('canvas');
+      const span = document.createElement('span');
+      span.textContent = label;
+      box.append(canvas, span);
+      parent.append(box);
+      cards.push({ canvas, draw, tiles, fixedCell });
+    }
+
+    const stats = { units: { worker: { hp: 40 }, grunt: { hp: 60 }, lancer: { hp: 40 }, brute: { hp: 240 } },
+                    structures: { core: { hp: 1000 }, forge: { hp: 400, buildTicks: 40 }, turret: { hp: 150, buildTicks: 30 } } };
+
+    // --- map sample ---
+    const sample = {
+      width: 8, height: 8, seed: 7,
+      rocks: [[1, 1], [2, 1], [5, 3], [6, 6], [1, 6], [4, 0]],
+      crystals: [{ x: 4, y: 4, amount: 400 }, { x: 5, y: 4, amount: 400 }, { x: 4, y: 5, amount: 180 }, { x: 5, y: 5, amount: 0 }, { x: 0, y: 3, amount: 40 }],
+    };
+    card($('map'), 'seed 7 sample, 20 px tiles', (ctx, time) => art.drawTerrain(ctx, sample, { cell: 20, time }), { tiles: 8, fixedCell: 20 });
+    const sample2 = { ...sample, seed: 11 };
+    card($('map'), 'seed 11 sample at the slider size', (ctx, time, cell) => art.drawTerrain(ctx, sample2, { cell, time }), { tiles: 8 });
+
+    // --- structures ---
+    for (const owner of [0, 1]) {
+      const team = art.TEAM_COLORS[owner].name;
+      for (const kind of art.KINDS.structures) {
+        const maxHp = stats.structures[kind].hp, buildTicks = stats.structures[kind].buildTicks;
+        const base = { id: 10 + owner, kind, owner, x: 0, y: 0, hp: maxHp, progress: buildTicks, complete: true, queue: [] };
+        card($('structures'), `${team} ${kind}`, (ctx, time, cell) =>
+          art.drawStructure(ctx, base, { cell, time, maxHp, hit: $('hit').checked }));
+        if (kind !== 'core') {
+          for (const frac of [0.25, 0.75]) {
+            const site = { ...base, complete: false, progress: Math.round(buildTicks * frac), hp: Math.round(maxHp * frac) };
+            card($('structures'), `${team} ${kind} site ${Math.round(frac * 100)}%`, (ctx, time, cell) =>
+              art.drawStructure(ctx, site, { cell, time, maxHp, buildTicks, hit: $('hit').checked }));
+          }
+        }
+        const queued = { ...base, hp: Math.round(maxHp * 0.6), queue: kind === 'turret' ? [] : ['grunt', 'grunt', 'lancer'] };
+        card($('structures'), `${team} ${kind} ${kind === 'turret' ? 'damaged' : 'queue 3, damaged'}`, (ctx, time, cell) =>
+          art.drawStructure(ctx, queued, { cell, time, maxHp, hit: $('hit').checked }));
+      }
+    }
+
+    // --- units ---
+    for (const owner of [0, 1]) {
+      const team = art.TEAM_COLORS[owner].name;
+      for (const kind of art.KINDS.units) {
+        const maxHp = stats.units[kind].hp;
+        const base = { id: 20 + owner * 4 + art.KINDS.units.indexOf(kind), kind, owner, x: 0, y: 0, hp: maxHp, carrying: 0, order: null };
+        for (const pose of ['idle', 'move', 'attack']) {
+          const u = { ...base, hp: pose === 'attack' ? Math.round(maxHp * 0.4) : maxHp };
+          card($('units'), `${team} ${kind} ${pose}`, (ctx, time, cell) =>
+            art.drawUnit(ctx, u, { cell, time, pose, maxHp, hit: $('hit').checked }));
+        }
+        for (const deathT of [0.25, 0.7]) {
+          card($('units'), `${team} ${kind} dying ${deathT}`, (ctx, time, cell) =>
+            art.drawUnit(ctx, base, { cell, time, pose: 'die', deathT: $('animate').checked ? (time * 0.6) % 1 : deathT, maxHp }));
+        }
+        if (kind === 'worker') {
+          const carrying = { ...base, carrying: 10, order: { type: 'gather', phase: 'toCore' } };
+          card($('units'), `${team} worker carrying (pose inferred)`, (ctx, time, cell) =>
+            art.drawUnit(ctx, carrying, { cell, time, maxHp, facing: owner ? Math.PI : 0 }));
+        }
+      }
+    }
+
+    // --- facing ---
+    for (let i = 0; i < 8; i++) {
+      const a = (i * Math.PI) / 4;
+      const u = { id: 40 + i, kind: 'grunt', owner: i % 2, x: 0, y: 0, hp: 60, order: null };
+      card($('facing'), `${Math.round((a * 180) / Math.PI)}°`, (ctx, time, cell) => art.drawUnit(ctx, u, { cell, time, pose: 'move', facing: a }));
+    }
+
+    // --- crowded scene at 20 px ---
+    const scene = {
+      width: 10, height: 8, seed: 7,
+      rocks: [[8, 0], [9, 5], [2, 7]],
+      crystals: [{ x: 7, y: 1, amount: 400 }, { x: 8, y: 1, amount: 400 }, { x: 7, y: 2, amount: 200 }, { x: 8, y: 2, amount: 0 }],
+      structures: [
+        { id: 1, kind: 'core', owner: 0, x: 2, y: 2, hp: 1000, complete: true, queue: ['worker'] },
+        { id: 50, kind: 'forge', owner: 0, x: 4, y: 4, hp: 400, complete: true, queue: ['grunt', 'brute'] },
+        { id: 51, kind: 'turret', owner: 0, x: 5, y: 1, hp: 150, complete: true, queue: [] },
+        { id: 52, kind: 'turret', owner: 0, x: 1, y: 5, hp: 50, progress: 10, complete: false, queue: [] },
+        { id: 53, kind: 'forge', owner: 1, x: 8, y: 6, hp: 100, progress: 30, complete: false, queue: [] },
+      ],
+      units: [
+        { id: 3, kind: 'worker', owner: 0, x: 3, y: 2, hp: 40, carrying: 10, order: { type: 'gather', phase: 'toCore' } },
+        { id: 4, kind: 'worker', owner: 0, x: 6, y: 2, hp: 40, carrying: 0, order: { type: 'gather', phase: 'mining' } },
+        { id: 5, kind: 'worker', owner: 0, x: 2, y: 5, hp: 30, carrying: 0, order: { type: 'build', site: 52 } },
+        { id: 60, kind: 'grunt', owner: 0, x: 5, y: 5, hp: 60, order: null },
+        { id: 61, kind: 'grunt', owner: 0, x: 6, y: 5, hp: 20, order: { type: 'attack', target: 70 } },
+        { id: 62, kind: 'lancer', owner: 0, x: 4, y: 6, hp: 40, order: { type: 'attack', target: 71 } },
+        { id: 63, kind: 'brute', owner: 0, x: 3, y: 4, hp: 240, order: { type: 'move', x: 7, y: 7 } },
+        { id: 70, kind: 'grunt', owner: 1, x: 7, y: 5, hp: 35, order: { type: 'attack', target: 61 } },
+        { id: 71, kind: 'brute', owner: 1, x: 7, y: 7, hp: 200, order: { type: 'attack', target: 62 } },
+        { id: 72, kind: 'lancer', owner: 1, x: 9, y: 3, hp: 40, order: null },
+        { id: 73, kind: 'worker', owner: 1, x: 9, y: 7, hp: 40, carrying: 0, order: { type: 'build', site: 53 } },
+      ],
+    };
+    card($('scene'), 'scene at 20 px: hit flash on the two grunts, one lancer dying', (ctx, time) => {
+      art.drawScene(ctx, scene, { cell: 20, time, stats, hitIds: new Set([61, 70]),
+        facings: new Map([[61, 0], [70, Math.PI], [62, Math.PI / 4], [71, -Math.PI / 2], [63, Math.PI / 2]]),
+        deaths: [{ unit: { id: 80, kind: 'lancer', owner: 1, x: 6, y: 4, hp: 0 }, t: (time * 0.5) % 1 }] });
+    }, { tiles: 10, fixedCell: 20 });
+    card($('scene'), 'same scene at the slider size', (ctx, time, cell) => {
+      art.drawScene(ctx, scene, { cell, time, stats, hitIds: new Set([61, 70]),
+        facings: new Map([[61, 0], [70, Math.PI], [62, Math.PI / 4], [71, -Math.PI / 2], [63, Math.PI / 2]]),
+        deaths: [{ unit: { id: 80, kind: 'lancer', owner: 1, x: 6, y: 4, hp: 0 }, t: (time * 0.5) % 1 }] });
+    }, { tiles: 10 });
+
+    // --- render loop ---
+    let frozen = 1.3;
+    function render(now) {
+      const cell = Number($('size').value);
+      $('sizeLabel').textContent = String(cell);
+      const time = $('animate').checked ? now / 1000 : frozen;
+      const dpr = window.devicePixelRatio || 1;
+      for (const c of cards) {
+        const px = c.fixedCell ?? cell;
+        const w = px * (c.tiles === 1 ? 1 : c.tiles) + (c.tiles === 1 ? px : 0); // single sprites get a one-cell margin
+        const h = c.tiles === 1 ? px * 2 : px * (c.tiles === 10 ? 8 : c.tiles);
+        if (c.canvas.width !== Math.round(w * dpr) || c.canvas.height !== Math.round(h * dpr)) {
+          c.canvas.width = Math.round(w * dpr); c.canvas.height = Math.round(h * dpr);
+          c.canvas.style.width = w + 'px'; c.canvas.style.height = h + 'px';
+        }
+        const ctx = c.canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        if (c.tiles === 1) {
+          ctx.fillStyle = '#0f1318';
+          ctx.fillRect(0, 0, w, h);
+          ctx.save();
+          ctx.translate(px / 2, px / 2); // sprite sits in the middle cell of a 2x2 box
+          c.draw(ctx, time, px);
+          ctx.restore();
+        } else {
+          c.draw(ctx, time, px);
+        }
+      }
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+{
+  "format": "haiku-tuning-results",
+  "version": 1,
+  "runs": [
+    {
+      "key": "players/haiku/bot.mjs vs players/sample-player.mjs seeds 1-6 ticks default",
+      "bot": "players/haiku/bot.mjs",
+      "opponent": "players/sample-player.mjs",
+      "seeds": "1-6",
+      "maxTicks": null,
+      "concurrency": 1,
+      "runAt": "2026-10-22T17:56:17.493Z",
+      "summary": {
+        "games": 12,
+        "wins": 12,
+        "losses": 0,
+        "draws": 0,
+        "winRate": 1,
+        "ci95": [
+          0.757,
+          1
+        ],
+        "meanValueDiff": 8.3,
+        "reasons": {
+          "core": 12
+        },
+        "forfeitGames": 0,
+        "late": {
+          "bot": 3,
+          "opp": 2
+        },
+        "errors": {
+          "bot": 0,
+          "opp": 0
+        },
+        "built": {
+          "bot": {
+            "worker": 96,
+            "forge": 12,
+            "grunt": 60,
+            "lancer": 60,
+            "brute": 30
+          },
+          "opp": {
+            "worker": 48
+          }
+        },
+        "lost": {
+          "bot": {},
+          "opp": {
+            "core": 12
+          }
+        },
+        "kills": {
+          "bot": {
+            "lancer>core": 9,
+            "grunt>core": 3
+          },
+          "opp": {}
+        },
+        "maxMs": {
+          "bot": 118.541,
+          "opp": 108.714
+        },
+        "meanMs": {
+          "bot": 0.406,
+          "opp": 0.349
+        },
+        "unreliable": true
+      },
+      "perGame": [
+        [
+          1,
+          0,
+          "win",
+          "core",
+          465,
+          1710,
+          1830
+        ],
+        [
+          1,
+          1,
+          "win",
+          "core",
+          476,
+          1895,
+          1760
+        ],
+        [
+          2,
+          0,
+          "win",
+          "core",
+          478,
+          1820,
+          1870
+        ],
+        [
+          2,
+          1,
+          "win",
+          "core",
+          478,
+          1875,
+          1740
+        ],
+        [
+          3,
+          0,
+          "win",
+          "core",
+          466,
+          1690,
+          1820
+        ],
+        [
+          3,
+          1,
+          "win",
+          "core",
+          480,
+          1895,
+          1790
+        ],
+        [
+          4,
+          0,
+          "win",
+          "core",
+          464,
+          1720,
+          1810
+        ],
+        [
+          4,
+          1,
+          "win",
+          "core",
+          485,
+          1925,
+          1820
+        ],
+        [
+          5,
+          0,
+          "win",
+          "core",
+          463,
+          1810,
+          1820
+        ],
+        [
+          5,
+          1,
+          "win",
+          "core",
+          481,
+          1895,
+          1790
+        ],
+        [
+          6,
+          0,
+          "win",
+          "core",
+          466,
+          1690,
+          1840
+        ],
+        [
+          6,
+          1,
+          "win",
+          "core",
+          484,
+          1845,
+          1780
+        ]
+      ]
+    }
+  ]
+}

@@ -9,6 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { performance } from 'node:perf_hooks';
 import { runMatch } from './referee.mjs';
 
 const USAGE = 'usage: node env/run-match.mjs --seed N --p0 <player.mjs> --p1 <player.mjs> [--out match.json] [--think MS] [--hard MS] [--max-ticks N]';
@@ -86,9 +87,9 @@ async function main() {
   if (opts.hard !== null) options.hardMs = opts.hard;
   if (opts.maxTicks !== null) options.maxTicks = opts.maxTicks;
 
-  const started = Date.now();
+  const started = performance.now();
   const { log, result } = await runMatch(options);
-  const elapsed = Date.now() - started;
+  const elapsed = Math.round(performance.now() - started);
 
   if (opts.out) {
     const outPath = path.resolve(opts.out);

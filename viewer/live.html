@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Driftfall · live match</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body { margin: 0; height: 100%; background: #0d0f13; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #status {
+      position: fixed; left: 16px; bottom: 56px; max-width: 80vw;
+      font: 15px system-ui, sans-serif; color: #cfd6df; background: #000a;
+      padding: 8px 12px; border-radius: 6px; white-space: pre-wrap;
+    }
+    #status:empty { display: none; }
+    #warn { position: fixed; top: 16px; left: 16px; right: 16px; font: 15px system-ui, sans-serif; color: #ffd966; }
+    #hud { position: fixed; top: 0; right: 0; bottom: 0; width: 0; overflow-y: auto; box-sizing: border-box; padding: 14px; background: #12161d; border-left: 1px solid #2b323d; }
+    #hud:empty { display: none; }
+  </style>
+</head>
+<body>
+  <canvas id="screen"></canvas>
+  <aside id="hud"></aside>
+  <div id="status"></div>
+  <p id="warn" hidden>This page loads its match files and modules over the network, which browsers block when opened straight
+    from disk. Start a tiny server in the project folder (for example <code>python3 -m http.server</code>) and open
+    <code>http://localhost:8000/viewer/live.html?log=../match.json</code>. Use <code>?list=matches.json</code> to loop
+    through several matches, <code>?speed=10</code> for ticks a second and <code>?hold=6</code> for seconds on each result.</p>
+  <input id="file" type="file" accept=".json,application/json" multiple hidden>
+  <script>if (location.protocol === 'file:') document.getElementById('warn').hidden = false;</script>
+  <script type="module" src="live.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+{
+  "format": "driftfall-analytics-summary",
+  "version": 1,
+  "ticksPerMinute": 480,
+  "rateNote": "ENV-SPEC.md has no tick rate; per-minute numbers assume 8 ticks per second (viewer3d default).",
+  "skipped": [],
+  "aggregate": {
+    "matchCount": 3,
+    "wins": [
+      0,
+      3
+    ],
+    "draws": 0,
+    "winReasons": {
+      "timeout": 3
+    },
+    "totalMinutes": 12.6,
+    "averageDamageDealtPerMatch": [
+      {},
+      {}
+    ],
+    "averageUnitsLostPerMatch": [
+      {},
+      {}
+    ],
+    "incomePerMinute": [
+      750,
+      769.8
+    ]
+  },
+  "findings": [
+    "3 matches analysed: side 0 won 0, side 1 won 3, 0 draws.",
+    "Win reasons: timeout 3.",
+    "Income: side 0 750 Shards per minute, side 1 769.8."
+  ],
+  "matches": [
+    {
+      "file": "latest.json",
+      "seed": 4,
+      "players": [
+        "sample",
+        "sample"
+      ],
+      "winner": 1,
+      "reason": "timeout",
+      "ticks": 2000,
+      "minutes": 4.2,
+      "value": [
+        3450,
+        3530
+      ],
+      "damageDealt": [
+        {},
+        {}
+      ],
+      "damageTaken": [
+        {},
+        {}
+      ],
+      "unitsLost": [
+        {},
+        {}
+      ],
+      "structuresLost": [
+        {},
+        {}
+      ],
+      "shardsDelivered": [
+        3150,
+        3230
+      ],
+      "shardsSpent": [
+        200,
+        200
+      ],
+      "incomePerMinute": [
+        756,
+        775.2
+      ],
+      "incomeCurve": [
+        [
+          1510,
+          880,
+          610,
+          150,
+          0
+        ],
+        [
+          1600,
+          890,
+          590,
+          150,
+          0
+        ]
+      ],
+      "lateTicks": [
+        0,
+        0
+      ],
+      "errorTicks": [
+        0,
+        0
+      ],
+      "forfeits": [],
+      "unresolvedEvents": 0
+    },
+    {
+      "file": "sample-1.json",
+      "seed": 1,
+      "players": [
+        "sample",
+        "sample"
+      ],
+      "winner": 1,
+      "reason": "timeout",
+      "ticks": 2000,
+      "minutes": 4.2,
+      "value": [
+        3440,
+        3550
+      ],
+      "damageDealt": [
+        {},
+        {}
+      ],
+      "damageTaken": [
+        {},
+        {}
+      ],
+      "unitsLost": [
+        {},
+        {}
+      ],
+      "structuresLost": [
+        {},
+        {}
+      ],
+      "shardsDelivered": [
+        3140,
+        3250
+      ],
+      "shardsSpent": [
+        200,
+        200
+      ],
+      "incomePerMinute": [
+        753.6,
+        780
+      ],
+      "incomeCurve": [
+        [
+          1520,
+          850,
+          620,
+          150,
+          0
+        ],
+        [
+          1600,
+          870,
+          640,
+          140,
+          0
+        ]
+      ],
+      "lateTicks": [
+        0,
+        0
+      ],
+      "errorTicks": [
+        0,
+        0
+      ],
+      "forfeits": [],
+      "unresolvedEvents": 0
+    },
+    {
+      "file": "sample-7.json",
+      "seed": 7,
+      "players": [
+        "sample",
+        "sample"
+      ],
+      "winner": 1,
+      "reason": "timeout",
+      "ticks": 2000,
+      "minutes": 4.2,
+      "value": [
+        3460,
+        3520
+      ],
+      "damageDealt": [
+        {},
+        {}
+      ],
+      "damageTaken": [
+        {},
+        {}
+      ],
+      "unitsLost": [
+        {},
+        {}
+      ],
+      "structuresLost": [
+        {},
+        {}
+      ],
+      "shardsDelivered": [
+        3160,
+        3220
+      ],
+      "shardsSpent": [
+        200,
+        200
+      ],
+      "incomePerMinute": [
+        758.4,
+        772.8
+      ],
+      "incomeCurve": [
+        [
+          1510,
+          880,
+          610,
+          160,
+          0
+        ],
+        [
+          1580,
+          860,
+          610,
+          170,
+          0
+        ]
+      ],
+      "lateTicks": [
+        0,
+        0
+      ],
+      "errorTicks": [
+        0,
+        0
+      ],
+      "forfeits": [],
+      "unresolvedEvents": 0
+    }
+  ]
+}

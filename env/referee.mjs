@@ -19,15 +19,12 @@ import { createLog, appendTick, finishLog } from './log.mjs';
 
 const WORKER_FILE = new URL('./player-worker.mjs', import.meta.url);
 
-// The section 11 numbers live in env/stats.mjs; these lookups accept the obvious spellings and fall back to the
-// spec values so the referee keeps working while the table settles.
-const pick = (...candidates) => candidates.find((v) => typeof v === 'number' && Number.isFinite(v));
-const limits = STATS?.referee ?? STATS?.limits ?? {};
+// The section 11 numbers live in env/stats.mjs (STATS.referee and STATS.match).
 export const DEFAULTS = Object.freeze({
-  thinkMs: pick(limits.thinkMs, STATS?.thinkMs, STATS?.thinkLimitMs, 50),
-  hardMs: pick(limits.hardMs, STATS?.hardMs, STATS?.hardLimitMs, 1000),
-  maxErrors: pick(limits.maxErrors, STATS?.maxErrors, STATS?.errorLimit, 50),
-  maxTicks: pick(limits.maxTicks, STATS?.maxTicks, 2000),
+  thinkMs: STATS.referee.thinkMs,
+  hardMs: STATS.referee.hardMs,
+  maxErrors: STATS.referee.throwLimit,
+  maxTicks: STATS.match.maxTicks,
 });
 
 const describe = (err) => (err instanceof Error ? err.message || err.name : String(err));
@@ -157,6 +154,9 @@ export async function runMatch(options = {}) {
   const maxTicks = options.maxTicks ?? DEFAULTS.maxTicks;
 
   const state = createMatch(seed);
+  // A shorter match than the stats table (tests use this): sim.mjs reads state.maxTicks in its own end check,
+  // so the timeout rule stays in one place.
+  if (options.maxTicks !== undefined) state.maxTicks = maxTicks;
   const handles = [new PlayerHandle(0, players[0], seed), new PlayerHandle(1, players[1], seed)];
 
   try {
@@ -228,12 +228,6 @@ export async function runMatch(options = {}) {
       appendTick(log, { tick, commands, events: events.concat(stepEvents) }, timing);
 
       result = state.result ?? checkEnd(state);
-      if (!result && state.tick >= maxTicks) {
-        // Only reachable when the caller asks for a shorter match than the stats table; same rule as spec section 9.
-        const value = valuesOf(state);
-        const winner = value[0] === value[1] ? null : value[0] > value[1] ? 0 : 1;
-        result = { winner, reason: 'timeout', tick: state.tick, value };
-      }
     }
 
     finishLog(log, result);

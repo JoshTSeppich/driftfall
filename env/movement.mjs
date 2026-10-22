@@ -4,7 +4,10 @@
 // Units are visited one at a time in id order: lowest id first on even ticks, highest id first on odd ticks.
 // Planning ignores units; the actual step is only taken if the next tile is free right now (rocks, crystals,
 // structures and other units all block, and a unit that already moved this tick counts at its new tile).
-// A unit whose next tile is taken simply waits this tick. Brutes (speed 2) only move on even ticks.
+// A unit whose next tile is taken simply waits this tick. If it is still blocked by a unit on its next moving
+// tick, it looks for a detour that treats standing units as obstacles and takes that instead; when no detour
+// exists (two units head-on in a one-tile gap) it keeps waiting, as §6 says. Brutes (speed 2) only move on
+// even ticks.
 //
 // A move order ends when the unit stands on its target tile. Any order whose destination cannot be reached
 // at all (walled off by rocks, crystals or structures) is cleared and a `blocked` event is logged.
@@ -94,6 +97,10 @@ function clearOrder(state, unit) {
   emit(state, { e: 'order', id: unit.id, order: null });
 }
 
+// Units that were held up by another unit on their last moving tick. Kept outside the unit records so that
+// observations, logs and record comparisons never see it; it only decides whether to try a detour this tick.
+const waiting = new WeakSet();
+
 /** Units sorted for this tick: lowest id first on even ticks, highest id first on odd ticks (§8). */
 function unitsInTickOrder(state) {
   const units = state.units.slice().sort((a, b) => a.id - b.id);
@@ -116,9 +123,13 @@ export function stepMovement(state) {
     if (!unit || unit.hp <= 0) continue;
 
     const dest = destinationOf(state, unit);
-    if (!dest) continue;
+    if (!dest) {
+      waiting.delete(unit);
+      continue;
+    }
 
     if (arrived(unit, dest)) {
+      waiting.delete(unit);
       if (unit.order.type === 'move') clearOrder(state, unit);
       continue;
     }
@@ -126,21 +137,43 @@ export function stepMovement(state) {
     // Brutes (speed 2) only step on even ticks; everyone else every tick.
     if (state.tick % unitSpeed(unit) !== 0) continue;
 
-    const path = findPath(grid, { x: unit.x, y: unit.y }, { x: dest.x, y: dest.y }, { within: dest.within });
+    const from = { x: unit.x, y: unit.y };
+    const goal = { x: dest.x, y: dest.y };
+    const path = findPath(grid, from, goal, { within: dest.within });
     if (!path || path.length === 0) {
       // Walled off: nowhere to go, ever. Drop the order and say so.
+      waiting.delete(unit);
       emit(state, { e: 'blocked', id: unit.id });
       clearOrder(state, unit);
       continue;
     }
 
-    const next = path[0];
-    if (!isFree(state, next.x, next.y)) continue; // someone is standing there: wait this tick
+    let next = path[0];
+    if (!isFree(state, next.x, next.y)) {
+      // Someone is standing there. First time: just wait. Still blocked next moving tick: try a detour that
+      // treats every other unit as an obstacle. No detour (head-on in a gap): keep waiting.
+      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit), from, goal, { within: dest.within }) : null;
+      if (!detour || detour.length === 0) {
+        waiting.add(unit);
+        continue;
+      }
+      next = detour[0];
+    }
 
+    waiting.delete(unit);
     unit.x = next.x;
     unit.y = next.y;
     emit(state, { e: 'move', id: unit.id, x: unit.x, y: unit.y });
 
     if (unit.order.type === 'move' && arrived(unit, dest)) clearOrder(state, unit);
   }
+}
+
+/** A planning grid where other units' tiles count as blocked too (used only for detours). */
+function avoidingUnits(state, self) {
+  return {
+    width: state.width,
+    height: state.height,
+    blocked: (x, y) => !isPassable(state, x, y) || state.units.some((u) => u !== self && u.x === x && u.y === y),
+  };
 }

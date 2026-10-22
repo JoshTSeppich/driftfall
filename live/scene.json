@@ -1,0 +1,21 @@
+{
+ "t": "2026-10-22T19:57:41.719Z",
+ "scene": "wall",
+ "focus": "wall",
+ "kind": "rotation",
+ "priority": 10,
+ "title": "THE SWARM · 1 agent working",
+ "reason": "rotation: WALL",
+ "agent": null,
+ "agentLabel": null,
+ "since": "2026-10-22T19:57:23.696Z",
+ "until": "2026-10-22T19:57:43.696Z",
+ "cut": false,
+ "message": null,
+ "match": "matches/latest.json",
+ "build": "red",
+ "buildHeadline": "Red: 12 test file(s) failing.",
+ "agents": 1,
+ "pinned": null,
+ "director": "live/show.mjs"
+}

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Swarm TV</title>
+<style>
+:root{--bg:#07090c;--panel:#0f1217;--line:#1d232c;--text:#e6e8eb;--dim:#7d8590;--fable:#e9a3ff;--sonnet:#d4a27f;--haiku:#4cc2ff;--claude:#ffb547;--joshua:#58c98a;--ok:#58c98a;--bad:#ff6b6b;
+  font-family:ui-sans-serif,-apple-system,"SF Pro Text",system-ui,sans-serif}
+*{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:hidden}
+header{height:44px;display:flex;align-items:center;gap:16px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+h1{font-size:16px;margin:0;letter-spacing:.04em} .pill{font-size:12px;padding:3px 10px;border-radius:99px;background:#1b2028}
+.spacer{flex:1}
+main{position:absolute;top:44px;bottom:0;left:0;right:0;display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1fr 1fr;gap:6px;padding:6px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.box h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0;padding:7px 10px;border-bottom:1px solid var(--line);display:flex;gap:8px}
+#build{grid-row:1 / span 1} #build iframe{flex:1;border:0;width:100%;background:#000}
+#chat .log{flex:1;overflow:auto;padding:6px 10px;font-size:13px;line-height:1.4}
+#chat .m{margin:3px 0} #chat b{font-weight:600}
+#agents{grid-column:1 / span 2} #wall{flex:1;display:grid;gap:4px;padding:4px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));grid-auto-rows:minmax(120px,1fr);overflow:hidden}
+.t{background:#05070a;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;min-height:0}
+.t .h{font-size:11px;padding:4px 7px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t .h i{font-style:normal;color:var(--dim)} .t .b{flex:1;overflow:hidden;font:10.5px/1.35 ui-monospace,Menlo,monospace;color:#9aa3ad;padding:4px 7px;display:flex;flex-direction:column;justify-content:flex-end}
+.t .b div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .t .b .c{color:#e6e8eb} .t .b .x{color:var(--bad)} .t .b .k{color:#4cc2ff}
+.t.hot{border-color:#4cc2ff;box-shadow:0 0 12px rgba(76,194,255,.35)}
+</style></head><body>
+<header><h1>SWARM TV · DRIFTFALL</h1><span class="pill" id="focus"></span><span class="pill" id="count"></span><span class="pill" id="health"></span><span class="spacer"></span><span class="pill" id="build-status">build: watching…</span></header>
+<main>
+  <section class="box" id="build"><h2>Live build <span id="buildwhat"></span></h2><iframe id="frame"></iframe></section>
+  <section class="box" id="chat"><h2>The swarm talking (team chat, verbatim)</h2><div class="log" id="log"></div></section>
+  <section class="box" id="agents"><h2>Every agent working right now <span id="where"></span></h2><div id="wall"></div></section>
+</main>
+<script>
+// Everything here is read live from the harness's records: agent feeds, the team chat file, the project's files.
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+const COL = { fable: "var(--fable)", sonnet: "var(--sonnet)", haiku: "var(--haiku)", claude: "var(--claude)", joshua: "var(--joshua)" };
+const modelOf = (label) => /fable/i.test(label) ? "fable" : /sonnet/i.test(label) ? "sonnet" : /haiku/i.test(label) ? "haiku" : "";
+// build preview: prefer the 3D viewer once it exists, else the 2D viewer; reload only when real build files change
+let lastChange = 0, lastPage = "";
+async function pollBuild() {
+  try {
+    const st = await (await fetch("/api/project?p=rts")).json();
+    const real = st.files.filter((f) => /^(env|viewer|viewer3d|assets)\//.test(f.path) && !/\.test\.mjs$/.test(f.path));
+    const changed = Math.max(0, ...real.map((f) => f.mtime));
+    const has3d = st.files.some((f) => f.path === "viewer3d/index.html") && st.files.some((f) => f.path === "viewer3d/engine.mjs");
+    const matches = st.files.filter((f) => /^matches\/.*\.json$/.test(f.path)).sort((a, b) => b.mtime - a.mtime);
+    const log = matches[0] ? "../" + matches[0].path : "../matches/sample-7.json";
+    const pg = has3d ? `viewer3d/index.html?tv=1&log=${log}` : `viewer/index.html?log=${log}`;
+    if (changed !== lastChange || pg !== lastPage) {
+      lastChange = changed; lastPage = pg; $("#frame").src = `/preview/rts/${pg}&v=${Math.round(changed)}`;
+      const newest = real.sort((a, b) => b.mtime - a.mtime)[0];
+      $("#buildwhat").textContent = `· ${has3d ? "3D viewer" : "2D debug viewer (3D coming)"} · last change: ${newest ? newest.path : "—"}`;
+      if (!has3d) setTimeout(() => { try { $("#frame").contentDocument.querySelector("#play")?.click(); } catch {} }, 1500);
+    }
+    $("#build-status").textContent = `build files: ${real.length} · tests: ${st.files.filter((f) => /\.test\.mjs$/.test(f.path)).length}`;
+  } catch {}
+}
+let seen = 0;
+async function pollChat() {
+  try { const lines = (await (await fetch("/preview/rts/channel.jsonl?v=" + Date.now())).text()).split("\n").filter(Boolean);
+    const L = $("#log");
+    for (const l of lines.slice(seen)) { try { const m = JSON.parse(l); const d = document.createElement("div"); d.className = "m";
+      d.innerHTML = `<b style="color:${COL[m.from] || "#ccc"}">${esc(m.from)}</b> ${esc(m.text)}`; L.appendChild(d); } catch {} }
+    if (lines.length !== seen) L.scrollTop = L.scrollHeight; seen = lines.length;
+  } catch {}
+}
+const tiles = new Map();
+async function pollAgents() {
+  try {
+    const g = await (await fetch("/api/graph")).json();
+    const run = g.nodes.filter((n) => (n.kind === "job" || n.kind === "subagent") && n.state === "running")
+      .sort((a, b) => (b.last || 0) - (a.last || 0));
+    $("#count").textContent = `${run.length} agents working`;
+    $("#where").textContent = `· mini ${run.filter((n) => n.src?.machine !== "air").length} · MacBook Air ${run.filter((n) => n.src?.machine === "air").length}`;
+    const W = $("#wall"); const want = new Set(run.map((n) => n.id));
+    for (const [id, t] of tiles) if (!want.has(id)) { t.el.remove(); tiles.delete(id); }
+    for (const n of run) {
+      let t = tiles.get(n.id);
+      if (!t) { const el = document.createElement("div"); el.className = "t";
+        el.innerHTML = `<div class="h"><b style="color:${COL[modelOf(n.label)] || "#ccc"}">●</b> ${esc(n.label)} <i>${n.src?.machine === "air" ? "· MacBook Air" : "· mini"}</i></div><div class="b"></div>`;
+        W.appendChild(el); t = { el, len: 0, last: 0 }; tiles.set(n.id, t); }
+      t.el.classList.toggle("hot", Date.now() - (n.last || 0) < 5000);
+      if (n.last === t.last || n.kind !== "job") continue; t.last = n.last;
+      const feed = await (await fetch("/api/feed?id=" + encodeURIComponent(n.id))).json();
+      const B = t.el.querySelector(".b"); B.replaceChildren();
+      for (const l of feed.slice(-9)) { const d = document.createElement("div"); const x = l.text;
+        d.className = x.startsWith("claude:") ? "c" : x.trimStart().startsWith("→") ? "k" : x.trimStart().startsWith("✗") ? "x" : ""; d.textContent = x; B.appendChild(d); }
+    }
+  } catch {}
+}
+async function pollMeta() {
+  try { const f = await (await fetch("/api/focus")).json(); $("#focus").textContent = f ? "FOCUS · " + f.name : "no focus"; } catch {}
+  try { const h = await (await fetch("/api/health")).json(); const bad = (h.checks || []).filter((c) => !c.ok).length;
+    $("#health").textContent = bad ? `⚠ ${bad} issue(s)` : "health ok"; $("#health").style.color = bad ? "var(--claude)" : "var(--ok)"; } catch {}
+}
+setInterval(pollBuild, 3000); setInterval(pollChat, 1500); setInterval(pollAgents, 2500); setInterval(pollMeta, 5000);
+pollBuild(); pollChat(); pollAgents(); pollMeta();
+</script>
+<script src="/sub.js"></script>
+</body></html>

@@ -1,0 +1,38 @@
+{
+  "about": "Maps Driftfall things to image files. Paths are relative to this file (assets/sprites/). All sprites are 64x64 PNG with transparency unless noted; the ground tile is opaque. Side 0 is cobalt blue, side 1 is ember orange, matching TEAM_COLORS. Licenses: see ../LICENSES.md (all CC0, Kenney).",
+  "tileSize": 64,
+  "units": {
+    "worker": { "side0": "game/worker-s0.png", "side1": "game/worker-s1.png" },
+    "grunt":  { "side0": "game/grunt-s0.png",  "side1": "game/grunt-s1.png" },
+    "lancer": { "side0": "game/lancer-s0.png", "side1": "game/lancer-s1.png" },
+    "brute":  { "side0": "game/brute-s0.png",  "side1": "game/brute-s1.png" }
+  },
+  "structures": {
+    "core":   "game/core.png",
+    "forge":  "game/forge.png",
+    "turret": "game/turret.png",
+    "note": "Structures are neutral grey with small accent colour; tint or add a side-colour ring/plate yourself."
+  },
+  "terrain": {
+    "ground": "game/ground.png",
+    "rock": "game/rock.png",
+    "shard-field": "game/shard-field.png"
+  },
+  "effects": {
+    "projectile": "game/projectile.png",
+    "muzzle": "game/muzzle.png",
+    "explosion": "game/explosion.png",
+    "smoke": "game/smoke.png",
+    "note": "Particle images are 512x512 white/grey-scale style blobs; scale down and tint with globalCompositeOperation or a coloured fill. Extra variants live in kenney-particles/PNG (Transparent)/."
+  },
+  "ui": {
+    "fontFile": "../ui/kenney-ui-space/Font/Kenney Future.ttf",
+    "fontNarrowFile": "../ui/kenney-ui-space/Font/Kenney Future Narrow.ttf",
+    "bars": "../ui/kenney-ui-space/PNG/Blue/Default/ (bar_square_*, bar_round_*; _l/_m/_r are left, middle, right slices)",
+    "buttons": "../ui/kenney-ui-space/PNG/Blue/Default/button_square_*.png",
+    "crosshair": "../ui/kenney-ui-space/PNG/Blue/Default/crosshair_color_a.png"
+  },
+  "alternatives": {
+    "pack": "kenney-scifi-rts/PNG/Default size/ (Unit 01-12 blue, 13-24 orange, 25-36 green, 37-48 grey; Structure 01-16; Environment 01-20; Tile 01-42)"
+  }
+}

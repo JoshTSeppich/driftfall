@@ -172,7 +172,7 @@ function ownCore(state, player) {
 }
 
 // Point the order at the nearest tile with Shards, or go idle when none is left.
-function retarget(state, unit, order) {
+function retarget(state, unit) {
   const next = nearestCrystalWithShards(state, unit);
   if (!next) {
     setOrder(state, unit, null);
@@ -206,7 +206,7 @@ function tickGather(state, unit, order) {
     order.phase = "toField";
     order.ticks = 0;
     const tile = crystalAt(state, order.x, order.y);
-    if (!tile || !(tile.amount > 0)) retarget(state, unit, order);
+    if (!tile || !(tile.amount > 0)) retarget(state, unit);
     return;
   }
 
@@ -219,7 +219,7 @@ function tickGather(state, unit, order) {
   }
   const tile = crystalAt(state, order.x, order.y);
   if (!tile || !(tile.amount > 0)) {
-    retarget(state, unit, order);
+    retarget(state, unit);
     return;
   }
   if (distance(unit, tile) > 1) {
@@ -228,7 +228,13 @@ function tickGather(state, unit, order) {
     order.ticks = 0;
     return;
   }
-  order.phase = "mining";
+  if (order.phase !== "mining") {
+    // Arrived: mining starts now and counts from the next tick, so a load takes exactly
+    // mineTicks full ticks in the mining phase.
+    order.phase = "mining";
+    order.ticks = 0;
+    return;
+  }
   order.ticks += 1;
   if (order.ticks < mineTicks()) return;
 

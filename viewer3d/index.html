@@ -1,0 +1,219 @@
+<!doctype html>
+<!-- Driftfall 3D viewer (owner: fable). Open as viewer3d/index.html?log=../matches/sample-7.json
+     Also ?playlist=a.json,b.json  ?tv=1 (full-screen auto camera, loops the playlist)  ?speed=2  ?quality=high|medium|low
+     ?debug=1 (fps overlay on; press ` to toggle)  ?loop=1  ?mute=1
+     Keys: space play/pause (hud), m mute (hud), v director / r reset view (camera), [ ] speed, , . step one tick,
+     Home restart, n next match in the playlist -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driftfall 3D</title>
+<script type="importmap">{ "imports": {
+  "three": "../node_modules/three/build/three.module.js",
+  "three/addons/": "../node_modules/three/examples/jsm/" } }</script>
+<style>
+  html, body { margin: 0; height: 100%; background: #171326; color: #e8e4f4; font: 14px/1.4 system-ui, -apple-system, sans-serif; overflow: hidden; }
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { width: 100%; height: 100%; display: block; }
+  #hud { position: fixed; inset: 0; pointer-events: none; }
+  #hud > * { pointer-events: auto; }
+  #boot { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; color: #b9b3d6; }
+  #boot b { color: #33e0ff; font-weight: 600; letter-spacing: .08em; }
+  #boot.error { color: #ffb13b; }
+  #modules { position: fixed; right: 8px; bottom: 8px; font: 11px ui-monospace, Menlo, monospace; color: #7e78a0; opacity: .8; }
+  #modules span.missing { color: #ffb13b; }
+  body.tv #modules { display: none; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="view"></canvas></div>
+<div id="hud"></div>
+<div id="boot"><b>DRIFTFALL</b><br>loading…</div>
+<div id="modules"></div>
+<script type="module">
+import * as THREE from 'three';
+import { createEngine, createPlaceholder } from './engine.mjs';
+
+const q = new URLSearchParams(location.search);
+const boot = document.getElementById('boot');
+const modulesEl = document.getElementById('modules');
+const canvas = document.getElementById('view');
+const hudRoot = document.getElementById('hud');
+const tv = q.get('tv') === '1';
+if (tv) document.body.classList.add('tv');
+
+// Every module besides the engine is optional: a missing or broken one is reported and skipped.
+const loaded = {};
+async function optional(name, file) {
+  try { loaded[name] = await import(file); return loaded[name]; }
+  catch (err) {
+    loaded[name] = null;
+    console.warn(`[index] ${file} not loaded:`, err?.message ?? err);
+    return null;
+  }
+}
+function showModules() {
+  modulesEl.innerHTML = Object.entries(loaded)
+    .map(([n, m]) => `<span class="${m ? 'ok' : 'missing'}">${n}${m ? '' : '*'}</span>`).join(' · ') +
+    ' <span>(* missing, placeholder used)</span>';
+}
+
+// Playlist -------------------------------------------------------------------------------------------------------
+const playlist = (q.get('playlist') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+if (q.get('log')) playlist.unshift(q.get('log'));
+if (!playlist.length) playlist.push('../matches/sample-7.json');
+let index = 0;
+
+async function fetchLog(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
+  const log = await res.json();
+  if (log.format !== 'driftfall-log') throw new Error(`${url}: not a driftfall log`);
+  return log;
+}
+
+// Fallback world built on viewer/replay.mjs, used only when viewer3d/world.mjs is missing.
+async function fallbackWorld(log) {
+  const replay = await import('../viewer/replay.mjs');
+  const prevR = replay.createReplayer(log, 50), nextR = replay.createReplayer(log, 50);
+  const ticks = replay.lastTick(log);
+  return {
+    ticks,
+    stateAt: (tick) => structuredClone(nextR.seek(tick)),
+    frame(t) {
+      t = Math.max(0, Math.min(t, ticks));
+      const tick = Math.floor(t);
+      const nextTick = Math.min(tick + 1, ticks);
+      const prev = prevR.seek(tick);
+      const next = nextR.seek(nextTick);
+      return { tick, alpha: nextTick === tick ? 0 : t - tick, prev, next, events: nextR.eventsAt(nextTick) };
+    },
+  };
+}
+
+// Engine ---------------------------------------------------------------------------------------------------------
+const [paletteMod, assetsMod, worldMod] = await Promise.all([
+  optional('palette', './palette.mjs'), optional('assets', './assets.mjs'), optional('world', './world.mjs')]);
+let palette;
+try { palette = paletteMod?.createPalette ? paletteMod.createPalette(THREE) : (paletteMod?.PALETTE ?? paletteMod?.palette); }
+catch (err) { console.warn('[index] createPalette failed, engine defaults used', err); }
+
+let engine = null;
+let systems = [];
+let currentWorld = null;
+
+async function loadMatch(url) {
+  boot.hidden = false; boot.classList.remove('error'); boot.innerHTML = `<b>DRIFTFALL</b><br>loading ${url}`;
+  const log = await fetchLog(url);
+  const { width = 32, height = 32 } = log.initial ?? {};
+  if (!engine) {
+    engine = createEngine(canvas, {
+      width, height, tileSize: 1, palette, stats: log.stats,
+      quality: q.get('quality') ?? 'high',
+      speed: Number(q.get('speed') ?? 1) || 1,
+      ticksPerSecond: Number(q.get('tps') ?? 8) || 8,
+      loop: q.get('loop') === '1' || (tv && playlist.length === 1),
+      debug: q.get('debug') === '1',
+    });
+    if (assetsMod?.loadAssets) {
+      try { engine.ctx.assets = (await assetsMod.loadAssets(engine.ctx)) ?? engine.ctx.assets; }
+      catch (err) { console.warn('[index] loadAssets failed, using procedural fallbacks', err); }
+    }
+    window.driftfall = { engine, ctx: engine.ctx, loaded };
+  } else {
+    for (const s of systems) engine.remove(s), s.dispose?.();
+    systems = [];
+  }
+  currentWorld = worldMod?.createWorld ? worldMod.createWorld(log) : await fallbackWorld(log);
+  engine.setWorld(currentWorld);
+  const ctx = engine.ctx;
+  ctx.log = log;
+  ctx.stats = log.stats ?? ctx.stats;
+  ctx.hudRoot = hudRoot;
+  ctx.tv = tv;
+  ctx.heightAt = () => 0;
+
+  // Playback controls shared by hud.mjs and the keys below (ctx.time is the engine's playback clock).
+  const time = ctx.time;
+  const control = {
+    isPlaying: () => time.playing,
+    play: () => { if (time.ended) { time.t = 0; time.ended = false; } time.playing = true; },
+    pause: () => { time.playing = false; },
+    toggle: () => (time.playing ? control.pause() : control.play()),
+    setSpeed: (s) => { time.speed = s; },
+    seek: (tick) => { time.t = Math.max(0, Math.min(time.duration, tick)); time.ended = false; },
+    tick: () => time.t,
+  };
+  ctx.control = control;
+
+  // Systems, in draw order. Each is createXxx(ctx, opts) -> { update(frame, dt), dispose() }.
+  const names = log.players ?? ['Side 0', 'Side 1'];
+  const colors = (ctx.look?.teams ?? [0x3fa9ff, 0xff8a3d]).map((c) => typeof c === 'number' ? '#' + c.toString(16).padStart(6, '0') : c);
+  const made = {};
+  const wanted = [
+    ['terrain', './terrain.mjs', 'createTerrain', () => ({})],
+    ['buildings', './buildings.mjs', 'createBuildings', () => ({})],
+    ['units', './units.mjs', 'createUnits', () => ({ stats: log.stats })],
+    ['vfx', './vfx.mjs', 'createVfx', () => ({ stats: log.stats, quality: q.get('quality') === 'low' ? 0.5 : 1 })],
+    ['camera', './camera.mjs', 'createCamera', () => ({ tv, width, height, canvas })],
+    ['audio', './audio.mjs', 'createAudio', () => ({ muted: q.get('mute') === '1' })],
+    ['hud', './hud.mjs', 'createHud', () => ({ world: currentWorld, control, colors, names, mount: hudRoot, audio: made.audio, log })],
+  ];
+  const missing = {};
+  for (const [name, file, fn, makeOpts] of wanted) {
+    const mod = loaded[name] === undefined ? await optional(name, file) : loaded[name];
+    const make = mod?.[fn] ?? mod?.default;
+    if (typeof make !== 'function') { missing[name] = true; if (mod) console.warn(`[index] ${file} has no ${fn}()`); continue; }
+    try {
+      const sys = make(ctx, makeOpts());
+      if (sys?.update) { sys.name ??= name; made[name] = sys; systems.push(engine.add(sys)); }
+      if (name === 'terrain' && typeof sys?.heightAt === 'function') ctx.heightAt = sys.heightAt; // agreed with sonnet
+    } catch (err) { missing[name] = true; loaded[name] = null; console.error(`[index] ${fn} threw`, err); }
+  }
+  if (missing.terrain || missing.units || missing.buildings) {
+    systems.push(engine.add(createPlaceholder(engine.ctx, {
+      parts: { terrain: !!missing.terrain, units: !!missing.units, structures: !!missing.buildings } })));
+  }
+  showModules();
+  boot.hidden = true;
+  document.title = `Driftfall 3D — ${(log.players ?? []).join(' vs ')} (seed ${log.seed})`;
+  engine.start();
+}
+
+// Advance the playlist when a match ends (the engine sets time.ended when it is not looping).
+function watchEnd() {
+  const t = engine?.ctx.time;
+  if (t && t.ended && playlist.length > 1) {
+    t.ended = false;
+    index = (index + 1) % playlist.length;
+    setTimeout(() => loadMatch(playlist[index]).catch(fail), 2500);
+  }
+  requestAnimationFrame(watchEnd);
+}
+
+// Keys (hud.mjs may add buttons on top of these) -----------------------------------------------------------------
+window.addEventListener('keydown', (e) => {
+  const t = engine?.ctx.time; if (!t || e.metaKey || e.ctrlKey) return;
+  if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) && e.target.type !== 'range') return;
+  const speeds = [0.25, 0.5, 1, 2, 4, 8, 16];
+  // Space is the HUD's when it is loaded (hud.mjs binds it); the engine only takes it when there is no HUD.
+  if (e.code === 'Space' && !loaded.hud) { e.preventDefault(); engine.ctx.control.toggle(); }
+  else if (e.key === ']') t.speed = speeds.find((s) => s > t.speed) ?? t.speed;
+  else if (e.key === '[') t.speed = [...speeds].reverse().find((s) => s < t.speed) ?? t.speed;
+  else if (e.key === '.') { t.playing = false; t.t = Math.min(t.duration, Math.floor(t.t) + 1); }
+  else if (e.key === ',') { t.playing = false; t.t = Math.max(0, Math.ceil(t.t) - 1); }
+  else if (e.key === 'Home') { t.t = 0; t.ended = false; t.playing = true; }
+  else if (e.key === 'n' || e.key === 'N') { if (playlist.length > 1) { index = (index + 1) % playlist.length; loadMatch(playlist[index]).catch(fail); } }
+});
+
+function fail(err) {
+  console.error(err);
+  boot.hidden = false; boot.classList.add('error');
+  boot.innerHTML = `<b>DRIFTFALL</b><br>could not load the match<br><small>${String(err?.message ?? err)}</small>`;
+}
+
+loadMatch(playlist[index]).then(watchEnd).catch(fail);
+</script>
+</body>
+</html>

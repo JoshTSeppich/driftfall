@@ -1,0 +1,270 @@
+{
+ "build": 26,
+ "at": "2026-10-22T19:47:45.815Z",
+ "seconds": 121.6,
+ "state": "red",
+ "nextBuildAt": "2026-10-22T19:50:45.815Z",
+ "headline": "Red: 12 test file(s) failing.",
+ "tests": {
+  "files": 35,
+  "pass": 516,
+  "fail": 77,
+  "seconds": 155.5
+ },
+ "failures": [
+  {
+   "file": "tests/anticheat.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "an enormous reply (a 50 MB string in one command) does not stall or crash the match"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: file reads from a player must fail"
+  },
+  {
+   "file": "tests/combat-counters.test.mjs",
+   "owners": [
+    "haiku",
+    "fable"
+   ],
+   "imports": [
+    "env/combat.mjs",
+    "env/stats.mjs",
+    "env/state.mjs",
+    "env/sim.mjs"
+   ],
+   "tests": [
+    "Brute beats a Turret",
+    "Turret beats a Grunt"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Counter broken: a Brute should destroy a Turret (double damage to structures) and survive. The loser was still alive after 200 ticks."
+  },
+  {
+   "file": "tests/determinism-fuzz.test.mjs",
+   "owners": [
+    "sonnet",
+    "haiku",
+    "fable"
+   ],
+   "imports": [
+    "env/rng.mjs",
+    "env/stats.mjs",
+    "env/sim.mjs",
+    "env/state.mjs",
+    "env/log.mjs"
+   ],
+   "tests": [
+    "seed 1200785376: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 469934147: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 1199342297: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 793828992: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 274931087: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 802628746: two fuzzed runs and a replay of the same commands give identical logs"
+   ],
+   "error": "ReferenceError [Error]: movable is not defined"
+  },
+  {
+   "file": "tests/economy-build-train.test.mjs",
+   "owners": [
+    "fable"
+   ],
+   "imports": [
+    "env/economy.mjs"
+   ],
+   "tests": [
+    "build: cost is paid on accept and a forge site appears at once",
+    "build: the new site has hp 1 and progress 0 while no Worker is adjacent",
+    "build: with the Worker already adjacent the site starts at hp 1 and progress is at most 1 after the first tick",
+    "build: rejected with no-shards (nothing spent, nothing placed) when Shards are short",
+    "build: rejected with tile-taken on a unit, a structure or a rock, and costs nothing",
+    "build: progress only rises while an own Worker with a build order is adjacent"
+   ],
+   "error": "TypeError [Error]: Cannot read properties of undefined (reading 'units')"
+  },
+  {
+   "file": "tests/economy-gather.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/economy.mjs",
+    "env/state.mjs",
+    "env/sim.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [],
+   "error": "TypeError: Cannot read properties of undefined (reading 'carry')"
+  },
+  {
+   "file": "tests/live-page.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [],
+   "error": ""
+  },
+  {
+   "file": "tests/map-generation.test.mjs",
+   "owners": [
+    "sonnet"
+   ],
+   "imports": [
+    "env/rng.mjs",
+    "env/map.mjs"
+   ],
+   "tests": [
+    "crystal fields are at the spec coordinates with 400 Shards each",
+    "size and fixed layout",
+    "map-generation"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: seed 1 crystal count"
+  },
+  {
+   "file": "tests/movement-edge.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/movement.mjs",
+    "env/state.mjs",
+    "env/sim.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "a crowd of six Grunts through a one-tile chokepoint all gets through within 300 ticks"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: grunt 7 should have reached 7,5"
+  },
+  {
+   "file": "tests/movement-order.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/movement.mjs",
+    "env/state.mjs",
+    "env/sim.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "a Brute moves only on even ticks; a Grunt moves every tick"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+  },
+  {
+   "file": "tests/perf.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "PERF.md holds a baseline for every metric",
+    "idle-tick is no more than 2x its baseline",
+    "army-40v40-march is no more than 2x its baseline",
+    "army-40v40-engage is no more than 2x its baseline",
+    "findpath-open-32 is no more than 2x its baseline",
+    "findpath-sealed-32 is no more than 2x its baseline"
+   ],
+   "error": "TypeError [Error]: Cannot read properties of undefined (reading 'idle-tick')"
+  },
+  {
+   "file": "tests/sim-end-conditions.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/sim.mjs",
+    "env/state.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "a side whose Core dies loses with reason core",
+    "when side 1 Core dies, side 0 wins with reason core",
+    "both Cores dying on the same tick is a draw with reason both-cores",
+    "reaching maxTicks with a higher value wins with reason timeout",
+    "reaching maxTicks with a higher value for side 0 wins for side 0",
+    "an exact value tie at maxTicks is a draw with reason timeout"
+   ],
+   "error": "TypeError [Error]: Cannot read properties of undefined (reading 'hp')"
+  },
+  {
+   "file": "tests/viewer3d-director.test.mjs",
+   "owners": [
+    "haiku",
+    "sonnet"
+   ],
+   "imports": [
+    "viewer3d/camera.mjs",
+    "viewer/replay.mjs"
+   ],
+   "tests": [
+    "events become interest: hits at the target and attacker, deaths, big builds and spawns",
+    "a finished Worker or Core is not a big build"
+   ],
+   "error": "ReferenceError [Error]: BIG_BUILDS is not defined"
+  }
+ ],
+ "parse": {
+  "checked": 39,
+  "errors": []
+ },
+ "match": {
+  "ok": true,
+  "seed": 27,
+  "file": "matches/latest.json",
+  "result": {
+   "winner": 1,
+   "reason": "timeout",
+   "tick": 2000,
+   "value": [
+    3480,
+    3510
+   ]
+  },
+  "ms": 528
+ },
+ "changed": {
+  "first": false,
+  "added": [],
+  "changed": [
+   {
+    "file": "live/compile.log",
+    "owner": null
+   },
+   {
+    "file": "live/scene.json",
+    "owner": null
+   }
+  ],
+  "removed": [],
+  "total": 2
+ },
+ "files": {
+  "env": 14,
+  "viewer": 11,
+  "viewer3d": 13,
+  "tests": 36,
+  "players": 13,
+  "live": 16
+ },
+ "previous": {
+  "build": 25,
+  "state": "red",
+  "at": "2026-10-22T19:42:44.237Z",
+  "failing": [
+   "tests/anticheat.test.mjs",
+   "tests/combat-counters.test.mjs",
+   "tests/determinism-fuzz.test.mjs",
+   "tests/economy-build-train.test.mjs",
+   "tests/economy-gather.test.mjs",
+   "tests/live-page.test.mjs",
+   "tests/map-generation.test.mjs",
+   "tests/movement-edge.test.mjs",
+   "tests/movement-order.test.mjs",
+   "tests/perf.test.mjs",
+   "tests/sim-end-conditions.test.mjs",
+   "tests/viewer3d-director.test.mjs"
+  ]
+ }
+}

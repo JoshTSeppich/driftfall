@@ -1,0 +1,1069 @@
+{
+ "collaboration": "Deep collaboration (every role): announce what you're starting in the team chat; ask the owner before touching their area; get every change reviewed by one role from a different team; answer questions addressed to you first; post a plain-English status at least every 15 minutes; disagree with a reason and an alternative, and settle it with AGREE; credit others' ideas.",
+ "roles": [
+  {
+   "id": "R001",
+   "department": "Live View",
+   "title": "Live View Lead / Show Director",
+   "status": "core",
+   "scope": "Decides what's on the TV and the main monitor at every moment: the newest playable build, the match, the swarm talking, who's working on what. Owns the live layout and when to switch scenes.",
+   "owns": "live/SHOW.md, live/index.html layout"
+  },
+  {
+   "id": "R002",
+   "department": "Live View",
+   "title": "Live Build Compiler",
+   "status": "core",
+   "scope": "Continuously rebuilds Driftfall from whatever the swarm has saved: runs the full test suite, checks every module loads, records a fresh match from the latest code, and publishes build status (green/red, what broke, who owns it) every few minutes.",
+   "owns": "live/compile.mjs, live/status.json, matches/latest-*.json"
+  },
+  {
+   "id": "R003",
+   "department": "Live View",
+   "title": "Swarm Discussion Curator",
+   "status": "core",
+   "scope": "Turns the team chat into readable threads by topic, highlights decisions, open questions, disagreements and every AGREE, and keeps a plain-English 'what the swarm decided' summary live on screen.",
+   "owns": "live/threads.json, live/decisions.md"
+  },
+  {
+   "id": "R004",
+   "department": "Live View",
+   "title": "Live View Engineer",
+   "status": "core",
+   "scope": "Builds the live page: latest 3D render of the newest build, build status, test results, live chat threads, agent activity and terminals, all updating without reloads.",
+   "owns": "live/*.mjs, live/style.css"
+  },
+  {
+   "id": "R005",
+   "department": "Live View",
+   "title": "Agent Spotlight Operator",
+   "status": "core",
+   "scope": "Watches the Control Room map and terminals, and spotlights whichever agents are doing the most interesting work right now (with their live output), so Joshua always sees the action.",
+   "owns": "live/spotlight.mjs"
+  },
+  {
+   "id": "R006",
+   "department": "Live View",
+   "title": "Build Changelog Writer",
+   "status": "core",
+   "scope": "Writes a running plain-English changelog: what changed, who changed it, and why (linked to the chat discussion), shown on screen and committed to the repo.",
+   "owns": "CHANGELOG.md, live/changelog.json"
+  },
+  {
+   "id": "R007",
+   "department": "Live View",
+   "title": "Live Commentator",
+   "status": "core",
+   "scope": "Narrates in plain English what's happening across the build and matches (the subtitles agent's role inside the show), never stating anything not in the records.",
+   "owns": "live/captions"
+  },
+  {
+   "id": "R008",
+   "department": "Leadership",
+   "title": "Game Director",
+   "status": "core",
+   "scope": "Owns the vision for Driftfall: what makes it fun, the final call when teams can't agree, and protecting scope so it ships.",
+   "owns": "VISION.md"
+  },
+  {
+   "id": "R009",
+   "department": "Leadership",
+   "title": "Creative Director",
+   "status": "core",
+   "scope": "Owns the feel and identity: original sci-fi world, tone, faction personality, making sure art, audio and design tell one story.",
+   "owns": "CREATIVE.md"
+  },
+  {
+   "id": "R010",
+   "department": "Leadership",
+   "title": "Executive Producer",
+   "status": "on-call",
+   "scope": "Owns the big picture of time and cost for the whole swarm; decides when to grow or shrink teams.",
+   "owns": "PRODUCTION.md (budget section)"
+  },
+  {
+   "id": "R011",
+   "department": "Leadership",
+   "title": "Senior Producer",
+   "status": "core",
+   "scope": "Runs the build plan: milestones, dependencies, who's blocked; keeps PLAN.json current and the swarm unblocked.",
+   "owns": "PLAN.json, MILESTONES.md"
+  },
+  {
+   "id": "R012",
+   "department": "Leadership",
+   "title": "Producer / Associate Producer",
+   "status": "core",
+   "scope": "One per feature team: tracks that team's tasks, chases blockers in the chat, keeps their ticket list honest.",
+   "owns": "tickets per team"
+  },
+  {
+   "id": "R013",
+   "department": "Leadership",
+   "title": "Project Manager / Scrum Master",
+   "status": "core",
+   "scope": "Runs the swarm's rhythm: short stand-ups in the chat every ~15 minutes (done / doing / blocked), retros after milestones.",
+   "owns": "STANDUPS.md"
+  },
+  {
+   "id": "R014",
+   "department": "Leadership",
+   "title": "Technical Director",
+   "status": "core",
+   "scope": "Owns architecture and technical standards across engine, sim and online: interfaces, determinism, performance budgets; approves interface changes.",
+   "owns": "ENV-SPEC.md (architecture), VISUAL-3D.md interfaces"
+  },
+  {
+   "id": "R015",
+   "department": "Leadership",
+   "title": "Art Director",
+   "status": "core",
+   "scope": "Owns the look: style guide, palette, readability of units at a glance, approves art and VFX.",
+   "owns": "ART-GUIDE.md, viewer3d/palette.mjs sign-off"
+  },
+  {
+   "id": "R016",
+   "department": "Leadership",
+   "title": "Audio Director",
+   "status": "core",
+   "scope": "Owns how the game sounds: sound style, mix priorities, voice tone; approves audio.",
+   "owns": "AUDIO-GUIDE.md"
+  },
+  {
+   "id": "R017",
+   "department": "Leadership",
+   "title": "Narrative Director",
+   "status": "on-call",
+   "scope": "Owns the world and story frame for the factions, mission briefings and any campaign.",
+   "owns": "NARRATIVE.md"
+  },
+  {
+   "id": "R018",
+   "department": "Design",
+   "title": "Lead Game Designer",
+   "status": "core",
+   "scope": "Owns the rules as a whole: units, economy, buildings, win conditions; keeps ENV-SPEC.md coherent and fun.",
+   "owns": "ENV-SPEC.md (rules sections)"
+  },
+  {
+   "id": "R019",
+   "department": "Design",
+   "title": "Senior Multiplayer / Balance Designer",
+   "status": "core",
+   "scope": "Owns balance: unit costs, damage, counters, timings; proposes changes from match data, never by gut.",
+   "owns": "env/stats.mjs proposals, BALANCE.md"
+  },
+  {
+   "id": "R020",
+   "department": "Design",
+   "title": "Unit Designer",
+   "status": "core",
+   "scope": "Owns each unit's role, strengths, counters and abilities, and how a player tells them apart.",
+   "owns": "UNITS.md"
+  },
+  {
+   "id": "R021",
+   "department": "Design",
+   "title": "Faction / Race Designer",
+   "status": "on-call",
+   "scope": "Owns any second faction: asymmetric units and buildings that still balance.",
+   "owns": "FACTIONS.md"
+  },
+  {
+   "id": "R022",
+   "department": "Design",
+   "title": "Economy Designer",
+   "status": "core",
+   "scope": "Owns gathering, costs, income curve and how fast a match snowballs.",
+   "owns": "ECONOMY.md"
+  },
+  {
+   "id": "R023",
+   "department": "Design",
+   "title": "Systems Designer",
+   "status": "core",
+   "scope": "Owns cross-cutting rules: supply cap, build queues, upgrades, tie-breaks.",
+   "owns": "SYSTEMS.md"
+  },
+  {
+   "id": "R024",
+   "department": "Design",
+   "title": "Campaign Mission Designer",
+   "status": "on-call",
+   "scope": "Owns single-player missions and scripted objectives, if a campaign is added.",
+   "owns": "missions/"
+  },
+  {
+   "id": "R025",
+   "department": "Design",
+   "title": "Level / Map Designer",
+   "status": "core",
+   "scope": "Owns map layouts: mirrored fairness, chokepoints, expansions, rock placement rules.",
+   "owns": "env/map.mjs design notes, maps/"
+  },
+  {
+   "id": "R026",
+   "department": "Design",
+   "title": "Co-op / Game Modes Designer",
+   "status": "on-call",
+   "scope": "Owns extra modes (2v2, survival, puzzle maps).",
+   "owns": "MODES.md"
+  },
+  {
+   "id": "R027",
+   "department": "Design",
+   "title": "UI/UX Designer",
+   "status": "core",
+   "scope": "Owns how a human reads and controls the game: HUD layout, selection, command card, feedback.",
+   "owns": "UX.md, HUD wireframes"
+  },
+  {
+   "id": "R028",
+   "department": "Design",
+   "title": "Tutorial / Onboarding Designer",
+   "status": "on-call",
+   "scope": "Owns teaching a new player the game in the first minutes.",
+   "owns": "TUTORIAL.md"
+  },
+  {
+   "id": "R029",
+   "department": "Design",
+   "title": "Monetization / Live Ops Designer",
+   "status": "n/a",
+   "scope": "No store or live economy in Driftfall.",
+   "owns": ""
+  },
+  {
+   "id": "R030",
+   "department": "Design",
+   "title": "Technical Designer",
+   "status": "core",
+   "scope": "Owns data-driven content: stats tables, trigger/scripting hooks, the map editor's design.",
+   "owns": "env/stats.mjs structure, editor spec"
+  },
+  {
+   "id": "R031",
+   "department": "Narrative",
+   "title": "Lead Writer",
+   "status": "on-call",
+   "scope": "Owns all in-game text voice and quality.",
+   "owns": "text/"
+  },
+  {
+   "id": "R032",
+   "department": "Narrative",
+   "title": "Narrative Designer",
+   "status": "on-call",
+   "scope": "Owns how story shows up in play: unit lines, briefings, map flavor.",
+   "owns": "text/briefings"
+  },
+  {
+   "id": "R033",
+   "department": "Narrative",
+   "title": "Staff Writer",
+   "status": "on-call",
+   "scope": "Writes unit acknowledgements, tooltips and flavor text on request.",
+   "owns": "text/units"
+  },
+  {
+   "id": "R034",
+   "department": "Narrative",
+   "title": "Cinematic Writer",
+   "status": "on-call",
+   "scope": "Writes scripts for the intro and victory/defeat sequences.",
+   "owns": "cinematics/scripts"
+  },
+  {
+   "id": "R035",
+   "department": "Narrative",
+   "title": "Lore / Continuity Editor",
+   "status": "on-call",
+   "scope": "Keeps names, factions and facts consistent everywhere.",
+   "owns": "LORE.md"
+  },
+  {
+   "id": "R036",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Lead Engine Programmer",
+   "status": "core",
+   "scope": "Owns the 3D engine layer: render loop, scene, systems interface, performance.",
+   "owns": "viewer3d/engine.mjs"
+  },
+  {
+   "id": "R037",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Engine Programmer",
+   "status": "core",
+   "scope": "Implements engine features the other systems need (resource loading, instancing, LOD).",
+   "owns": "viewer3d/assets.mjs"
+  },
+  {
+   "id": "R038",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Graphics / Rendering Programmer",
+   "status": "core",
+   "scope": "Owns lighting, shadows, tone mapping, post-processing (bloom, vignette, fog).",
+   "owns": "viewer3d/engine.mjs rendering"
+  },
+  {
+   "id": "R039",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Shader Programmer",
+   "status": "core",
+   "scope": "Writes custom shaders: crystal glow, team-color strips, shield shimmer, terrain blending.",
+   "owns": "viewer3d/shaders/"
+  },
+  {
+   "id": "R040",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Physics Programmer",
+   "status": "on-call",
+   "scope": "Owns debris and ragdoll-style death effects (visual only; the sim stays grid-based).",
+   "owns": "viewer3d/physics.mjs"
+  },
+  {
+   "id": "R041",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Animation Programmer",
+   "status": "core",
+   "scope": "Owns animation playback and blending: walk, attack, death, construction rise.",
+   "owns": "viewer3d/anim.mjs"
+  },
+  {
+   "id": "R042",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Audio Programmer",
+   "status": "core",
+   "scope": "Owns positional audio, mixing, ducking and limits on simultaneous sounds.",
+   "owns": "viewer3d/audio.mjs"
+  },
+  {
+   "id": "R043",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Tools Programmer",
+   "status": "on-call",
+   "scope": "Builds the map editor and debug tools.",
+   "owns": "tools/"
+  },
+  {
+   "id": "R044",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Build & Release Engineer",
+   "status": "core",
+   "scope": "Owns that the repo always builds: GitHub pushes, versions, release tags, the Live Build Compiler's pipeline.",
+   "owns": "package.json, .github/, releases"
+  },
+  {
+   "id": "R045",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Platform Programmer",
+   "status": "on-call",
+   "scope": "Owns browser and OS quirks (Safari vs Chrome, Retina, the TV display).",
+   "owns": "viewer3d/platform.mjs"
+  },
+  {
+   "id": "R046",
+   "department": "Engineering \u00b7 Engine",
+   "title": "Performance / Optimization Engineer",
+   "status": "core",
+   "scope": "Owns 60 fps at 1080p and fast sims: profiles, sets budgets, files tickets with owners.",
+   "owns": "PERF.md"
+  },
+  {
+   "id": "R047",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "Lead Gameplay Programmer",
+   "status": "core",
+   "scope": "Owns the simulation modules as a whole and their integration.",
+   "owns": "env/sim.mjs integration"
+  },
+  {
+   "id": "R048",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "Gameplay Programmer",
+   "status": "core",
+   "scope": "Implements units, abilities and combat rules.",
+   "owns": "env/combat.mjs, env/commands.mjs"
+  },
+  {
+   "id": "R049",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "Pathfinding / Movement Programmer",
+   "status": "core",
+   "scope": "Owns paths, detours, crowding and blocked-tile rules (the Worker freeze lives here).",
+   "owns": "env/path.mjs, env/movement.mjs"
+  },
+  {
+   "id": "R050",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "AI Programmer",
+   "status": "core",
+   "scope": "Owns the built-in computer opponents and the sample player, and the player API's ergonomics.",
+   "owns": "players/sample-player.mjs, players/builtin-*"
+  },
+  {
+   "id": "R051",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "UI Programmer",
+   "status": "core",
+   "scope": "Implements the HUD and any human controls.",
+   "owns": "viewer3d/hud.mjs"
+  },
+  {
+   "id": "R052",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "Replay / Observer Programmer",
+   "status": "core",
+   "scope": "Owns replays: log format, the replayer, observer views and the TV director.",
+   "owns": "env/log.mjs, viewer/replay.mjs, viewer3d/world.mjs, viewer3d/camera.mjs"
+  },
+  {
+   "id": "R053",
+   "department": "Engineering \u00b7 Gameplay",
+   "title": "Scripting / Trigger System Programmer",
+   "status": "on-call",
+   "scope": "Builds map scripts and triggers for missions and modes.",
+   "owns": "env/triggers.mjs"
+  },
+  {
+   "id": "R054",
+   "department": "Engineering \u00b7 Online",
+   "title": "Lead Online / Network Engineer",
+   "status": "on-call",
+   "scope": "Owns human-vs-human online play if added.",
+   "owns": "online/"
+  },
+  {
+   "id": "R055",
+   "department": "Engineering \u00b7 Online",
+   "title": "Network Programmer",
+   "status": "core",
+   "scope": "Owns lockstep determinism: same seed and commands give byte-identical logs; desync detection.",
+   "owns": "tests/sim-determinism.test.mjs, env/rng.mjs"
+  },
+  {
+   "id": "R056",
+   "department": "Engineering \u00b7 Online",
+   "title": "Matchmaking / Ladder Engineer",
+   "status": "core",
+   "scope": "Owns the bot ladder: round-robin schedule, ratings, standings for the AI players.",
+   "owns": "ladder/"
+  },
+  {
+   "id": "R057",
+   "department": "Engineering \u00b7 Online",
+   "title": "Backend / Services Engineer",
+   "status": "on-call",
+   "scope": "Owns any shared services (results store, match history).",
+   "owns": "services/"
+  },
+  {
+   "id": "R058",
+   "department": "Engineering \u00b7 Online",
+   "title": "DevOps / Site Reliability Engineer",
+   "status": "core",
+   "scope": "Owns the harness staying up while the swarm runs: watchdog, restarts, disk, the air link.",
+   "owns": "control-room/bin/watchdog.mjs"
+  },
+  {
+   "id": "R059",
+   "department": "Engineering \u00b7 Online",
+   "title": "Anti-Cheat Engineer",
+   "status": "core",
+   "scope": "Owns fair play for bots: sandboxed players, time limits, no reaching outside the API.",
+   "owns": "env/referee.mjs + env/player-worker.mjs review"
+  },
+  {
+   "id": "R060",
+   "department": "Engineering \u00b7 Online",
+   "title": "Security Engineer",
+   "status": "core",
+   "scope": "Owns safety of the swarm: what agents may touch, asset downloads, secrets out of the repo.",
+   "owns": "SECURITY.md"
+  },
+  {
+   "id": "R061",
+   "department": "Engineering \u00b7 Online",
+   "title": "Database Engineer",
+   "status": "n/a",
+   "scope": "No database; results are files.",
+   "owns": ""
+  },
+  {
+   "id": "R062",
+   "department": "Engineering \u00b7 Online",
+   "title": "Data / Telemetry Engineer",
+   "status": "core",
+   "scope": "Owns match stats extraction: per-unit damage, income curves, win rates, for balance.",
+   "owns": "analytics/"
+  },
+  {
+   "id": "R063",
+   "department": "Art",
+   "title": "Lead Artist",
+   "status": "core",
+   "scope": "Runs the art team day to day and integrates everyone's work into one look.",
+   "owns": "art task list"
+  },
+  {
+   "id": "R064",
+   "department": "Art",
+   "title": "Concept Artist",
+   "status": "core",
+   "scope": "Designs units, buildings and the plateau as reference sheets the modelers follow (original designs only).",
+   "owns": "concept/"
+  },
+  {
+   "id": "R065",
+   "department": "Art",
+   "title": "Lead Character / Unit Artist",
+   "status": "core",
+   "scope": "Owns unit models and their silhouettes.",
+   "owns": "viewer3d/units.mjs art sign-off"
+  },
+  {
+   "id": "R066",
+   "department": "Art",
+   "title": "3D Unit Modeler",
+   "status": "core",
+   "scope": "Builds the low-poly unit and building models (or adapts CC0 ones).",
+   "owns": "assets/models/ (own work)"
+  },
+  {
+   "id": "R067",
+   "department": "Art",
+   "title": "Environment Artist",
+   "status": "core",
+   "scope": "Builds the plateau, cliffs, crystal fields and sky.",
+   "owns": "viewer3d/terrain.mjs"
+  },
+  {
+   "id": "R068",
+   "department": "Art",
+   "title": "Prop Artist",
+   "status": "on-call",
+   "scope": "Adds debris, wrecks, scattered details.",
+   "owns": "assets/models/props"
+  },
+  {
+   "id": "R069",
+   "department": "Art",
+   "title": "Texture / Material Artist",
+   "status": "core",
+   "scope": "Owns materials and textures: metal, rock, crystal, emissive strips.",
+   "owns": "viewer3d/palette.mjs materials"
+  },
+  {
+   "id": "R070",
+   "department": "Art",
+   "title": "Technical Artist",
+   "status": "core",
+   "scope": "Bridges art and code: import pipeline, LODs, shader params, performance of art.",
+   "owns": "viewer3d/assets.mjs pipeline"
+  },
+  {
+   "id": "R071",
+   "department": "Art",
+   "title": "Rigger",
+   "status": "on-call",
+   "scope": "Rigs any skinned models so they animate.",
+   "owns": "assets/models rigs"
+  },
+  {
+   "id": "R072",
+   "department": "Art",
+   "title": "Animator",
+   "status": "core",
+   "scope": "Animates walk, attack, death, construction and idle loops.",
+   "owns": "animation clips"
+  },
+  {
+   "id": "R073",
+   "department": "Art",
+   "title": "VFX Artist",
+   "status": "core",
+   "scope": "Designs and tunes lasers, sparks, explosions, delivery sparkles, dust.",
+   "owns": "viewer3d/vfx.mjs"
+  },
+  {
+   "id": "R074",
+   "department": "Art",
+   "title": "Lighting Artist",
+   "status": "core",
+   "scope": "Owns the dusk lighting, rim light, fog and mood.",
+   "owns": "viewer3d/engine.mjs light settings"
+  },
+  {
+   "id": "R075",
+   "department": "Art",
+   "title": "UI Artist / Icon Artist",
+   "status": "core",
+   "scope": "Draws the HUD frames, unit icons and minimap style.",
+   "owns": "viewer3d/hud assets"
+  },
+  {
+   "id": "R076",
+   "department": "Art",
+   "title": "Marketing / Key Art Illustrator",
+   "status": "on-call",
+   "scope": "Makes the title card and key art for the show.",
+   "owns": "art/key"
+  },
+  {
+   "id": "R077",
+   "department": "Cinematics",
+   "title": "Cinematic Director",
+   "status": "on-call",
+   "scope": "Owns the intro and victory/defeat sequences and the TV director's 'shots'.",
+   "owns": "cinematics/"
+  },
+  {
+   "id": "R078",
+   "department": "Cinematics",
+   "title": "Cinematic Producer",
+   "status": "on-call",
+   "scope": "Schedules cinematic work.",
+   "owns": ""
+  },
+  {
+   "id": "R079",
+   "department": "Cinematics",
+   "title": "Storyboard Artist",
+   "status": "on-call",
+   "scope": "Boards the intro and camera moves.",
+   "owns": "cinematics/boards"
+  },
+  {
+   "id": "R080",
+   "department": "Cinematics",
+   "title": "Layout / Previs Artist",
+   "status": "on-call",
+   "scope": "Blocks camera paths for in-engine sequences.",
+   "owns": "cinematics/previs"
+  },
+  {
+   "id": "R081",
+   "department": "Cinematics",
+   "title": "Cinematic Modeler / Animator / Lighter",
+   "status": "on-call",
+   "scope": "Builds hero shots in-engine.",
+   "owns": "cinematics/scenes"
+  },
+  {
+   "id": "R082",
+   "department": "Cinematics",
+   "title": "Compositor",
+   "status": "on-call",
+   "scope": "Final look of rendered sequences.",
+   "owns": ""
+  },
+  {
+   "id": "R083",
+   "department": "Cinematics",
+   "title": "Editor",
+   "status": "core",
+   "scope": "Cuts match highlights from logs and recordings for the show.",
+   "owns": "recordings/highlights"
+  },
+  {
+   "id": "R084",
+   "department": "Audio",
+   "title": "Sound Designer",
+   "status": "core",
+   "scope": "Creates or picks every sound effect (CC0 or original) and tunes them.",
+   "owns": "assets/audio/"
+  },
+  {
+   "id": "R085",
+   "department": "Audio",
+   "title": "Composer",
+   "status": "on-call",
+   "scope": "Original music: menu theme, match ambience, victory sting.",
+   "owns": "assets/audio/music"
+  },
+  {
+   "id": "R086",
+   "department": "Audio",
+   "title": "Music Producer",
+   "status": "on-call",
+   "scope": "Mixes and masters the music.",
+   "owns": ""
+  },
+  {
+   "id": "R087",
+   "department": "Audio",
+   "title": "Audio Implementer",
+   "status": "core",
+   "scope": "Hooks sounds to game events with priorities and variation.",
+   "owns": "viewer3d/audio.mjs events map"
+  },
+  {
+   "id": "R088",
+   "department": "Audio",
+   "title": "Voice Director",
+   "status": "on-call",
+   "scope": "Directs unit voice lines if added (synthetic or licensed).",
+   "owns": ""
+  },
+  {
+   "id": "R089",
+   "department": "Audio",
+   "title": "Casting Director",
+   "status": "n/a",
+   "scope": "No human voice cast.",
+   "owns": ""
+  },
+  {
+   "id": "R090",
+   "department": "Audio",
+   "title": "Voice Actors",
+   "status": "n/a",
+   "scope": "No human voice cast.",
+   "owns": ""
+  },
+  {
+   "id": "R091",
+   "department": "Audio",
+   "title": "Foley Artist",
+   "status": "on-call",
+   "scope": "Footsteps and mechanical detail sounds.",
+   "owns": "assets/audio/foley"
+  },
+  {
+   "id": "R092",
+   "department": "Audio",
+   "title": "Mix Engineer",
+   "status": "core",
+   "scope": "Final balance of all audio so fights read clearly.",
+   "owns": "mix settings"
+  },
+  {
+   "id": "R093",
+   "department": "QA",
+   "title": "QA Lead",
+   "status": "core",
+   "scope": "Owns the test plan and quality bar; decides what counts as green for a build.",
+   "owns": "TEST-PLAN.md"
+  },
+  {
+   "id": "R094",
+   "department": "QA",
+   "title": "QA Analyst / Test Lead",
+   "status": "core",
+   "scope": "Turns the spec into test areas and finds the gaps.",
+   "owns": "tests/ coverage map"
+  },
+  {
+   "id": "R095",
+   "department": "QA",
+   "title": "QA Tester",
+   "status": "core",
+   "scope": "Plays matches and replays, files bugs with exact repro (seed, tick, owner).",
+   "owns": "BUGS.md"
+  },
+  {
+   "id": "R096",
+   "department": "QA",
+   "title": "Balance / Multiplayer Tester",
+   "status": "core",
+   "scope": "Runs many bot-vs-bot matches and reports balance problems with data.",
+   "owns": "analytics/balance-reports"
+  },
+  {
+   "id": "R097",
+   "department": "QA",
+   "title": "Compatibility Tester",
+   "status": "core",
+   "scope": "Checks Safari, Chrome, the TV display and Retina.",
+   "owns": "COMPAT.md"
+  },
+  {
+   "id": "R098",
+   "department": "QA",
+   "title": "Localization QA",
+   "status": "n/a",
+   "scope": "English only for now.",
+   "owns": ""
+  },
+  {
+   "id": "R099",
+   "department": "QA",
+   "title": "SDET / Test Automation Engineer",
+   "status": "core",
+   "scope": "Builds the automated suite runners and the Live Build Compiler's checks.",
+   "owns": "tests/run-all.mjs"
+  },
+  {
+   "id": "R100",
+   "department": "QA",
+   "title": "Certification / Compliance Tester",
+   "status": "core",
+   "scope": "Checks license compliance: every asset has a CC0/permitted license recorded, nothing from other franchises.",
+   "owns": "assets/LICENSES audit"
+  },
+  {
+   "id": "R101",
+   "department": "Localization",
+   "title": "Localization Manager",
+   "status": "n/a",
+   "scope": "English only for now.",
+   "owns": ""
+  },
+  {
+   "id": "R102",
+   "department": "Localization",
+   "title": "Translator",
+   "status": "n/a",
+   "scope": "English only for now.",
+   "owns": ""
+  },
+  {
+   "id": "R103",
+   "department": "Localization",
+   "title": "Localization Engineer",
+   "status": "on-call",
+   "scope": "Keeps text in one table so it could be translated later.",
+   "owns": "text/strings.json"
+  },
+  {
+   "id": "R104",
+   "department": "Localization",
+   "title": "Cultural Consultant",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R105",
+   "department": "Research",
+   "title": "Games User Researcher",
+   "status": "core",
+   "scope": "Watches what Joshua looks at and asks about, and reports what's confusing in the game and the live view.",
+   "owns": "RESEARCH.md"
+  },
+  {
+   "id": "R106",
+   "department": "Research",
+   "title": "UX Researcher",
+   "status": "on-call",
+   "scope": "Tests the HUD and controls for clarity.",
+   "owns": ""
+  },
+  {
+   "id": "R107",
+   "department": "Research",
+   "title": "Data Analyst",
+   "status": "core",
+   "scope": "Turns match data into plain-English findings (win rates, game length, unit usage).",
+   "owns": "analytics/reports"
+  },
+  {
+   "id": "R108",
+   "department": "Research",
+   "title": "Data Scientist",
+   "status": "on-call",
+   "scope": "Ratings model for the bot ladder; balance modeling.",
+   "owns": "ladder/ratings"
+  },
+  {
+   "id": "R109",
+   "department": "Esports",
+   "title": "Esports Program Manager",
+   "status": "core",
+   "scope": "Runs the AI tournament: brackets, rules, schedule.",
+   "owns": "TOURNAMENT.md"
+  },
+  {
+   "id": "R110",
+   "department": "Esports",
+   "title": "Tournament Operations",
+   "status": "core",
+   "scope": "Runs matches fairly with the referee and publishes results.",
+   "owns": "tournament/results"
+  },
+  {
+   "id": "R111",
+   "department": "Esports",
+   "title": "Observer / Broadcast Tools Producer",
+   "status": "core",
+   "scope": "Owns the TV broadcast view: director camera, overlays, replays of key moments.",
+   "owns": "live broadcast overlays"
+  },
+  {
+   "id": "R112",
+   "department": "Esports",
+   "title": "Community Manager",
+   "status": "n/a",
+   "scope": "No public community yet.",
+   "owns": ""
+  },
+  {
+   "id": "R113",
+   "department": "Esports",
+   "title": "Social Media Manager",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R114",
+   "department": "Esports",
+   "title": "Content Creator Relations",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R115",
+   "department": "Esports",
+   "title": "Pro Player Liaison / Balance Council Coordinator",
+   "status": "core",
+   "scope": "Runs the 'balance council': each model's player team gives feedback on balance (not strategy).",
+   "owns": "BALANCE-COUNCIL.md"
+  },
+  {
+   "id": "R116",
+   "department": "Live Ops",
+   "title": "Live Ops Producer",
+   "status": "on-call",
+   "scope": "Owns ongoing updates after the first tournament.",
+   "owns": ""
+  },
+  {
+   "id": "R117",
+   "department": "Live Ops",
+   "title": "Patch Manager",
+   "status": "core",
+   "scope": "Bundles balance and fix changes into numbered patches with notes.",
+   "owns": "PATCHES.md"
+  },
+  {
+   "id": "R118",
+   "department": "Live Ops",
+   "title": "Release Manager",
+   "status": "core",
+   "scope": "Tags releases on GitHub and decides what's in each.",
+   "owns": "GitHub releases"
+  },
+  {
+   "id": "R119",
+   "department": "Live Ops",
+   "title": "Player Support / Customer Service Lead",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R120",
+   "department": "Live Ops",
+   "title": "Game Master",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R121",
+   "department": "Business",
+   "title": "Product Manager",
+   "status": "on-call",
+   "scope": "Owns what Driftfall is for (demo, product, research) and its roadmap.",
+   "owns": "ROADMAP.md"
+  },
+  {
+   "id": "R122",
+   "department": "Business",
+   "title": "Marketing Director / Brand Manager",
+   "status": "on-call",
+   "scope": "Owns how Driftfall is presented (name, tagline, trailer).",
+   "owns": ""
+  },
+  {
+   "id": "R123",
+   "department": "Business",
+   "title": "PR Manager",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R124",
+   "department": "Business",
+   "title": "Partnerships / Business Development",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R125",
+   "department": "Business",
+   "title": "Legal / IP Counsel",
+   "status": "core",
+   "scope": "Owns originality and licensing: no StarCraft or other franchise names, art or sounds; asset licenses valid.",
+   "owns": "LEGAL.md"
+  },
+  {
+   "id": "R126",
+   "department": "Business",
+   "title": "Licensing / Rights Manager",
+   "status": "core",
+   "scope": "Keeps assets/LICENSES current and attributions displayed where required.",
+   "owns": "assets/LICENSES.md"
+  },
+  {
+   "id": "R127",
+   "department": "Business",
+   "title": "Finance / Business Analyst",
+   "status": "core",
+   "scope": "Tracks the swarm's real cost per team and per milestone.",
+   "owns": "COSTS.md"
+  },
+  {
+   "id": "R128",
+   "department": "Business",
+   "title": "Ratings & Compliance Specialist",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  },
+  {
+   "id": "R129",
+   "department": "Studio",
+   "title": "Studio Manager",
+   "status": "n/a",
+   "scope": "The harness is the studio.",
+   "owns": ""
+  },
+  {
+   "id": "R130",
+   "department": "Studio",
+   "title": "Recruiter / Talent Acquisition",
+   "status": "core",
+   "scope": "Decides which roles to spawn next and on which model, from what the swarm is blocked on.",
+   "owns": "roles/roles.json status"
+  },
+  {
+   "id": "R131",
+   "department": "Studio",
+   "title": "HR / People Partner",
+   "status": "core",
+   "scope": "Keeps the swarm kind and collaborative: flags rude or dismissive messages and helps settle disagreements.",
+   "owns": "chat etiquette"
+  },
+  {
+   "id": "R132",
+   "department": "Studio",
+   "title": "IT Support",
+   "status": "core",
+   "scope": "Keeps both Macs, the bridges and the air runner working for the swarm.",
+   "owns": "harness health"
+  },
+  {
+   "id": "R133",
+   "department": "Studio",
+   "title": "Office / Facilities",
+   "status": "n/a",
+   "scope": "",
+   "owns": ""
+  }
+ ]
+}

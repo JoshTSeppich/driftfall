@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Driftfall — Live</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="top">
+  <div class="brand">DRIFTFALL <span>live build</span></div>
+  <div id="build" class="pill">build: …</div>
+  <div id="scene" class="pill dim"></div>
+  <div id="clock"></div>
+</header>
+<main id="grid">
+  <section id="stage" class="panel">
+    <div class="ptitle"><span id="stageTitle">Match</span><span id="stageSrc" class="dim"></span></div>
+    <iframe id="matchFrame" title="match" allow="autoplay"></iframe>
+  </section>
+  <section id="status" class="panel">
+    <div class="ptitle">Build status</div>
+    <div id="statusBody" class="scroll"></div>
+  </section>
+  <section id="chat" class="panel">
+    <div class="ptitle">Swarm talking <span id="chatMode" class="dim"></span></div>
+    <div id="threads"></div>
+    <div id="chatLines" class="scroll"></div>
+  </section>
+  <section id="wall" class="panel">
+    <div class="ptitle">Agents at work <span id="wallCount" class="dim"></span></div>
+    <div id="agents"></div>
+  </section>
+</main>
+<footer id="caption"><span class="tag">NOW</span><span id="capText">Waiting for the first caption…</span></footer>
+<script type="module" src="app.mjs"></script>
+</body>
+</html>

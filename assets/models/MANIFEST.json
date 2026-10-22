@@ -1,0 +1,442 @@
+{
+ "version": 1,
+ "note": "Paths are relative to assets/models/. fit = reads right as is; stand-in = closest CC0 shape. Sizes are glTF units (Kenney space kit ~1 unit = 1 tile). Models carry Kenney palette colors: recolor per team in code (material.color / emissive).",
+ "unit": "meters-ish",
+ "worker": "space/rover.glb",
+ "grunt": "space/astronautA.glb",
+ "lancer": "space/astronautB.glb",
+ "brute": "space/craft_cargoB.glb",
+ "core": "space/hangar_roundA.glb",
+ "forge": "space/hangar_largeA.glb",
+ "turret": "space/turret_double.glb",
+ "rock": "space/rock_largeB.glb",
+ "crystal": "space/rock_crystalsLargeA.glb",
+ "units": {
+  "worker": {
+   "file": "space/rover.glb",
+   "fit": "fit",
+   "note": "little wheeled rover",
+   "size": [
+    0.3,
+    0.39,
+    0.35
+   ]
+  },
+  "grunt": {
+   "file": "space/astronautA.glb",
+   "fit": "fit",
+   "note": "stocky suited trooper",
+   "size": [
+    1.46,
+    1.58,
+    1
+   ]
+  },
+  "lancer": {
+   "file": "space/astronautB.glb",
+   "fit": "fit",
+   "note": "suited trooper; add space/weapon_rifle.glb as a long lance",
+   "size": [
+    1.46,
+    1.58,
+    1
+   ]
+  },
+  "skyspike": {
+   "file": "space/astronautB.glb",
+   "fit": "stand-in",
+   "note": "pair with space/weapon_gun.glb pointed up",
+   "size": [
+    1.46,
+    1.58,
+    1
+   ]
+  },
+  "dart": {
+   "file": "space/craft_racer.glb",
+   "fit": "stand-in",
+   "note": "low fast racer, keep it on the ground",
+   "size": [
+    1.2,
+    0.75,
+    2.03
+   ]
+  },
+  "brute": {
+   "file": "space/craft_cargoB.glb",
+   "fit": "stand-in",
+   "note": "heaviest hull in the kit; no CC0 walker exists, a procedural hex walker may read better",
+   "size": [
+    1.5,
+    0.9,
+    2.5
+   ]
+  },
+  "bombard": {
+   "file": "space/craft_miner.glb",
+   "fit": "stand-in",
+   "note": "squat hull; add td/weapon-cannon.glb on top",
+   "size": [
+    1.8,
+    0.7,
+    2.6
+   ]
+  },
+  "gale": {
+   "file": "space/craft_speederA.glb",
+   "fit": "fit",
+   "note": "air fighter",
+   "size": [
+    2,
+    0.8,
+    2.1
+   ]
+  },
+  "ferry": {
+   "file": "space/craft_cargoA.glb",
+   "fit": "fit",
+   "note": "air transport",
+   "size": [
+    1.6,
+    0.8,
+    2.45
+   ]
+  },
+  "lumen": {
+   "file": "space/craft_speederD.glb",
+   "fit": "fit",
+   "note": "small air scout",
+   "size": [
+    2.8,
+    0.9,
+    2.23
+   ]
+  },
+  "mender": {
+   "file": "space/astronautA.glb",
+   "fit": "stand-in",
+   "note": "tint green-white",
+   "size": [
+    1.46,
+    1.58,
+    1
+   ]
+  },
+  "shade": {
+   "file": "space/alien.glb",
+   "fit": "fit",
+   "note": "make translucent when cloaked",
+   "size": [
+    1.46,
+    1.78,
+    1
+   ]
+  },
+  "hexer": {
+   "file": "space/alien.glb",
+   "fit": "stand-in",
+   "note": "scale up 1.2 and add a glow",
+   "size": [
+    1.46,
+    1.78,
+    1
+   ]
+  }
+ },
+ "buildings": {
+  "core": {
+   "file": "space/hangar_roundA.glb",
+   "fit": "fit",
+   "note": "big hex hangar; the only piece wider than a tile (3.3 units)",
+   "size": [
+    3.27,
+    1.5,
+    2.83
+   ]
+  },
+  "forge": {
+   "file": "space/hangar_largeA.glb",
+   "fit": "fit",
+   "note": "long hangar block",
+   "size": [
+    2,
+    1,
+    3
+   ]
+  },
+  "siphon": {
+   "file": "space/machine_generator.glb",
+   "fit": "fit",
+   "note": "sits on a vent",
+   "size": [
+    0.95,
+    0.4,
+    0.55
+   ]
+  },
+  "foundry": {
+   "file": "space/hangar_largeB.glb",
+   "fit": "fit",
+   "note": "heavy hangar",
+   "size": [
+    2.2,
+    1.1,
+    3
+   ]
+  },
+  "aerie": {
+   "file": "space/hangar_roundB.glb",
+   "fit": "fit",
+   "note": "round hangar; pad for air units",
+   "size": [
+    3.27,
+    1.8,
+    2.83
+   ]
+  },
+  "sanctum": {
+   "file": "space/hangar_roundGlass.glb",
+   "fit": "fit",
+   "note": "glass dome",
+   "size": [
+    3.27,
+    1.4,
+    2.83
+   ]
+  },
+  "turret": {
+   "file": "space/turret_double.glb",
+   "fit": "fit",
+   "note": "twin gun; aim by rotating the model on Y",
+   "size": [
+    0.9,
+    0.4,
+    0.6
+   ]
+  },
+  "flakspire": {
+   "file": "space/satelliteDish_detailed.glb",
+   "fit": "stand-in",
+   "note": "dish pointed at sky; or td/weapon-turret.glb",
+   "size": [
+    0.7,
+    0.62,
+    0.7
+   ]
+  },
+  "beacon": {
+   "file": "space/satelliteDish.glb",
+   "fit": "fit",
+   "note": "detector dish",
+   "size": [
+    0.69,
+    0.62,
+    0.57
+   ]
+  }
+ },
+ "terrain": {
+  "floor": {
+   "file": "space/terrain.glb",
+   "fit": "fit",
+   "note": "flat ground tile",
+   "size": [
+    1,
+    0,
+    1
+   ]
+  },
+  "ramp": {
+   "file": "space/terrain_ramp.glb",
+   "fit": "fit",
+   "note": "ramp piece",
+   "size": [
+    1,
+    0.5,
+    1
+   ]
+  },
+  "cliff": {
+   "file": "space/terrain_sideCliff.glb",
+   "fit": "fit",
+   "note": "cliff edge",
+   "size": [
+    0.5,
+    0.5,
+    1
+   ]
+  },
+  "rock": {
+   "file": "space/rock_largeB.glb",
+   "fit": "fit",
+   "note": "impassable boulder",
+   "size": [
+    0.93,
+    0.5,
+    0.94
+   ]
+  },
+  "rock_small": {
+   "file": "space/rock_largeA.glb",
+   "fit": "fit",
+   "note": "smaller boulder",
+   "size": [
+    0.92,
+    0.5,
+    0.83
+   ]
+  },
+  "vent": {
+   "file": "space/craterLarge.glb",
+   "fit": "stand-in",
+   "note": "crater; add a glow plane for Flux",
+   "size": [
+    0.89,
+    0.12,
+    0.89
+   ]
+  },
+  "crystal": {
+   "file": "space/rock_crystalsLargeA.glb",
+   "fit": "fit",
+   "note": "Shard cluster; tint teal #4ef2d8 and emissive",
+   "size": [
+    0.83,
+    0.54,
+    0.92
+   ]
+  },
+  "shard": {
+   "file": "space/rock_crystals.glb",
+   "fit": "fit",
+   "note": "small Shard cluster",
+   "size": [
+    0.85,
+    0.34,
+    0.8
+   ]
+  },
+  "rich_shard": {
+   "file": "space/rock_crystalsLargeB.glb",
+   "fit": "fit",
+   "note": "big Shard cluster",
+   "size": [
+    0.94,
+    0.55,
+    0.93
+   ]
+  },
+  "rubble": {
+   "file": "space/rocks_smallA.glb",
+   "fit": "fit",
+   "note": "destructible scrap",
+   "size": [
+    0.94,
+    0.11,
+    0.87
+   ]
+  }
+ },
+ "props": {
+  "scaffold": {
+   "file": "td/tower-round-build-a.glb",
+   "fit": "fit",
+   "note": "construction stages a..f: td/tower-round-build-a..f.glb",
+   "size": [
+    1,
+    1,
+    1
+   ]
+  },
+  "scaffold_square": {
+   "file": "td/tower-square-build-a.glb",
+   "fit": "fit",
+   "note": "stages a..f",
+   "size": [
+    1.1,
+    1,
+    1.1
+   ]
+  },
+  "barrels": {
+   "file": "space/barrels.glb",
+   "fit": "fit",
+   "note": "",
+   "size": [
+    0.55,
+    0.25,
+    0.5
+   ]
+  },
+  "meteor": {
+   "file": "space/meteor_detailed.glb",
+   "fit": "fit",
+   "note": "",
+   "size": [
+    0.87,
+    0.73,
+    0.83
+   ]
+  },
+  "crater": {
+   "file": "space/crater.glb",
+   "fit": "fit",
+   "note": "",
+   "size": [
+    0.71,
+    0.12,
+    0.83
+   ]
+  },
+  "gun": {
+   "file": "space/weapon_gun.glb",
+   "fit": "fit",
+   "note": "",
+   "size": [
+    0.2,
+    0.45,
+    0.7
+   ]
+  },
+  "rifle": {
+   "file": "space/weapon_rifle.glb",
+   "fit": "fit",
+   "note": "",
+   "size": [
+    0.2,
+    0.55,
+    1
+   ]
+  },
+  "cannon": {
+   "file": "td/weapon-cannon.glb",
+   "fit": "fit",
+   "note": "textured, needs td/Textures/colormap.png",
+   "size": [
+    0.6,
+    0.59,
+    0.6
+   ]
+  },
+  "selection": {
+   "file": "td/selection-a.glb",
+   "fit": "fit",
+   "note": "selection ring, textured",
+   "size": [
+    1,
+    0.05,
+    1
+   ]
+  },
+  "tile_crystal": {
+   "file": "td/tile-crystal.glb",
+   "fit": "fit",
+   "note": "textured ground tile with crystal",
+   "size": [
+    1,
+    0.75,
+    1
+   ]
+  }
+ }
+}

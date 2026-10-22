@@ -170,11 +170,11 @@ function applyEvent(state, ev, stats) {
   }
 }
 
-// Apply one tick entry { tick, commands, events } to the state, in place. Returns the state.
+// Apply the events of one tick entry { tick, commands, events } to the state, in place. Returns the state.
+// It leaves state.tick alone: replayTo and createReplayer advance the tick by counting entries.
 // `stats` is optional (the log's stats table); it only makes `done` set progress exactly.
 export function applyTick(state, tickEntry, stats) {
   for (const ev of tickEntry?.events ?? []) applyEvent(state, ev, stats);
-  if (typeof tickEntry?.tick === 'number') state.tick = tickEntry.tick;
   return state;
 }
 
