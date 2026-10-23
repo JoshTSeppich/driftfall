@@ -1,15 +1,15 @@
 {
- "build": 232,
- "at": "2026-10-23T16:51:21.290Z",
- "seconds": 411.3,
+ "build": 234,
+ "at": "2026-10-23T17:10:58.380Z",
+ "seconds": 405.4,
  "state": "red",
- "nextBuildAt": "2026-10-23T16:54:21.290Z",
+ "nextBuildAt": "2026-10-23T17:13:58.380Z",
  "headline": "Red: 2 test file(s) failing, match did not record.",
  "tests": {
   "files": 86,
-  "pass": 1295,
-  "fail": 2,
-  "seconds": 755.5
+  "pass": 1296,
+  "fail": 1,
+  "seconds": 547.6
  },
  "failures": [
   {
@@ -30,10 +30,9 @@
    "owners": [],
    "imports": [],
    "tests": [
-    "idle-tick is no more than 2x its baseline",
-    "army-40v40-march is no more than 2x its baseline"
+    "idle-tick is no more than 2x its baseline"
    ],
-   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.77x its baseline (4.669 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
+   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 3.39x its baseline (6.979 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
   }
  ],
  "parse": {
@@ -42,7 +41,7 @@
  },
  "match": {
   "ok": false,
-  "seed": 233,
+  "seed": 235,
   "error": "[timed out]",
   "keptPrevious": true
  },
@@ -51,15 +50,15 @@
   "added": [],
   "changed": [
    {
-    "file": "tests/full-match-smoke.test.mjs",
-    "owner": null
+    "file": "env/movement.mjs",
+    "owner": "fable"
    },
    {
-    "file": "tests/live-viewer.test.mjs",
-    "owner": null
+    "file": "env/path.mjs",
+    "owner": "sonnet"
    },
    {
-    "file": "live/compile.mjs",
+    "file": "tests/opening-clock.test.mjs",
     "owner": null
    }
   ],
@@ -75,12 +74,10 @@
   "live": 19
  },
  "previous": {
-  "build": 231,
+  "build": 233,
   "state": "red",
-  "at": "2026-10-23T16:41:29.964Z",
+  "at": "2026-10-23T17:01:13.005Z",
   "failing": [
-   "tests/full-match-smoke.test.mjs",
-   "tests/live-viewer.test.mjs",
    "tests/opening-clock.test.mjs",
    "tests/perf.test.mjs"
   ]

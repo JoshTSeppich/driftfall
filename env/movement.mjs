@@ -122,10 +122,13 @@ function unitsInTickOrder(state) {
  * Run the movement phase on `state` in place. Emits `move`, `blocked` and `order` events.
  */
 export function stepMovement(state) {
+  // Rocks, crystals and structures do not change during this phase, so they are flattened to a bitmap once. The old
+  // per-tile isPassable() scanned every crystal and structure inside every path search (80% of a bot match's time).
+  const solid = solidMap(state);
   const plainGrid = {
     width: state.width,
     height: state.height,
-    blocked: (x, y) => !isPassable(state, x, y),
+    blocked: (x, y) => solid[y * state.width + x] === 1,
   };
   // Power fences (env/fence.mjs): live enemy ground lines are walls for this unit. Null unless fences are on.
   stepFences(state);
@@ -168,13 +171,13 @@ export function stepMovement(state) {
     if (detouring.has(unit)) {
       // Already on a detour: keep planning around other units so the plain path cannot lead straight back into
       // the unit that blocked it. If no detour exists any more, the plain path below is used as usual.
-      const detour = findPath(avoidingUnits(state, unit, grid.walls), from, goal, { within: dest.within });
+      const detour = findPath(avoidingUnits(state, unit, grid.walls, solid), from, goal, { within: dest.within });
       if (detour && detour.length > 0) next = detour[0];
     }
     if (!isFree(state, next.x, next.y)) {
       // Someone is standing there. First time: just wait. Still blocked next moving tick: try a detour that
       // treats every other unit as an obstacle. No detour (head-on in a gap): keep waiting.
-      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit, grid.walls), from, goal, { within: dest.within }) : null;
+      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit, grid.walls, solid), from, goal, { within: dest.within }) : null;
       if (!detour || detour.length === 0) {
         waiting.add(unit);
         continue;
@@ -196,10 +199,28 @@ export function stepMovement(state) {
 }
 
 /** A planning grid where other units' tiles count as blocked too (used only for detours). */
-function avoidingUnits(state, self, walls) {
+function avoidingUnits(state, self, walls, solid) {
+  const w = state.width;
+  const taken = new Uint8Array(w * state.height);
+  for (const u of state.units) if (u !== self && u.x >= 0 && u.y >= 0 && u.x < w && u.y < state.height) taken[u.y * w + u.x] = 1;
   return {
-    width: state.width,
+    width: w,
     height: state.height,
-    blocked: (x, y) => !isPassable(state, x, y) || (walls && walls(x, y)) || state.units.some((u) => u !== self && u.x === x && u.y === y),
+    blocked: (x, y) => solid[y * w + x] === 1 || (walls && walls(x, y)) || taken[y * w + x] === 1,
   };
+}
+
+/** 1 for every tile isPassable() would refuse (rock, crystal, structure), 0 elsewhere; callers stay in bounds. */
+function solidMap(state) {
+  const w = state.width;
+  const solid = new Uint8Array(w * state.height);
+  for (const k of state.rockSet) {
+    const comma = k.indexOf(',');
+    const x = +k.slice(0, comma);
+    const y = +k.slice(comma + 1);
+    if (x >= 0 && y >= 0 && x < w && y < state.height) solid[y * w + x] = 1;
+  }
+  for (const c of state.crystals) if (c.x >= 0 && c.y >= 0 && c.x < w && c.y < state.height) solid[c.y * w + c.x] = 1;
+  for (const t of state.structures) if (t.x >= 0 && t.y >= 0 && t.x < w && t.y < state.height) solid[t.y * w + t.x] = 1;
+  return solid;
 }

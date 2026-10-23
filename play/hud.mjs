@@ -4,19 +4,21 @@
 import { TEAM, NEUTRAL, HEALTH } from '../viewer3d/palette.mjs';
 import { portraitFor } from './icons.mjs';
 import { slotsHtml, rankStars } from './items-ui.mjs';
-import { STATS } from '../env/stats.mjs';
+import { STATS, toasterName } from '../env/stats.mjs';
 
-export const KIND_NAME = Object.freeze({
-  worker: 'Worker', grunt: 'Grunt', lancer: 'Lancer', brute: 'Brute',
-  core: 'Core', forge: 'Forge', turret: 'Turret',
-});
-export const kindName = (kind) => KIND_NAME[kind] ?? String(kind);
+// Toaster Wars names (TERRITORY.md section 16): the sim keeps its stable kind ids, the roster in env/stats.mjs names them.
+export const KIND_NAME = Object.freeze(Object.fromEntries(
+  ['worker', 'grunt', 'lancer', 'brute', 'howler', 'spiker', 'dart', 'core', 'forge', 'turret', 'mill', 'well', 'toaster']
+    .map((k) => [k, toasterName(k)]),
+));
+export const kindName = (kind) => KIND_NAME[kind] ?? toasterName(kind);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const isStructure = (kind, stats = STATS) => kind === 'core' || kind in stats.structures;
 
 /** Max hp for a kind (units, structures and the Core). */
 export function maxHp(kind, stats = STATS) {
+  if (kind === 'core' && stats.toaster?.coreHp) return stats.toaster.coreHp; // the Power Strip of a Toaster Wars match
   return stats.units[kind]?.hp ?? stats.structures[kind]?.hp ?? stats.core?.hp ?? 0;
 }
 
