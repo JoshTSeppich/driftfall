@@ -53,6 +53,9 @@ export function parseArgs(argv) {
       case '--classic':
         opts.territory = false;
         break;
+      case '--pacing':
+        opts.pacing = true;
+        break;
       case '--quiet':
         opts.quiet = true;
         break;
@@ -87,7 +90,7 @@ async function main() {
   }
 
   // Toaster Wars is the default (Joshua, 09:27): the territory match with hunger, cords and the kitchen. --classic = old game.
-  const options = { seed: opts.seed, players: [path.resolve(opts.p0), path.resolve(opts.p1)], territory: opts.territory };
+  const options = { seed: opts.seed, players: [path.resolve(opts.p0), path.resolve(opts.p1)], territory: opts.territory, pacing: opts.pacing === true };
   if (opts.think !== null) options.thinkMs = opts.think;
   if (opts.hard !== null) options.hardMs = opts.hard;
   if (opts.maxTicks !== null) options.maxTicks = opts.maxTicks;

@@ -1,24 +1,50 @@
 {
- "build": 241,
- "at": "2026-10-23T18:05:24.001Z",
- "seconds": 270.8,
+ "build": 244,
+ "at": "2026-10-23T18:28:38.987Z",
+ "seconds": 273.9,
  "state": "red",
- "nextBuildAt": "2026-10-23T18:08:24.001Z",
- "headline": "Red: match did not record.",
+ "nextBuildAt": "2026-10-23T18:31:38.987Z",
+ "headline": "Red: 2 test file(s) failing, match did not record.",
  "tests": {
-  "files": 87,
-  "pass": 1307,
-  "fail": 0,
-  "seconds": 412.4
+  "files": 92,
+  "pass": 1332,
+  "fail": 2,
+  "seconds": 435.3
  },
- "failures": [],
+ "failures": [
+  {
+   "file": "tests/icons.test.mjs",
+   "owners": [
+    "haiku"
+   ],
+   "imports": [
+    "env/stats.mjs",
+    "play/icons.mjs",
+    "play/command-card.mjs",
+    "play/hud.mjs"
+   ],
+   "tests": [
+    "every card command has art or readable fallback, with hotkeys retained"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: {\"action\":\"build\",\"kind\":\"forge\",\"key\":\"q\",\"label\":\"forge\"}"
+  },
+  {
+   "file": "tests/perf.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "idle-tick is no more than 2x its baseline"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.56x its baseline (4.459 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
+  }
+ ],
  "parse": {
   "checked": 65,
   "errors": []
  },
  "match": {
   "ok": false,
-  "seed": 242,
+  "seed": 245,
   "error": "[timed out]",
   "keptPrevious": true
  },
@@ -33,15 +59,16 @@
   "env": 33,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 89,
+  "tests": 94,
   "players": 19,
   "live": 19
  },
  "previous": {
-  "build": 240,
+  "build": 243,
   "state": "red",
-  "at": "2026-10-23T17:57:53.220Z",
+  "at": "2026-10-23T18:21:05.052Z",
   "failing": [
+   "tests/icons.test.mjs",
    "tests/perf.test.mjs"
   ]
  }
