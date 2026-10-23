@@ -1,4 +1,4 @@
-Match: fanatic-fable (side 0) vs fanatic-haiku (side 1), seed 847. Result: {"winner":0,"reason":"core","tick":679,"value":[1335,195]} (24 ticks = 1 s).
-0-10s: progress×80, mine@1×63, deliver@1×61, mine@0×58, deliver@0×57, queue×42, mine×31, deliver×29
-10-20s: order×2132, blocked×918, hit×157, deliver@0×67, mine@0×66, deliver@1×59, mine@1×59, queue×55
-20-30s: order×625, blocked×228, hit×228, mine@0×40, deliver@0×36, queue×32, deliver@1×24, deliver×24
+Match: fanatic-haiku (side 0) vs fanatic-fable (side 1), seed 605. Result: {"winner":1,"reason":"core","tick":589,"value":[160,1355]} (24 ticks = 1 s).
+0-10s: progress×80, mine@1×62, deliver@1×62, mine@0×61, deliver@0×60, queue×42, mine×32, deliver×29
+10-20s: order×1067, blocked×391, hit×122, mine@1×70, deliver@1×69, deliver@0×54, queue×53, mine@0×53
+20-30s: order×396, hit×222, blocked×56, mine@1×24, die×24, deliver@1×23, queue×21, deliver×19
