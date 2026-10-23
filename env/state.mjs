@@ -12,8 +12,9 @@ function copyOrder(order) {
   return order ? { ...order } : null;
 }
 
-export function createInitialState(seed) {
-  const map = generateMap(seed);
+// opts.map names the map (env/map.mjs); the default is the classic 32 x 32 one unless the caller chooses.
+export function createInitialState(seed, opts = {}) {
+  const map = generateMap(seed, { map: opts.map });
   const state = {
     tick: 0,
     seed,

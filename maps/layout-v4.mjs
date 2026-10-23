@@ -185,9 +185,10 @@ export function encodeV4(base) {
     tiles: base.tiles.map((r) => r.join('')),
     heights: base.heights.map((r) => r.join('')),
     reachIds: base.reachId.map((r) => r.map(idText).join('')),
-    reaches: base.reaches.map(({ id, key, name, kind, side, rect, h, chamfer, center, gates }) => ({ id, key, name, kind, side, rect, height: h, chamfer, center, gates })),
+    reaches: base.reaches.map(({ id, key, name, kind, side, rect, h, chamfer, center, gates, outline }) => ({ id, key, name, kind, side, rect, height: h, chamfer, center, gates, ...(outline ? { outline } : {}) })),
     gates: base.gates.map(({ id, a, b, type, axis, center, cells }) => ({ id, a, b, type, axis, center, cells })),
     cores: base.cores, workers: base.workers,
+    ...(base.extras ? { extras: base.extras } : {}),
   };
 }
 
@@ -222,7 +223,8 @@ export function territoryLayoutV4(decoded) {
   const reaches = decoded.reaches.map((r) => {
     const [x0, y0, x1, y1] = r.rect;
     const X1 = x1 + 1, Y1 = y1 + 1, cut = (r.chamfer ?? 3) - 0.5;
-    const outline = [[x0 + cut, y0], [X1 - cut, y0], [X1, y0 + cut], [X1, Y1 - cut], [X1 - cut, Y1], [x0 + cut, Y1], [x0, Y1 - cut], [x0, y0 + cut]];
+    // A Reach may bring its own outline (Wheatfield's organic cells); the others get the cut rectangle.
+    const outline = r.outline ?? [[x0 + cut, y0], [X1 - cut, y0], [X1, y0 + cut], [X1, Y1 - cut], [X1 - cut, Y1], [x0 + cut, Y1], [x0, Y1 - cut], [x0, y0 + cut]];
     let claimSpot = { x: r.center[0], y: r.center[1] };
     search: for (let d = 0; d < 30; d++) {
       for (let j = -d; j <= d; j++) for (let i = -d; i <= d; i++) {
@@ -241,7 +243,7 @@ export function territoryLayoutV4(decoded) {
   return { width: decoded.width, height: decoded.height, reaches };
 }
 
-const solidChar = (c) => c === '#' || c === 'o' || c === 'S' || c === 'R';
+const solidChar = (c) => c === '#' || c === 'o' || c === 'S' || c === 'R' || c === '~';
 
 /**
  * Seeded scatter: rocks and rubble in small mirrored blobs inside Reaches, away from fields, vents, cores, workers

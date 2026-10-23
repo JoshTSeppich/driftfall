@@ -10,7 +10,7 @@ export function boot() {
   const canvas=document.querySelector('canvas');
   const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=T.ACESFilmicToneMapping;renderer.info.autoReset=false;
   let glossy=false, composer;
-  const lab=createLab({renderer:{render(scene,camera){renderer.info.reset();if(glossy)composer.render();else renderer.render(scene,camera);}}});
+  const lab=createLab({onAttackRelease:()=>playThump(),renderer:{render(scene,camera){renderer.info.reset();if(glossy)composer.render();else renderer.render(scene,camera);}}});
   lab.setShape(document.querySelector('#shape').value);
   const pmrem=new T.PMREMGenerator(renderer), room=new RoomEnvironment(), env=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();
   composer=new EffectComposer(renderer);composer.addPass(new RenderPass(lab.scene,lab.camera));
@@ -24,8 +24,17 @@ export function boot() {
   document.querySelectorAll('[data-look]').forEach((b,i)=>b.onclick=()=>pickLook(i));
   document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='terrain-kit'){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
   document.querySelector('#terrain-inspection').onchange=e=>{const stage=document.querySelector('#stage');stage.classList.toggle('terrain720',e.target.value==='720');stage.classList.toggle('terrainthumb',e.target.value==='thumb');resize();};
+  function playThump(){
+    if(document.querySelector('#shape').value!=='attack-four-slice')return;
+    const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+    const audio=new Audio(),osc=audio.createOscillator(),gain=audio.createGain(),t=audio.currentTime;
+    osc.frequency.setValueAtTime(95,t);osc.frequency.exponentialRampToValueAtTime(32,t+.12);
+    gain.gain.setValueAtTime(0,audio.currentTime);gain.gain.setValueAtTime(.22,t);gain.gain.exponentialRampToValueAtTime(.001,t+.16);
+    osc.connect(gain);gain.connect(audio.destination);osc.start(t);osc.stop(t+.18);osc.onended=()=>audio.close();
+  }
+  document.querySelector('#special-attack').onchange=e=>{lab.setSpecialAttack(e.target.value);lab.setShape('attack-specialists');document.querySelector('#shape').value='attack-specialists';};
   const manualAttack=()=>{auto=false;document.querySelector('#auto').setAttribute('aria-pressed','false');};
-  document.querySelector('#attack-play').onclick=()=>{manualAttack();lab.playAttack();status.textContent=document.querySelector('#shape').value==='attack-zapper'?'ZAPPER / HOT COIL':'POPPER / POP SHOT';};
+  document.querySelector('#attack-play').onclick=()=>{manualAttack();lab.playAttack();status.textContent=document.querySelector('#shape').value==='attack-specialists'?document.querySelector('#special-attack').selectedOptions[0].textContent.toUpperCase():document.querySelector('#shape').value==='attack-four-slice'?'FOUR-SLICE / QUAD VOLLEY':document.querySelector('#shape').value==='attack-zapper'?'ZAPPER / HOT COIL':'POPPER / POP SHOT';};
   document.querySelector('#attack-stop').onclick=()=>{manualAttack();lab.stopAttack();};
   document.querySelector('#attack-time').oninput=e=>{manualAttack();lab.setAnimationTime(Number(e.target.value));};
   document.querySelector('#attack-loop').onchange=e=>{manualAttack();lab.setAttackLoop(e.target.checked);lab.playAttack();};

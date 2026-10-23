@@ -46,7 +46,8 @@ test('training draws gradually into debt instead of stalling, and ignores the un
 });
 
 test('claim: a worker walks to the Reach and builds a claim; Hold goes up', () => {
-  const s = createTerritoryMatch(5);
+  // The classic map keeps the Natural inside the first cord; on Wheatfield the Lower Farm is past it (cord-limit).
+  const s = createTerritoryMatch(5, { map: 'legacy' });
   const reach = natural(s);
   s.shards[0] = 500;
   run(s, 1);

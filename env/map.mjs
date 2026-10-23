@@ -1,6 +1,7 @@
 import { makeRng } from './rng.mjs';
 import { drawV4, encodeV4, decodeV4, scatterV4, territoryLayoutV4 } from '../maps/layout-v4.mjs';
 import { loadMapSize, winCountFor } from '../maps/layout-sizes.mjs';
+import { drawWheatfield, WHEATFIELD } from '../maps/layout-wheatfield.mjs';
 
 const SIZE = 32;
 const PAIRS = 24;
@@ -49,21 +50,35 @@ export function isConnected(map) {
 // A page or script can still opt in with ?map=v4 (browser) or DRIFTFALL_MAP=v4 (node).
 export const DEFAULT_MAP = 'legacy';
 
-export function chosenMap() {
+// The territory match plays Wheatfield Valley (maps/WHEATFIELD.md) unless a page or script names another map.
+export const TERRITORY_DEFAULT_MAP = 'wheatfield';
+
+export function chosenMap({ territory = false } = {}) {
   const q = globalThis.location?.search ? new URLSearchParams(globalThis.location.search).get('map') : null;
-  return q || globalThis.process?.env?.DRIFTFALL_MAP || DEFAULT_MAP;
+  return q || globalThis.process?.env?.DRIFTFALL_MAP || (territory ? TERRITORY_DEFAULT_MAP : DEFAULT_MAP);
 }
 
 // Map names a page or script may ask for: standard (128 x 128, 21 Reaches; 'v4' is the older name for it), large
 // (192, 31 Reaches, watch mode's default) and huge (256, 41 Reaches). TERRITORY.md section 14.
 export const MAP_SIZES = Object.freeze(['standard', 'large', 'huge']);
 const sizeOf = (map) => (map === 'v4' ? 'standard' : map);
-export const isTerritoryMap = (map) => MAP_SIZES.includes(sizeOf(map));
+export const isTerritoryMap = (map) => MAP_SIZES.includes(sizeOf(map)) || map === WHEATFIELD.name;
 
 let v4Base = null;
 /** The hand-drawn v4 map, decoded once (tiles as char rows, reachGrid as a Uint8Array). Same as maps/driftfall-v4.json. */
+let wheatfieldBase = null;
+/** Wheatfield Valley, 256 x 256 with 31 Reaches (maps/layout-wheatfield.mjs), decoded once. */
+function loadWheatfield() {
+  if (!wheatfieldBase) {
+    const decoded = decodeV4(JSON.parse(JSON.stringify(encodeV4(drawWheatfield()))));
+    wheatfieldBase = { ...decoded, size: WHEATFIELD.name, winCount: winCountFor(decoded.reaches.length) };
+  }
+  return wheatfieldBase;
+}
+
 export function loadMapV4(size = 'standard') {
   const name = sizeOf(size);
+  if (name === WHEATFIELD.name) return loadWheatfield();
   if (name !== 'standard') return loadMapSize(name);
   if (!v4Base) v4Base = { ...decodeV4(encodeV4(drawV4())), size: 'standard', winCount: winCountFor(21) };
   return v4Base;
@@ -78,12 +93,33 @@ export function reachLayoutV4(size = 'standard') {
  * v4 in the shape the sim already reads (rocks, crystals, cores, workers) plus the new layers: heights, tiles,
  * ramps, vents, rubble, reaches, gates and reachGrid (Uint8Array, row-major, Reach id per tile, 0 = none).
  */
+// The scatter checks connectivity after every rock blob, so a 256 x 256 map takes most of a second per seed. The result
+// is kept for the last few seeds and handed out as a copy, so callers can change their map freely.
+const generatedV4 = new Map();
 export function generateMapV4(seed, size = 'standard') {
+  const key = `${sizeOf(size)}:${seed}`;
+  if (!generatedV4.has(key)) {
+    if (generatedV4.size >= 4) generatedV4.delete(generatedV4.keys().next().value);
+    generatedV4.set(key, buildMapV4(seed, size));
+  }
+  return structuredClone(generatedV4.get(key));
+}
+
+function buildMapV4(seed, size) {
   const m = scatterV4(loadMapV4(size), seed);
   const rocks = [], crystals = [], vents = [], rubble = [], ramps = [];
+  const water = [], bridges = [], fords = [], wells = [], sockets = [], camps = [], ruins = [];
   for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) {
     const c = m.tiles[y][x];
-    if (c === '#') rocks.push([x, y]);
+    // Creek water is a rock for movement (units cannot wade); bridges and fords are open ground.
+    if (c === '#' || c === '~') rocks.push([x, y]);
+    if (c === '~') water.push([x, y]);
+    else if (c === 'B') bridges.push([x, y]);
+    else if (c === 'f') fords.push([x, y]);
+    else if (c === 'U') wells.push([x, y]);
+    else if (c === 'G') sockets.push([x, y]);
+    else if (c === 'k') camps.push([x, y]);
+    else if (c === 'X') ruins.push([x, y]);
     else if (c === 'S') crystals.push({ x, y, amount: AMOUNT });
     else if (c === 'R') crystals.push({ x, y, amount: AMOUNT * 2, rich: true });
     else if (c === 'L') vents.push({ x, y, amount: 600 });
@@ -94,6 +130,8 @@ export function generateMapV4(seed, size = 'standard') {
     version: 4, width: m.width, height: m.height, rocks, crystals, cores: m.cores, workers: m.workers,
     heights: m.heights, tiles: m.tiles, ramps, vents, rubble, reaches: m.reaches, gates: m.gates, reachGrid: m.reachGrid,
     scatter: m.scatter, size: m.size, gateBase: m.gateBase, reachCount: m.reaches.length, winCount: m.winCount,
+    // Wheatfield's extra layers (empty on the other maps): water tiles, crossings, wells, sockets, camps and the ruin.
+    water, bridges, fords, wells, sockets, camps, ruins, extras: m.extras ?? null,
   };
 }
 

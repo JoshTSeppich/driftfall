@@ -22,7 +22,7 @@ import { cardWithRecall } from './items-ui.mjs';
 import { createFeedback } from './feel.mjs';
 import { createSoundPlayer } from './sound-player.mjs';
 import { stingerFor } from '../viewer3d/audio.mjs';
-import { territoryOptions, territoryPanel, drawReachBorders } from './territory-wire.mjs';
+import { territoryOptions, territoryPanel, drawReachBorders, drawPowerOverlay } from './territory-wire.mjs';
 import { reachViews, drawReachMinimap } from './reach-view.mjs';
 
 export const TICKS_PER_SECOND = 24;
@@ -568,6 +568,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     drawCampsOverlay(ov, campMarks(neutralSnap.neutrals), project, tp);
     drawPickups(ov, neutralSnap.groundItems, project, tp, performance.now());
     drawReachBorders(ov, state.territory, side, state.tick, project);
+    drawPowerOverlay(ov, state, side, input.ui.selection, project, state.tick);
     if (mode) {
       ov.fillStyle = 'rgba(0,0,0,.55)'; ov.fillRect(w2() / 2 - 150, 54, 300, 24);
       ov.fillStyle = '#ffe14a'; ov.font = '13px system-ui'; ov.textAlign = 'center';

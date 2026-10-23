@@ -2,6 +2,19 @@
 Designed with GPT (ChatGPT, Joshua's plan) at Joshua's request (20:29: "unique and cute... distinct, but our own").
 This is the rule book for the Design Studio (play/style-lab.html), every model, every animation and all art.
 
+
+## 0. BLOCKY REVISION (Joshua, 10-23 08:21: "go way simple, geometric and blocky") — overrides the sections below where they differ
+- **Every toaster is a few plain blocks.** Body = one box (a toaster is a box). Feet = two small boxes. Toast = one
+  thin slab sticking out of the slot. Face = a dark inset panel with two small square/trapezoid eye blocks. That's it.
+- **2–4 parts per unit** (body, toast, feet as one or two pieces, optional one prop), each a box on its own pivot.
+- **No bevels, no greebles, no rounded anything.** Where something must read as round (a dial, a wheel), use the
+  five-facet prism, but most units should need none.
+- **Under ~60 triangles per unit.** Silhouette by proportion only: Crumb = small cube; Popper = taller box with a tall
+  slab of toast; Zapper = box with two short block emitters on top; Four-Slice = a wide, long box with four slabs;
+  Broiler = a box with a hinged front panel; Bagel = a short pentagonal prism wheel.
+- **Colour does the work:** flat cream body, charcoal face panel, team-colour block on top or shoulder, golden toast.
+- Motion stays the same (hop, clunk, toast pops); simpler parts make it snappier and cheaper.
+
 ## The idea
 The Toastinators are tiny, highly disciplined war machines who happen to be kitchen appliances. **They don't know
 they're adorable.** They think they're an elite mechanised army: every hop is a military manoeuvre, every slice of
@@ -72,6 +85,11 @@ No photorealism, rust, scratches or complicated machinery: geometry does the wor
 
 **Production test:** at 64 pixels you recognise the Crumb by its oversized slot, the Popper by its raised toast, the
 Zapper by its twin emitters, and the Four-Slice by its enormous width.
+
+## 8a. Grid tileset (Joshua, 10-23 08:29): classic-RTS, very grid-like. Square tiles, grid-aligned cliffs with straight
+edges and 45° corners, wide wedge ramps, rectangular buildable base areas. Terrain resources are only WHEAT (fields
+near each base) and WATER (river and ponds, tapped by Pumps); power comes from WINDMILLS (windmill pads on high
+ground) and DAMS (dam sites on the river). No meadows, butter blocks or generator sockets on the map.
 
 ## 8. Terrain: "The Quiet Battlefield" (designed with GPT, 20:42; Joshua: "build the terrain with GPT, sharp contrast")
 **The world is quieter than the Toastinators.** Terrain is the stage, never the show: a miniature geometric

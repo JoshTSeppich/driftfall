@@ -6,6 +6,7 @@
 // stepRulesPost (after combat). Pure and deterministic: no clock, no randomness.
 
 import { createInitialState, emit, allocId, isFree, distance } from './state.mjs';
+import { chosenMap, generateMap, isTerritoryMap, reachLayoutV4 } from './map.mjs';
 import { enableBudget, stepBudget, canProgress } from './budget.mjs';
 import { buildReaches, createTerritory, updateTerritory, holdCount } from './territory.mjs';
 import { enableChain, layTrack } from './economy.mjs';
@@ -49,12 +50,20 @@ export function defaultLayout(state) {
 }
 
 /** A match with the budget, the territory rules and the Drift all switched on. */
+// The map is Wheatfield Valley unless opts.map or the page names another (env/map.mjs chosenMap).
 export function createTerritoryMatch(seed, opts = {}) {
-  const state = createInitialState(seed);
+  const map = opts.map || chosenMap({ territory: true });
+  const state = createInitialState(seed, { map });
+  // Creek water is rock for movement; the rock pushes (env/rocks.mjs) need to know which rock tiles are water, so a push
+  // into the creek makes a ford instead of being refused.
+  const water = generateMap(seed, { map }).water || [];
+  const waterKeys = new Set(water.map(([x, y]) => `${x},${y}`));
+  state.rockHooks = { isWater: (s, x, y) => waterKeys.has(`${x},${y}`) };
   if (!Array.isArray(state.events)) state.events = [];
   if (state.result === undefined) state.result = null;
   enableBudget(state, opts.budget || {});
-  createTerritory(state, buildReaches(opts.layout || defaultLayout(state)), opts.rules || {});
+  const layout = opts.layout || (isTerritoryMap(map) ? reachLayoutV4(map) : defaultLayout(state));
+  createTerritory(state, buildReaches(layout), opts.rules || {});
   state.drift = createDrift(seed);
   state.claims = [];
   enableResearch(state);

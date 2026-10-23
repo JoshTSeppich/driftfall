@@ -1,17 +1,32 @@
 {
- "build": 208,
- "at": "2026-10-23T14:08:54.613Z",
- "seconds": 163.1,
+ "build": 212,
+ "at": "2026-10-23T14:30:06.063Z",
+ "seconds": 171.8,
  "state": "red",
- "nextBuildAt": null,
- "headline": "Red: 1 test file(s) failing.",
+ "nextBuildAt": "2026-10-23T14:33:06.063Z",
+ "headline": "Red: 2 test file(s) failing.",
  "tests": {
-  "files": 73,
-  "pass": 1138,
-  "fail": 1,
-  "seconds": 271.4
+  "files": 77,
+  "pass": 1184,
+  "fail": 16,
+  "seconds": 292
  },
  "failures": [
+  {
+   "file": "tests/sim-territory.test.mjs",
+   "owners": [
+    "fable"
+   ],
+   "imports": [
+    "env/sim.mjs",
+    "env/sim-territory.mjs",
+    "env/territory.mjs"
+   ],
+   "tests": [
+    "claim: a worker walks to the Reach and builds a claim; Hold goes up"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: claim finishes"
+  },
   {
    "file": "tests/style-lab.test.mjs",
    "owners": [],
@@ -19,56 +34,78 @@
     "play/style-lab/lab.mjs"
    ],
    "tests": [
-    "Pop Shot reference is seekable, interruptible and emits one presentation hit without spending ammo"
+    "Mill has five pivoted parts, a turning five-facet stone and wheat-to-Flour grinding",
+    "Pump sits on river water with five rigid parts, spring piston and outlet flow",
+    "Churn pumps a rigid plunger and handle, springs at idle and hops with planted pauses",
+    "Generator spins a five-facet wheel, springs, hops and glows as a dam in every look",
+    "Bagel rolls on five grounded facets and spring-tips up to brake in all looks",
+    "Bible signature attacks recoil emitters and synchronise heavy toast"
    ],
-   "error": "Error: Unknown shape"
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
   }
  ],
  "parse": {
-  "checked": 59,
+  "checked": 61,
   "errors": []
  },
  "match": {
   "ok": true,
-  "seed": 209,
+  "seed": 213,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3460,
-    3540
+    3480,
+    3520
    ]
   },
-  "ms": 739
+  "ms": 812
  },
  "changed": {
   "first": false,
-  "added": [],
+  "added": [
+   {
+    "file": "tests/wheatfield-map.test.mjs",
+    "owner": null
+   }
+  ],
   "changed": [
+   {
+    "file": "env/map.mjs",
+    "owner": "sonnet"
+   },
+   {
+    "file": "env/sim-territory.mjs",
+    "owner": null
+   },
+   {
+    "file": "env/state.mjs",
+    "owner": "haiku"
+   },
    {
     "file": "tests/style-lab.test.mjs",
     "owner": null
    }
   ],
   "removed": [],
-  "total": 1
+  "total": 5
  },
  "files": {
-  "env": 28,
+  "env": 30,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 75,
+  "tests": 79,
   "players": 18,
   "live": 19
  },
  "previous": {
-  "build": 207,
+  "build": 211,
   "state": "red",
-  "at": "2026-10-23T14:01:14.852Z",
+  "at": "2026-10-23T14:24:14.238Z",
   "failing": [
-   "tests/perf.test.mjs"
+   "tests/style-lab.test.mjs"
   ]
  }
 }

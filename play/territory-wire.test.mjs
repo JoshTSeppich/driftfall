@@ -8,13 +8,13 @@ const fakeCtx = () => {
   return { calls, set strokeStyle(v) { calls.push(['stroke', v]); }, set lineWidth(v) {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() { calls.push(['draw']); } };
 };
 
-test('territory is off unless ?territory=1, so the plain game stays as it was', () => {
-  assert.equal(territoryOptions(new URLSearchParams('')).on, false);
-  assert.equal(territoryOptions(new URLSearchParams('')).createState, undefined);
-  const t = territoryOptions(new URLSearchParams('territory=1'));
-  assert.equal(t.on, true);
-  const s = t.createState(7);
-  assert.ok(s.territory && s.drift);
+test('territory is the default match; ?territory=0 gives the old classic match', () => {
+  // Joshua 10-23 08:03: territory is the default (sonnet, wire-up); the classic match is ?territory=0.
+  const on = territoryOptions(new URLSearchParams(''));
+  assert.equal(on.on, true);
+  assert.ok(on.createState(7).territory && on.createState(7).drift);
+  assert.equal(territoryOptions(new URLSearchParams('territory=0')).on, false);
+  assert.equal(territoryOptions(new URLSearchParams('territory=0')).createState, undefined);
 });
 
 test('Reach borders: one stroke per visible Reach', () => {

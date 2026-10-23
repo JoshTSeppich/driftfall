@@ -5,11 +5,11 @@ import { buildModel, triangles, LOOKS, SHAPES, createLab } from '../play/style-l
 for (const look of LOOKS) test(`${look}: real geometry builds with a stub renderer`, () => {
   const renderer = { render() {}, setSize() {}, dispose() {} };
   const lab = createLab({ renderer, width: 900, height: 600, look });
-  for (const kind of ['attack-zapper', 'attack-popper', 'toppings', 'thought-moods', 'toast-stacks', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
+  for (const kind of ['attack-specialists', 'attack-four-slice', 'attack-zapper', 'attack-popper', 'toppings', 'thought-moods', 'toast-stacks', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
     const model = buildModel(kind, look, 'cyan');
     assert.ok(model instanceof THREE.Group);
     assert.ok(triangles(model) > 0);
-    if (['attack-zapper', 'attack-popper', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) < 300, `${kind}: ${triangles(model)}`);
+    if (['attack-specialists', 'attack-four-slice', 'attack-zapper', 'attack-popper', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) <= 60, `${kind}: ${triangles(model)}`);
     if (['toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
   }
   for (const action of lab.actions) { lab.trigger(action, 0); for (let t = 0; t <= 4; t += 0.016) lab.update(t); }
@@ -104,7 +104,7 @@ test('Mill has five pivoted parts, a turning five-facet stone and wheat-to-Flour
   const lab=createLab();lab.setShape('mill');
   const m=lab.units[0];assert.equal(m.children.length,5);assert.ok(triangles(m)<800);
   const stone=m.getObjectByName('millstone'), wheat=m.getObjectByName('wheat'), flour=m.getObjectByName('flour');
-  assert.equal(stone.geometry.parameters.radialSegments,5);
+  assert.equal(stone.geometry.type,'BoxGeometry');
   lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
   assert.ok(m.position.y>0);const idleAngle=stone.rotation.y;
   lab.trigger('grind',1);for(let i=60;i<=90;i++)lab.update(i/60);
@@ -121,7 +121,7 @@ test('Mill has five pivoted parts, a turning five-facet stone and wheat-to-Flour
   const lab=createLab();lab.setShape('pump');
   const p=lab.units[0];assert.equal(p.children.length,5);assert.ok(triangles(p)<800);
   const piston=p.getObjectByName('piston'),pipe=p.getObjectByName('pipe'),flow=p.getObjectByName('outflow');
-  assert.equal(pipe.geometry.parameters.radialSegments,5);
+  assert.equal(pipe.geometry.type,'BoxGeometry');
   const river=lab.scene.getObjectByName('river-tile');assert.ok(river);assert.ok(river.visible);
   lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
   const idle=piston.position.y;assert.notEqual(idle,piston.userData.home.y);
@@ -134,7 +134,7 @@ test('Mill has five pivoted parts, a turning five-facet stone and wheat-to-Flour
   assert.equal(poses[34][0],poses[37][0]);
   assert.equal(river.position.x,p.position.x);assert.equal(river.position.z,p.position.z);
   for(const look of LOOKS){lab.setLook(look);assert.equal(lab.units[0].name,'pump');}
-  lab.setTeam('orange');assert.equal(lab.units[0].getObjectByName('body').material.color.getHex(),0xff8a2a);
+  lab.setTeam('orange');assert.equal(lab.units[0].getObjectByName('body').material.color.getHex(),0xf2d7a6);
   lab.dispose();
 });
 
@@ -143,7 +143,7 @@ test('Churn pumps a rigid plunger and handle, springs at idle and hops with plan
   const lab=createLab();lab.setShape('churn');
   const u=lab.units[0];assert.equal(u.children.length,5);assert.ok(triangles(u)<800);
   const plunger=u.getObjectByName('plunger'), handle=u.getObjectByName('handle');
-  assert.equal(u.getObjectByName('body').geometry.parameters.radialSegments,5);
+  assert.equal(u.getObjectByName('body').geometry.type,'BoxGeometry');
   lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
   assert.notEqual(plunger.position.y,plunger.userData.home.y);
   lab.trigger('churn',1);const strokes=[];
@@ -158,7 +158,7 @@ test('Churn pumps a rigid plunger and handle, springs at idle and hops with plan
   assert.ok(poses.some(v=>v[1]>.05));assert.ok(poses.some(v=>Math.abs(v[2]-1)>.02));
   assert.equal(poses[34][0],poses[37][0]);
   for(const look of LOOKS){lab.setLook(look);lab.trigger('churn',3);lab.update(3.5);assert.equal(lab.units[0].name,'churn');}
-  lab.setTeam('orange');assert.equal(lab.units[0].getObjectByName('body').material.color.getHex(),0xff8a2a);
+  lab.setTeam('orange');assert.equal(lab.units[0].getObjectByName('body').material.color.getHex(),0xf2d7a6);
   lab.dispose();
 });
 
@@ -166,7 +166,7 @@ test('Churn pumps a rigid plunger and handle, springs at idle and hops with plan
   const lab=createLab();lab.setShape('generator');
   const u=lab.units[0], wheel=u.getObjectByName('wheel');
   assert.equal(u.children.length,5);assert.ok(triangles(u)<800);
-  assert.equal(wheel.geometry.parameters.radialSegments,5);
+  assert.equal(wheel.geometry.type,'BoxGeometry');
   lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
   const angle=wheel.rotation.z;assert.ok(angle>0);assert.ok(u.position.y>0);
   lab.trigger('generate',1);for(let i=60;i<120;i++)lab.update(i/60);
@@ -263,7 +263,7 @@ test('Bible signature attacks recoil emitters and synchronise heavy toast',()=>{
       assert.ok(u.getObjectByName('toast0').position.y>u.getObjectByName('toast0').userData.home.y+.5);
       if(kind==='four-slice')assert.equal(u.getObjectByName('toast0').position.y,u.getObjectByName('toast1').position.y);
     }
-    lab.setExpression('alarmed');lab.update(.3);assert.equal(u.getObjectByName('eye-left').geometry.userData.facets,5);
+    lab.setExpression('alarmed');lab.update(.3);assert.equal(u.getObjectByName('eye-left').geometry.type,'BoxGeometry');
     lab.setExpression('angry');lab.update(.4);assert.ok(u.getObjectByName('slot0').material.emissiveIntensity>0);
   }
   lab.dispose();
@@ -274,7 +274,7 @@ test('Defroster has six rigid pivots, frosty vents and a warm beam repairing an 
   for(const look of LOOKS){
     lab.setLook(look);const u=lab.units[0],vent=u.getObjectByName('coil0'),beam=u.getObjectByName('repair-beam');
     assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
-    assert.equal(vent.geometry.parameters.radialSegments,5);
+    assert.equal(vent.geometry.type,'BoxGeometry');
     assert.equal(vent.material.color.getHex(),0xa6ddec);
     assert.equal(u.getObjectByName('body').material.color.getHex(),0xf2d7a6);
     lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
@@ -300,7 +300,7 @@ test('Defroster has six rigid pivots, frosty vents and a warm beam repairing an 
     lab.setLook(look);const u=lab.units[0],plug=u.getObjectByName('unplugged-plug');
     assert.equal(u.children.length,5);assert.ok(triangles(u)<300);
     assert.equal(u.getObjectByName('body').material.color.getHex(),0x303844);
-    assert.equal(plug.geometry.parameters.radialSegments,5);
+    assert.equal(plug.geometry.type,'BoxGeometry');
     lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
     assert.notEqual(plug.rotation.z,0);
     lab.trigger('hide',1);lab.update(1);assert.equal(u.userData.hiddenFraction,0);
@@ -321,7 +321,7 @@ test('Defroster has six rigid pivots, frosty vents and a warm beam repairing an 
   for(const look of LOOKS){
     lab.setLook(look);const u=lab.units[0],patient=u.getObjectByName('power-patient');
     assert.ok(triangles(u)<800);assert.equal(u.children.length,6);
-    for(const name of ['outlet','extension-box'])assert.equal(u.getObjectByName(name).geometry.parameters.radialSegments,5);
+    for(const name of ['outlet','extension-box'])assert.equal(u.getObjectByName(name).geometry.type,'BoxGeometry');
     assert.ok(triangles(patient)<300);
     lab.trigger('cut-cord',0);lab.update(.1);assert.ok(u.getObjectByName('cut-sparks').visible);
     lab.update(9);assert.equal(u.userData.powered,true);
@@ -364,7 +364,7 @@ test('Terrain Kit preserves palette, resources, fog, ownership and four rigid To
   for(const look of LOOKS){
     lab.setLook(look);const u=lab.units[0],dial=u.getObjectByName('dial'),hand=u.getObjectByName('timer-hand');
     assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
-    assert.equal(dial.geometry.parameters.radialSegments,5);
+    assert.equal(dial.geometry.type,'BoxGeometry');
     lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
     const angle=hand.rotation.z;lab.update(1.1);assert.notEqual(hand.rotation.z,angle);
     assert.notEqual(dial.position.y,dial.userData.home.y);
@@ -399,7 +399,7 @@ test('Flying Toast has six rigid pivots, spring wings and a recovering dive stri
   for(const look of LOOKS){
     lab.setLook(look);const u=lab.units[0],wing=u.getObjectByName('wing-left');
     assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
-    assert.equal(wing.geometry.userData.facets,5);
+    assert.equal(wing.geometry.type,'BoxGeometry');
     assert.equal(u.getObjectByName('body').material.color.getHex(),0xf2d7a6);
     lab.trigger('idle',0);for(let i=0;i<60;i++)lab.update(i/60);
     assert.ok(u.position.y>.5);assert.ok(Math.abs(wing.rotation.z)>.01);
@@ -423,7 +423,7 @@ test('Flying Toast has six rigid pivots, spring wings and a recovering dive stri
     assert.ok(visor,'pilot visor must read as one broad charcoal panel');
     assert.equal(visor.parent,toast);
     assert.equal(visor.material.color.getHex(),0x303844);
-    assert.equal(toast.geometry.userData.facets,5);
+    assert.equal(toast.geometry.type,'BoxGeometry');
     const size=new THREE.Box3().setFromObject(toast).getSize(new THREE.Vector3());
     assert.ok(size.x>.85&&size.y>.65,'toast slice dominates the air silhouette');
     assert.equal(u.children.length,6);
@@ -437,7 +437,7 @@ test('Breadbox opens its rigid roll-top before dropping a unit and springs shut 
   for(const look of LOOKS){
     lab.setLook(look);const u=lab.units[0],lid=u.getObjectByName('roll-top'),cargo=u.getObjectByName('cargo-unit');
     assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
-    assert.equal(lid.geometry.parameters.radialSegments,5);
+    assert.equal(lid.geometry.type,'BoxGeometry');
     assert.equal(u.getObjectByName('body').material.color.getHex(),0xf2d7a6);
     lab.trigger('idle',0);const heights=[];for(let i=0;i<60;i++){lab.update(i/60);heights.push(u.position.y);}
     assert.ok(Math.max(...heights)-Math.min(...heights)>.02);assert.equal(cargo.visible,false);
@@ -460,9 +460,9 @@ test('Smoke Alarm floats, blinks and springs a five-sided detection pulse in eve
   for(const look of LOOKS){
     lab.setLook(look);const u=lab.units[0],light=u.getObjectByName('alarm-light'),ring=u.getObjectByName('beep-ring');
     assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
-    assert.equal(u.getObjectByName('body').geometry.parameters.radialSegments,5);
-    assert.equal(light.geometry.parameters.radialSegments,5);
-    assert.equal(ring.geometry.parameters.thetaSegments,5);
+    assert.equal(u.getObjectByName('body').geometry.type,'BoxGeometry');
+    assert.equal(light.geometry.type,'BoxGeometry');
+    assert.equal(ring.geometry.type,'BoxGeometry');
     assert.equal(u.getObjectByName('body').material.color.getHex(),0xf2d7a6);
     for(const name of ['faceplate','eye-left','eye-right','slot0','toast0'])assert.ok(u.getObjectByName(name));
     lab.trigger('idle',0);const heights=[],blinks=new Set();
@@ -542,7 +542,7 @@ test('Track carries pentagonal crystal slices through straight, corner and junct
     lab.setLook(look);const u=lab.units[0];assert.equal(u.children.length,6);assert.ok(triangles(u)<800);
     for(const name of ['straight','corner','junction']){
       assert.ok(u.getObjectByName('track-'+name));
-      const slice=u.getObjectByName('slice-'+name);assert.equal(slice.children[0].geometry.parameters.radialSegments,5);
+      const slice=u.getObjectByName('slice-'+name);assert.equal(slice.children[0].geometry.type,'BoxGeometry');
     }
     u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
     lab.trigger('idle',0);lab.update(.1);const deck=u.getObjectByName('track-straight'),y=deck.position.y;lab.update(.3);assert.notEqual(deck.position.y,y);
@@ -759,3 +759,95 @@ test('Pop Shot loops repeat the arc, stop clears effects, and movement plants be
     lab.stopAttack();assert.equal(target.visible,false);lab.dispose();
   }
  });
+
+test('attack gallery emits both presentation hits and Hot Coil interruption clears heat',()=>{
+  const hits=[];const lab=createLab({onAttackHit:e=>hits.push(e.unit.name)});
+  lab.setShape('all');lab.playAttack();lab.update(.35);
+  assert.deepEqual(hits,['attack-specialists','attack-four-slice','attack-zapper','attack-popper']);
+  lab.setShape('attack-zapper');lab.playAttack();lab.update(.51);
+  const u=lab.units[0];assert.ok(u.getObjectByName('heater0').material.emissiveIntensity>1);
+  lab.trigger('move',.51);lab.update(.52);
+  for(const name of ['hot-bolt','hot-target','hot-flash'])assert.equal(u.getObjectByName(name).visible,false);
+  assert.equal(u.getObjectByName('heater0').material.emissiveIntensity,0);
+  assert.equal(hits.length,4);lab.dispose();
+});
+
+test('Quad Volley braces, holds, releases four spread slices and resets deterministically',()=>{
+ for(const look of LOOKS){
+  const lab=createLab({look});lab.setShape('attack-four-slice');const u=lab.units[0];
+  assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
+  u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+  lab.playAttack();lab.setAnimationTime(80);const brace=u.getObjectByName('body').rotation.x;
+  assert.ok(brace<0);lab.setAnimationTime(150);assert.equal(u.getObjectByName('body').rotation.x,brace);
+  lab.setAnimationTime(270);const slices=[0,1,2,3].map(i=>u.getObjectByName('quad-slice'+i));
+  assert.ok(slices.every(o=>o.visible));assert.equal(new Set(slices.map(o=>o.position.x)).size,4);
+  const p=slices[0].position.clone();lab.setAnimationTime(340);assert.ok(u.getObjectByName('quad-flash').visible);
+  lab.setAnimationTime(270);assert.deepEqual(slices[0].position,p);
+  lab.setAnimationTime(520);assert.equal(u.getObjectByName('body').rotation.x,0);assert.equal(u.userData.cameraShake,0);
+  lab.stopAttack();assert.ok(slices.every(o=>!o.visible));lab.dispose();
+ }
+});
+
+ test('Quad Volley release thump events follow playback, repeat and never fire on seek',()=>{
+ let releases=0,hits=0;const lab=createLab({onAttackRelease:()=>releases++,onAttackHit:()=>hits++});lab.setShape('attack-four-slice');
+ lab.playAttack();lab.setAnimationTime(250);assert.equal(releases,0);assert.notEqual(lab.units[0].userData.cameraShake,0);
+ lab.playAttack();lab.update(.21);lab.update(.35);assert.equal(releases,1);assert.equal(hits,1);
+ lab.stopAttack();assert.equal(lab.units[0].userData.cameraShake,0);
+ lab.playAttack();lab.update(.56);assert.equal(releases,2);lab.dispose();
+ });
+
+test('Quad Volley moves in planted heavy hops and keeps toast on idle springs',()=>{
+ const lab=createLab();lab.setShape('attack-four-slice');const u=lab.units[0];
+ lab.trigger('move',0);lab.update(.47);const x=u.position.x;lab.update(.53);assert.equal(u.position.x,x);
+ lab.update(.7);assert.ok(u.position.y>0);assert.equal(u.scale.y,1);
+ lab.trigger('idle',1);lab.update(1.1);const y=u.getObjectByName('toast0').position.y;lab.update(1.3);assert.notEqual(u.getObjectByName('toast0').position.y,y);
+ lab.dispose();
+});
+
+test('specialist attack study preserves rigs, budgets, deterministic seek and interruption',()=>{
+ for(const look of LOOKS)for(const kind of ['broiler','flak-popper','bagel','crumb']){
+  const lab=createLab({look});lab.setShape('attack-specialists');lab.setSpecialAttack(kind);
+  const u=lab.units[0];assert.ok(u.children.length>=3&&u.children.length<=6);assert.ok(triangles(u)<300,kind+': '+triangles(u));
+  const snapshot=()=>{const a=[];u.traverse(o=>{if(!o.userData.ink)a.push([o.name,o.visible,...o.position.toArray(),...o.rotation.toArray(),...o.scale.toArray()]);});return a;};
+  lab.setAnimationTime(0);const idle=snapshot();lab.setAnimationTime(270);const flight=snapshot();
+  assert.notDeepEqual(flight,idle);lab.setAnimationTime(340);assert.ok(u.getObjectByName('special-flash').visible);
+  lab.setAnimationTime(270);assert.deepEqual(snapshot(),flight);lab.setAnimationTime(520);assert.deepEqual(snapshot(),idle);
+  lab.playAttack();lab.update(.27);lab.stopAttack();assert.deepEqual(snapshot(),idle);
+  lab.trigger('move',1);lab.update(1.2);assert.ok(u.position.y>0||kind==='bagel');
+  lab.dispose();
+ }
+});
+
+test('specialist signatures show shell arc, exactly five flak croutons, ram rebound and panic hop',()=>{
+ const lab=createLab();lab.setShape('attack-specialists');
+ for(const kind of ['broiler','flak-popper','bagel','crumb']){
+  lab.setSpecialAttack(kind);const u=lab.units[0];
+  u.traverse(o=>{if(o.isMesh&&!o.userData.ink&&o.geometry.parameters?.radialSegments!==undefined)assert.equal(o.geometry.parameters.radialSegments,5);});
+  lab.setAnimationTime(270);
+  const shell=u.getObjectByName('special-shell');
+  if(kind==='broiler'){assert.ok(shell.visible);assert.ok(shell.position.z>0);assert.ok(u.getObjectByName('door').rotation.x<-1);}
+  if(kind==='flak-popper'){assert.ok(shell.visible);assert.equal(shell.position.z,0);assert.ok(shell.position.y>2);}
+  if(kind==='crumb')assert.equal([0,1,2,3,4].filter(i=>u.getObjectByName('special-crumb'+i).visible).length,5);
+  lab.setAnimationTime(360);
+  if(kind==='broiler')assert.ok(u.getObjectByName('special-fire').visible);
+  if(kind==='flak-popper'){assert.equal(shell.visible,false);assert.equal([0,1,2,3,4].filter(i=>u.getObjectByName('special-crumb'+i).visible).length,5);}
+  lab.setAnimationTime(340);const impact=u.position.z;lab.setAnimationTime(460);
+  if(kind==='bagel')assert.ok(u.position.z<impact&&u.position.y>.8);
+  if(kind==='crumb')assert.ok(u.position.z<1.2&&u.position.y>0);
+  if(kind!=='broiler')assert.equal(u.userData.cameraShake,0);
+ }
+ lab.dispose();
+});
+
+ test('Blocky revision replaces every appliance surface and keeps all looks',()=>{
+ for(const look of LOOKS)for(const kind of SHAPES.filter(k=>!['terrain-kit','ground-patches','toppings'].includes(k))){
+  const u=buildModel(kind,look);assert.equal(u.userData.blocky,true,kind);
+  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry'].includes(o.geometry.type),kind+': '+o.name);});
+ }
+ });
+
+test('Blocky attack effects retain renderable surfaces within the sixty-triangle budget',()=>{
+ for(const [kind,names] of [['attack-popper',['pop-projectile','pop-flash']],['attack-zapper',['hot-bolt','hot-target','hot-flash']],['attack-four-slice',['quad-slice0','quad-slice1','quad-slice2','quad-slice3','quad-flash']]]){
+  const u=buildModel(kind);assert.ok(triangles(u)<=60);for(const name of names)assert.ok(u.getObjectByName(name).geometry.attributes.position.count>0,name);
+ }
+});
