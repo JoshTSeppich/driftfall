@@ -494,3 +494,11 @@ Full research and design: research/POWER-NETWORK.md. In short:
 - **Unit cords wrap around corners** (wrap-point list); every bend uses cord length, so the terrain shapes your reach.
   Pegs re-anchor. Unit cords stay tripwires, not walls.
 - **No softlocks:** no fence may enclose an enemy power point or cut a player off from every open Reach.
+- **GPT review adopted (POWER-NETWORK.md section 11):**
+  - Fences are an explicit, upkeep-costing order, separate from power links (nearest 3, deterministic).
+  - Enclosure takes 6 s to capture, is capped at 400 tiles and gives +15% wheat.
+  - Brown-out is local, with load shedding and a 2 s restart.
+  - At most 3 wrap points per cord.
+  - Stepping on a cord threatens it; cutting it takes an attack.
+  - Extension Box reach 8, Relay Pylon reach 16, rock short 5 s.
+  - "The Great Unplugging": cords recoil FWIP, and a broken dam reshapes the river.

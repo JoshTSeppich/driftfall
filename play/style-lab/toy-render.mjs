@@ -1,3 +1,4 @@
+import {poseCute} from './cute-pass.mjs';
 import * as T from 'three';
 
 export function configureToyRenderer(renderer,enabled=true){
@@ -50,8 +51,9 @@ export function buildToyShowcase(build,look,team){
  }
  return root;
 }
-export function poseToyShowcase(root,{active,age}){
+export function poseToyShowcase(root,{active,age,expression}){
  root.children.forEach((u,i)=>{
+  if(u.userData.cute){poseCute(u,{active,age,expression,homeX:u.userData.showcaseX});return;}
   const heavy=i===2,cycle=age/(heavy?.9:.6),phase=cycle%1,flight=Math.min(1,phase/.72),moving=active==='move',hop=moving?4*flight*(1-flight):0;
   u.position.set(u.userData.showcaseX+(moving?(Math.floor(cycle)+flight*flight*(3-2*flight))*.22:0),(heavy?.18:.32)*hop,0);
   u.scale.set(1+(moving?.04*Math.cos(flight*Math.PI*2):0),1+(moving?-.08*Math.cos(flight*Math.PI*2):0),1);

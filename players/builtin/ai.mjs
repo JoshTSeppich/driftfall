@@ -30,7 +30,7 @@ const COUNTERS = {
 const CLAIM_ROLES = ['natural', 'vent', 'flank', 'rich', 'mesa', 'pocket', 'outer', 'centre']; // claim order; nearest first within a role
 const CLAIM_RETRY = 24 * 60; // a claim order not shown as claimed after a minute is retried
 const FLOOD_WARN = 24 * 8; // pull units out of a Reach this long before a Flood
-const BASE_MIX = { grunt: 1.0, lancer: 1.0, brute: 0.5 };
+const BASE_MIX = { grunt: 1.0, lancer: 1.0, brute: 0.5, howler: 0, spiker: 0, dart: 0 }; // the rest of the roster: not yet in its plan
 
 const dist = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 const HOME_RADIUS = 9; // crystal tiles within this of our Core are the home field

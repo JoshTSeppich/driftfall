@@ -6,6 +6,9 @@ import { MOTION_UNITS } from '../engine/coil/motion-specs.mjs';
 
 const KIND_TO_TOASTINATOR = Object.freeze({
   worker: 'crumb', grunt: 'popper', lancer: 'zapper', brute: 'four-slice', dart: 'bagel', howler: 'broiler',
+  // the toaster roster's own names (and the model ids of play/toaster-models.mjs) map to themselves
+  crumb: 'crumb', popper: 'popper', zapper: 'zapper', 'four-slice': 'four-slice', fourslice: 'four-slice', broiler: 'broiler',
+  'flak-popper': 'popper', flakpopper: 'popper', bagel: 'bagel',
 });
 
 export function coilEnabled(search = '') {

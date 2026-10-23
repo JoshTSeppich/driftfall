@@ -10,11 +10,16 @@
 // and dying are instance matrices. Health bars are one instanced quad, selection circles one instanced ring and
 // air-unit ground shadows one instanced disc. 200 units on screen cost about 17 draw calls plus the shadow pass.
 //
+// With the toy look on (ctx.toy, the default; ?toy=0 turns it off) units are the cute blocky toasters of
+// play/toaster-units.mjs instead of these baked shapes or the drawn sprites; pass opts.toaster = false to force the old look.
+//
 // Frame shape is viewer3d/world.mjs's: { tick, alpha, prev, next, events }. Pure helpers (bakeKind, unitPose,
 // instanceTransform) are exported so tests/play-units-instanced.test.mjs can run them in node with real Three.js.
 
 import * as THREE from 'three';
 import { createDrawnUnits } from './drawn-units.mjs';
+import { createToasterUnits } from './toaster-units.mjs';
+import { unitState } from '../env/ammo.mjs';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   buildUnitModel, resolveKind, UNIT_SPECS, UNIT_KINDS_3D, normalizeEvents, choosePose, yawBetween, turnToward,
@@ -198,7 +203,8 @@ export function instanceTransform({ pose, spec, phase = 0, walkPhase = 0, time =
 export function createInstancedUnits(ctx, opts = {}) {
   const scene = ctx.scene;
   const look = opts.look ?? new URLSearchParams(globalThis.location?.search ?? '').get('look');
-  const drawn = look !== '3d' && (opts.loadTexture || typeof document !== 'undefined')
+  const toaster = opts.toaster !== false && ctx.toy ? createToasterUnits(ctx, { scale: opts.scale }) : null;
+  const drawn = !toaster && look !== '3d' && (opts.loadTexture || typeof document !== 'undefined')
     ? createDrawnUnits(ctx, opts) : null;
   const tileSize = ctx.tileSize ?? 1;
   const palette = ctx.palette ?? null;
@@ -283,7 +289,7 @@ export function createInstancedUnits(ctx, opts = {}) {
     kinds.set(kind, e);
     return e;
   }
-  for (const k of opts.prebake ?? UNIT_KINDS_3D) kindEntry(k);
+  if (!toaster) for (const k of opts.prebake ?? UNIT_KINDS_3D) kindEntry(k);
 
   const bars = makeBatch(quad, barMat, { attr: { name: 'aBar', size: 3 }, order: 1000 });
   const rings = makeBatch(ringGeo, ringMat, { order: 5 });
@@ -308,7 +314,7 @@ export function createInstancedUnits(ctx, opts = {}) {
     const kind = resolveKind(u.kind);
     const owner = u.owner === 1 ? 1 : 0;
     const v = {
-      id: u.id, kind, owner, entry: kindEntry(kind), spec: UNIT_SPECS[kind] ?? { rig: 'hover', size: 0.5, height: 0.8, stride: 1.2 },
+      id: u.id, kind, owner, entry: toaster ? null : kindEntry(kind), spec: UNIT_SPECS[kind] ?? { rig: 'hover', size: 0.5, height: 0.8, stride: 1.2 },
       pos: new THREE.Vector3(), yaw: owner === 0 ? Math.PI * 0.75 : -Math.PI * 0.25,
       lastMoveTick: -Infinity, lastHitTick: null, lastHitAt: -Infinity, hitFlash: 0,
       spawnAt: time, dying: false, deathAt: 0, dead: false, maxHp: maxHpOf(kind, stats) || u.hp, hp: u.hp,
@@ -324,6 +330,12 @@ export function createInstancedUnits(ctx, opts = {}) {
   }
 
   // Write one unit's instances (body, cargo, bar, ring, shadow) for this frame.
+  let frameDt = 1 / 60, frameState = null;
+  function hungerOf(u) {
+    if (!u || !frameState?.ammo) return null;
+    try { return unitState(frameState, u); } catch { return null; }
+  }
+
   function emit(v, u, pose, alpha, tick) {
     const spec = v.spec, size = spec.size ?? 0.5;
     const walkPhase = spec.heavy ? alpha * Math.PI : (tick + alpha) * Math.PI * (spec.stride ?? 1.2);
@@ -338,7 +350,8 @@ export function createInstancedUnits(ctx, opts = {}) {
     dummy.scale.setScalar(unitScale * tr.scale);
     dummy.updateMatrix();
     const selected = selection.has(v.id);
-    if (!drawn?.emit(v, tr)) {
+    const toasted = toaster?.emit(v, u, { pose, time, dt: frameDt, selected, tr: v.dying ? { scale: 1 } : tr, state: hungerOf(u) });
+    if (!(toaster ? toasted : drawn?.emit(v, tr))) {
       const b = v.entry.batch;
       const i = slot(b);
       b.mesh.setMatrixAt(i, dummy.matrix);
@@ -369,7 +382,7 @@ export function createInstancedUnits(ctx, opts = {}) {
     if (showBar) {
       const j = slot(bars);
       const w = (spec.bar ?? Math.max(0.42, Math.min(0.7, size * 0.9))) * unitScale;
-      dummy.position.set(v.pos.x, v.pos.y + (tr.dy + (drawn?.height(v.kind) ?? spec.height ?? 0.8) + 0.16) * unitScale, v.pos.z);
+      dummy.position.set(v.pos.x, v.pos.y + (tr.dy + (toaster?.height(v.kind) ?? drawn?.height(v.kind) ?? spec.height ?? 0.8) + 0.16) * unitScale, v.pos.z);
       if (ctx.camera) dummy.quaternion.copy(ctx.camera.quaternion); else dummy.rotation.set(0, 0, 0);
       dummy.scale.set(w, w * 0.14, 1); dummy.updateMatrix();
       bars.mesh.setMatrixAt(j, dummy.matrix);
@@ -380,7 +393,10 @@ export function createInstancedUnits(ctx, opts = {}) {
   function update(frame, dt) {
     dt = Math.max(0, Math.min(0.1, Number.isFinite(dt) ? dt : 0.016));
     time += dt;
+    frameDt = dt;
+    frameState = frame?.next ?? frame?.prev ?? null;
     drawn?.begin();
+    toaster?.begin();
     for (const e of kinds.values()) { begin(e.batch); if (e.cargo) begin(e.cargo); }
     begin(bars); begin(rings); begin(shadows);
     const prev = frame?.prev ?? frame?.next ?? null;
@@ -449,10 +465,12 @@ export function createInstancedUnits(ctx, opts = {}) {
     for (const e of kinds.values()) { end(e.batch); if (e.cargo) end(e.cargo); }
     end(bars); end(rings); end(shadows);
     drawn?.end();
+    toaster?.end(time);
   }
 
   function dispose() {
     drawn?.dispose();
+    toaster?.dispose();
     for (const e of kinds.values()) {
       root.remove(e.batch.mesh); e.batch.mesh.dispose(); e.baked.geom?.dispose();
       if (e.cargo) { root.remove(e.cargo.mesh); e.cargo.mesh.dispose(); e.baked.cargo?.dispose(); }
@@ -483,7 +501,7 @@ export function createInstancedUnits(ctx, opts = {}) {
     get count() { return views.size; },
     // draw calls this frame: one per non-empty batch
     get draws() {
-      let n = drawn?.draws ?? 0;
+      let n = (drawn?.draws ?? 0) + (toaster?.draws ?? 0);
       for (const e of kinds.values()) { if (e.batch.used) n++; if (e.cargo?.used) n++; }
       for (const b of [bars, rings, shadows]) if (b.used) n++;
       return n;

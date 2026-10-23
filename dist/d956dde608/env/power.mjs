@@ -294,6 +294,145 @@ export function enforceCords(state) {
   }
 }
 
+// ---------------------------------------------------------------------------------------------------------------
+// Power Stations and lines (POWER-NETWORK.md sections 3 and 5, build step 1). Opt-in on top of the cord rules above:
+// buildLines() reads the same points but never changes how plugs or networks behave. Pure and deterministic.
+//
+// Every station has a link reach (how far its wire goes), a plug radius (units plug in), a line type and an energy
+// flag. A link spans the SMALLER reach of its two ends. A Relay Pylon's long reach only works pylon to pylon; its
+// links to anything else use the short reach. Any line with a pylon at an end is a high line (never blocks).
+
+export const STATION = Object.freeze({
+  strip: Object.freeze({ link: 10, plug: 14, line: 'ground', energy: true }),
+  outlet: Object.freeze({ link: 10, plug: 10, line: 'ground', energy: false }),
+  extension: Object.freeze({ link: 6, plug: 8, line: 'ground', energy: false }),
+  pylon: Object.freeze({ link: 14, plug: 4, line: 'high', energy: false, shortLink: 6 }),
+  generator: Object.freeze({ link: 6, plug: 0, line: 'ground', energy: true }),
+  windmill: Object.freeze({ link: 6, plug: 0, line: 'ground', energy: true }),
+  dam: Object.freeze({ link: 6, plug: 0, line: 'ground', energy: true }),
+});
+
+/** The spec of a station kind, or null. Unknown kinds are not stations. */
+export const stationSpec = (kind) => STATION[kind] ?? null;
+
+// Toaster-roster renames unit kinds; cord lengths are looked up through this so both names work.
+const CORD_ALIAS = Object.freeze({ crumb: 'worker', popper: 'grunt', zapper: 'lancer', four_slice: 'brute', 'four-slice': 'brute' });
+/** Cord length in tiles for a unit kind (engine kind or Toastinator name). */
+export const cordLength = (kind) => POWER.cord[kind] ?? POWER.cord[CORD_ALIAS[kind]] ?? 8;
+
+/** Every station of every side, id order. Strips come from Cores, outlets from complete claims. */
+export function stationsOf(state) {
+  const out = [];
+  for (const s of state.structures) {
+    if (s.kind === 'core' && s.hp > 0) out.push({ id: s.id, owner: s.owner, kind: 'strip', x: s.x, y: s.y });
+  }
+  for (const c of state.claims || []) {
+    if (c.complete && c.hp > 0 && !c.dead) out.push({ id: c.id, owner: c.owner, kind: 'outlet', x: c.x, y: c.y });
+  }
+  for (const p of (state.power && state.power.points) || []) {
+    if (STATION[p.kind] && !(p.hp <= 0)) out.push({ id: p.id, owner: p.owner, kind: p.kind, x: p.x, y: p.y });
+  }
+  return out.sort((a, b) => a.id - b.id);
+}
+
+/** Tiles on the straight line a to b, grid supercover (every tile the segment touches). Both ends included. */
+export function supercover(a, b) {
+  const tiles = [[a.x, a.y]];
+  const nx = Math.abs(b.x - a.x), ny = Math.abs(b.y - a.y);
+  const sx = b.x > a.x ? 1 : -1, sy = b.y > a.y ? 1 : -1;
+  let x = a.x, y = a.y;
+  for (let ix = 0, iy = 0; ix < nx || iy < ny;) {
+    const decision = (1 + 2 * ix) * ny - (1 + 2 * iy) * nx; // which edge the segment crosses next
+    if (decision === 0) { x += sx; y += sy; ix++; iy++; tiles.push([x - sx, y], [x, y - sy]); }
+    else if (decision < 0) { x += sx; ix++; }
+    else { y += sy; iy++; }
+    tiles.push([x, y]);
+  }
+  return tiles;
+}
+
+/** True when a ground line a to b has line of sight: no rock, cliff or water tile on the supercover (ends excluded). */
+export function lineOfSight(state, a, b) {
+  for (const [x, y] of supercover(a, b)) {
+    if ((x === a.x && y === a.y) || (x === b.x && y === b.y)) continue;
+    if (state.rockSet.has(`${x},${y}`)) return false;
+  }
+  return true;
+}
+
+/** Reach of a link between two stations, or 0 when their kinds may not link at all. */
+export function linkReach(a, b) {
+  const sa = STATION[a.kind], sb = STATION[b.kind];
+  if (!sa || !sb) return 0;
+  const pa = a.kind === 'pylon', pb = b.kind === 'pylon';
+  const ra = pa && !pb ? sa.shortLink : sa.link;
+  const rb = pb && !pa ? sb.shortLink : sb.link;
+  return Math.min(ra, rb);
+}
+
+const lineKind = (a, b) => (STATION[a.kind].line === 'high' || STATION[b.kind].line === 'high' ? 'high' : 'ground');
+
+// Do segments p1p2 and p3p4 properly cross (integer tile centres; touching at a shared end does not count)?
+const orient = (a, b, c) => Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+export function segmentsCross(p1, p2, p3, p4) {
+  const same = (p, q) => p.x === q.x && p.y === q.y;
+  if (same(p1, p3) || same(p1, p4) || same(p2, p3) || same(p2, p4)) return false;
+  const d1 = orient(p1, p2, p3), d2 = orient(p1, p2, p4), d3 = orient(p3, p4, p1), d4 = orient(p3, p4, p2);
+  return d1 * d2 < 0 && d3 * d4 < 0;
+}
+
+/**
+ * The line graph of every side: auto-connect in id order. A new station links to each own station in reach (nearest
+ * first, ties by id) unless they already share a neighbour. Ground links need line of sight and may not cross an enemy
+ * ground line laid earlier. Returns { stations, lines: [{a, b, owner, type}], lit: Set of station ids on a lit network }.
+ * A network is lit when it holds a Strip or an energy station (generator, windmill, dam).
+ */
+export function buildLines(state) {
+  const stations = stationsOf(state);
+  const byId = new Map(stations.map((s) => [s.id, s]));
+  const neighbours = new Map(stations.map((s) => [s.id, new Set()]));
+  const lines = [];
+  for (let i = 0; i < stations.length; i++) {
+    const s = stations[i];
+    const near = [];
+    for (let j = 0; j < i; j++) {
+      const q = stations[j];
+      if (q.owner !== s.owner) continue;
+      const d = distance(s, q);
+      if (d > 0 && d <= linkReach(s, q)) near.push({ q, d });
+    }
+    near.sort((u, v) => u.d - v.d || u.q.id - v.q.id);
+    for (const { q } of near) {
+      if ([...neighbours.get(s.id)].some((n) => neighbours.get(q.id).has(n))) continue;
+      const type = lineKind(s, q);
+      if (type === 'ground') {
+        if (!lineOfSight(state, s, q)) continue;
+        if (lines.some((l) => l.type === 'ground' && l.owner !== s.owner && segmentsCross(l.a, l.b, s, q))) continue;
+      }
+      neighbours.get(s.id).add(q.id);
+      neighbours.get(q.id).add(s.id);
+      lines.push({ a: { id: q.id, x: q.x, y: q.y }, b: { id: s.id, x: s.x, y: s.y }, owner: s.owner, type });
+    }
+  }
+  const lit = new Set();
+  const seen = new Set();
+  for (const s of stations) {
+    if (seen.has(s.id)) continue;
+    const members = [s];
+    seen.add(s.id);
+    for (let k = 0; k < members.length; k++) {
+      for (const n of neighbours.get(members[k].id)) {
+        if (!seen.has(n)) { seen.add(n); members.push(byId.get(n)); }
+      }
+    }
+    if (members.some((m) => STATION[m.kind].energy)) for (const m of members) lit.add(m.id);
+  }
+  return { stations, lines, lit };
+}
+
+/** Ground lines that stand right now. A line on a dark network (brown-out) is passable, so it is not listed. */
+export const liveGroundLines = (graph) => graph.lines.filter((l) => l.type === 'ground' && graph.lit.has(l.a.id));
+
 // The nearest free, passable tile next to a structure (rings 1 then 2), or null.
 function freeTileNear(state, s) {
   for (let d = 1; d <= 2; d++) {

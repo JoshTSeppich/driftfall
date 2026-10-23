@@ -126,24 +126,57 @@ export const STATS = deepFreeze({
     commandChars: 1024,
   },
 
-  // The Core (spec section 4). Can't be built, so it has no cost.
+  // The Core is the POWER STRIP (TERRITORY.md section 16): the base everything plugs into. Lose it, lose the match.
+  // Can't be built, so it has no cost. 2000 hp so a rush cannot flatten it in seconds.
   core: {
     hp: 1000,
     trains: ["worker"],
   },
 
-  // Buildable structures (spec section 4). Cost is paid when the build command is accepted.
+  // Buildable structures (spec section 4). Cost is paid when the build command is accepted. The Toaster-Wars kitchen
+  // (TERRITORY.md section 18): a Mill grinds wheat (Shards) into flour, a Well draws water, a Toaster turns
+  // flour + water + power into toast (env/bakery.mjs). The Forge stays the barracks (shown as the Assembly Line).
   structures: {
-    forge: { cost: 150, hp: 400, buildTicks: 40, trains: ["grunt", "lancer", "brute"] },
+    forge: { cost: 150, hp: 400, buildTicks: 40, trains: ["grunt", "lancer", "brute", "howler", "spiker", "dart"] },
     turret: { cost: 100, hp: 150, buildTicks: 30, damage: 12, range: 5, structureMultiplier: 1 },
+    mill: { cost: 75, hp: 200, buildTicks: 60 },
+    well: { cost: 50, hp: 150, buildTicks: 40 },
+    toaster: { cost: 100, hp: 250, buildTicks: 60 },
   },
 
   // Units (spec section 5). speed is ticks per step: 1 moves every tick, 2 moves on even ticks only.
+  // These are the classic-match numbers (createMatch, old tests and saves). The Toaster-Wars numbers (STATS.toaster
+  // below) overlay them whenever hunger is on, which is every territory match. Broiler, Flak Popper and Bagel are new
+  // kinds, so their rows here are already the toaster numbers.
   units: {
     worker: { cost: 50, hp: 40, damage: 2, range: 1, speed: 1, trainTicks: 20, structureMultiplier: 1 },
     grunt: { cost: 50, hp: 60, damage: 8, range: 1, speed: 1, trainTicks: 15, structureMultiplier: 1 },
     lancer: { cost: 75, hp: 40, damage: 10, range: 4, speed: 1, trainTicks: 20, structureMultiplier: 1 },
     brute: { cost: 150, hp: 240, damage: 25, range: 1, speed: 2, trainTicks: 40, structureMultiplier: 2 },
+    howler: { cost: 150, hp: 70, damage: 20, range: 9, speed: 4, trainTicks: 80, structureMultiplier: 1.5, splash: 1 },
+    spiker: { cost: 100, hp: 50, damage: 5, range: 5, speed: 3, trainTicks: 50, structureMultiplier: 0.5, splash: 1 },
+    dart: { cost: 100, hp: 120, damage: 12, range: 1, speed: 2, trainTicks: 50, structureMultiplier: 1, ammo: false },
+  },
+
+  // Toaster Wars overlay (COMBAT.md, Joshua 09:27 "remember they're toasters?"). Applies when state.ammo is on: a shot is
+  // `shot.damage` every `shot.every` ticks (24 ticks = 1 s), not a hit every tick; `splash` = radius in tiles, neighbours
+  // take half; `ammo: false` = needs power but no slices (Bagel). Slots (how many slices a body holds) live in
+  // env/ammo.mjs ARMED. Speeds are ticks per step: 3 = 8 tiles a second (the old 1 was 24). Use rowOf(state, kind).
+  toaster: {
+    coreHp: 2000, // the Power Strip is not a 15 s target
+    units: {
+      worker: { speed: 2, trainTicks: 40, shot: { damage: 2, every: 12 } },
+      grunt: { range: 4, speed: 3, trainTicks: 30, shot: { damage: 10, every: 18 } },
+      lancer: { range: 3, speed: 3, trainTicks: 40, shot: { damage: 6, every: 10 } },
+      brute: { range: 5, speed: 4, trainTicks: 80, shot: { damage: 36, every: 30 } },
+      howler: { trainTicks: 80, shot: { damage: 30, every: 36 } },
+      spiker: { trainTicks: 50, shot: { damage: 6, every: 14 } },
+      dart: { shot: { damage: 14, every: 12 } },
+    },
+    structures: {
+      forge: { buildTicks: 80 },
+      turret: { buildTicks: 60, shot: { damage: 12, every: 12 } },
+    },
   },
 
   // ---- TERRITORY.md tables (additive; see the header). ----
@@ -386,6 +419,42 @@ export function upkeepOf(kindOrStats) {
   return { shards: (s.cost ?? 0) * rate, flux: (s.flux ?? 0) * rate };
 }
 
+// The Toastinator roster (TERRITORY.md section 16, COMBAT.md section 3). The sim keeps its stable kind ids; the toaster
+// names are data on top, so old tests, saves and bots that say "grunt" still load. canonKind() resolves any name
+// (toaster name, id or alias) to the sim kind; toasterName() goes the other way for the HUD and the teach text.
+const ROSTER_UNITS = [
+  { kind: "worker", name: "Crumb", attack: "Crumb Toss", does: "hauls wheat, flour, water and toast; re-plugs cut cords", aliases: ["crumb"] },
+  { kind: "grunt", name: "Popper", attack: "Pop Shot", does: "basic ranged toaster: one slice a shot", aliases: ["popper"] },
+  { kind: "lancer", name: "Zapper", attack: "Hot Coil", does: "fast, short-range hot bolt", aliases: ["zapper"] },
+  { kind: "brute", name: "Four-Slice", attack: "Quad Volley", does: "slow heavy volley: four slices, braces to fire", aliases: ["four-slice", "fourslice", "four slice"] },
+  { kind: "howler", name: "Broiler", attack: "Bread Shell", does: "artillery: a bread shell with splash", aliases: ["broiler"] },
+  { kind: "spiker", name: "Flak Popper", attack: "Crouton Flak", does: "anti-air and anti-swarm burst", aliases: ["flak", "flak popper", "flakpopper"] },
+  { kind: "dart", name: "Bagel", attack: "Ram", does: "rolling melee bump: needs power, no slices", aliases: ["bagel"] },
+];
+const ROSTER_STRUCTURES = [
+  { kind: "core", name: "Power Strip", does: "the base: everything plugs into it; lose it and you lose the match", aliases: ["power strip", "powerstrip", "strip"] },
+  { kind: "forge", name: "Assembly Line", does: "builds fighting toasters", aliases: ["assembly line"] },
+  { kind: "turret", name: "Heat Lamp", does: "a fixed defence that shoots nearby enemies", aliases: ["heat lamp", "heatlamp"] },
+  { kind: "mill", name: "Mill", does: "grinds wheat into flour", aliases: [] },
+  { kind: "well", name: "Well", does: "draws water (best by the river)", aliases: [] },
+  { kind: "toaster", name: "Toaster", does: "flour + water + power make toast", aliases: [] },
+];
+export const ROSTER = deepFreeze({ units: ROSTER_UNITS, structures: ROSTER_STRUCTURES });
+const ALIASES = new Map();
+for (const r of [...ROSTER_UNITS, ...ROSTER_STRUCTURES]) {
+  ALIASES.set(r.kind, r.kind);
+  ALIASES.set(r.name.toLowerCase(), r.kind);
+  for (const a of r.aliases) ALIASES.set(a, r.kind);
+}
+export function canonKind(name) {
+  const key = typeof name === "string" ? name.trim().toLowerCase() : "";
+  return ALIASES.get(key) ?? null;
+}
+export function toasterName(kind) {
+  const r = [...ROSTER_UNITS, ...ROSTER_STRUCTURES].find((x) => x.kind === kind);
+  return r ? r.name : kind;
+}
+
 export const UNIT_KINDS = Object.freeze(Object.keys(STATS.units));
 export const STRUCTURE_KINDS = Object.freeze(Object.keys(STATS.structures));
 
@@ -410,6 +479,19 @@ export function kindStats(kind) {
   if (Object.prototype.hasOwnProperty.call(STATS.structures, kind)) return STATS.structures[kind];
   if (Object.prototype.hasOwnProperty.call(RULE_STRUCTURES, kind)) return RULE_STRUCTURES[kind];
   return null;
+}
+
+// The stats row a state plays by: kindStats() merged with the Toaster-Wars overlay when hunger is on (state.ammo).
+// Merged rows are built once, so this is cheap enough for the per-tick hot paths.
+const TOASTER_ROWS = new Map();
+for (const group of ["units", "structures"]) {
+  for (const [kind, over] of Object.entries(STATS.toaster[group])) {
+    TOASTER_ROWS.set(kind, Object.freeze({ ...kindStats(kind), ...over }));
+  }
+}
+export function rowOf(state, kind) {
+  if (state && state.ammo && TOASTER_ROWS.has(kind)) return TOASTER_ROWS.get(kind);
+  return kindStats(kind);
 }
 
 // Value of one entity, in Shards (spec sections 5 and 9). Units and complete buildable structures count their cost.

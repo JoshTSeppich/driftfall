@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { step } from '../env/sim.mjs';
 import { createTerritoryMatch } from '../env/sim-territory.mjs';
 import { sideTier, kindTier, TIER_RULES } from '../env/tiers.mjs';
-import { STATS, upgradeById } from '../env/stats.mjs';
+import { STATS, upgradeById, rowOf } from '../env/stats.mjs';
 
 const run = (s, n, cmds = [[], []]) => { for (let i = 0; i < n; i++) step(s, cmds); };
 const rejected = (s) => s.events.find((e) => e.e === 'reject')?.reason;
@@ -54,7 +54,7 @@ test('a queued tier-2 unit pauses (no progress, no draw) when Hold drops, and re
   run(s, 5);
   const progressed = f.training;
   const bank = s.shards[0];
-  assert.ok(progressed < STATS.units.brute.trainTicks);
+  assert.ok(progressed < rowOf(s, 'brute').trainTicks);
   s.testHold = [2, 0];
   run(s, 30);
   assert.equal(f.paused, true);

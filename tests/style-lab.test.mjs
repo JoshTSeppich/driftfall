@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
+import {TOASTERS,PALETTE} from '../play/toaster-spec.mjs';
 import { buildModel, triangles, LOOKS, SHAPES, createLab } from '../play/style-lab/lab.mjs';
 for (const look of LOOKS) test(`${look}: real geometry builds with a stub renderer`, () => {
   const renderer = { render() {}, setSize() {}, dispose() {} };
@@ -10,7 +11,7 @@ for (const look of LOOKS) test(`${look}: real geometry builds with a stub render
     assert.ok(model instanceof THREE.Group);
     assert.ok(triangles(model) > 0);
     if (['attack-specialists', 'attack-four-slice', 'attack-zapper', 'attack-popper', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) <= 60, `${kind}: ${triangles(model)}`);
-    if (['windmill-dam', 'toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
+    if (['power-stations','windmill-dam', 'toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
   }
   for (const action of lab.actions) { lab.trigger(action, 0); for (let t = 0; t <= 4; t += 0.016) lab.update(t); }
   lab.setTeam('orange'); lab.setLook(look); lab.setStress(true); lab.update(5);
@@ -91,7 +92,7 @@ test('Flak Popper aims its whole body back and launches vertical toast with spri
       assert.notEqual(geo.type,'OctahedronGeometry',kind);
       if(geo.type==='ShapeGeometry'&&!geo.userData.flatPanel)assert.equal(geo.userData.facets,5,kind);
     });
-    assert.ok(triangles(m)<(['windmill-dam', 'toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)?800:kind==='ground'?800:300));
+    assert.ok(triangles(m)<(['power-stations','windmill-dam', 'toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)?800:kind==='ground'?800:300));
   }
   const lab=createLab();
   const rings=lab.scene.getObjectByName('selection-rings');assert.ok(rings);
@@ -842,7 +843,7 @@ test('specialist signatures show shell arc, exactly five flak croutons, ram rebo
  test('Blocky revision replaces every appliance surface and keeps all looks',()=>{
  for(const look of LOOKS)for(const kind of SHAPES.filter(k=>!['toy-render','grid-terrain-kit','terrain-kit','ground-patches','toppings','windmill-dam'].includes(k))){
   const u=buildModel(kind,look);assert.equal(u.userData.blocky,true,kind);
-  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry',...(['hit-defeat','squad'].includes(kind)?['PlaneGeometry']:[])].includes(o.geometry.type),kind+': '+o.name);});
+  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry',...(['cute-pass','hit-defeat','squad','power-stations'].includes(kind)?['PlaneGeometry']:[])].includes(o.geometry.type),kind+': '+o.name);});
  }
  });
 
@@ -896,8 +897,8 @@ test('Toy renderer showcase keeps three original rigs, budgets and spring action
   assert.ok(SHAPES.includes('toy-render'));
   const lab=createLab({look});lab.setShape('toy-render');const u=lab.units[0];
   assert.deepEqual(u.children.map(o=>o.name),['crumb','popper','four-slice']);
-  assert.ok(triangles(u)<=180);
-  for(const child of u.children){assert.ok(triangles(child)<=60);assert.ok(child.children.length>=3&&child.children.length<=6);}
+  assert.ok(triangles(u)<300);
+  for(const child of u.children){assert.ok(triangles(child)<120);assert.ok(child.children.length>=3&&child.children.length<=6);}
   lab.trigger('idle',0);lab.update(.1);const toast=u.children[1].getObjectByName('toast0'),y=toast.position.y;lab.update(.2);assert.notEqual(toast.position.y,y);
   lab.trigger('move',1);lab.update(1.48);const x=u.children[0].position.x;lab.update(1.52);assert.equal(u.children[0].position.x,x);
   lab.update(1.15);assert.ok(u.children[0].position.y>0);assert.notEqual(u.children[0].scale.y,1);
@@ -971,5 +972,47 @@ test('Squad personality budget, shared salute/dance, planted cluster and Crumb c
   lab.trigger('idle',5);lab.update(5.2);const cord=members[0].getObjectByName('cord').rotation.x;lab.update(5.3);assert.notEqual(members[0].getObjectByName('cord').rotation.x,cord);
   assert.equal(members[0].getObjectByName('toast').visible,true);assert.equal(members[0].getObjectByName('eye-left').rotation.z,0);
   lab.trigger('stop',6);lab.update(6);assert.ok(members.every(m=>m.position.y===0));lab.dispose();
+ }
+});
+
+test('Power stations study separates fences/high lines and wraps a hopping Crumb with spent reach',()=>{
+ for(const look of LOOKS)for(const team of ['cyan','orange']){
+  assert.ok(SHAPES.includes('power-stations'));
+  const lab=createLab({look});lab.setTeam(team);lab.setShape('power-stations');const u=lab.units[0];
+  assert.ok(triangles(u)<800);
+  for(const p of u.children)assert.ok(triangles(p)<60,p.name+': '+triangles(p));
+  for(const name of ['extension-a','extension-b','relay-a','relay-b','ground-fence','high-line','high-shadow','fenced-land','brownout-line','short-rock','short-sparks','cliff','cord-unit','cord-0','cord-1','cord-2','peg-0','peg-1','reach-ring'])assert.ok(u.getObjectByName(name),name);
+  assert.ok(u.getObjectByName('high-line').position.y>2);
+  assert.ok(u.getObjectByName('ground-fence').position.y<.5);
+  assert.equal(u.getObjectByName('brownout-line').material.emissiveIntensity,0);
+  assert.equal(u.getObjectByName('ground-fence').material.color.getHex(),team==='orange'?0xff8540:0x32d9e8);
+  u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+  lab.trigger('idle',0);lab.update(.1);const toast=u.getObjectByName('unit-toast').position.y;lab.update(.2);assert.notEqual(u.getObjectByName('unit-toast').position.y,toast);
+  lab.trigger('move',1);lab.update(1.15);assert.ok(u.getObjectByName('cord-unit').position.y>0);
+  lab.update(1.47);const pos=u.getObjectByName('cord-unit').position.clone();lab.update(1.5);assert.deepEqual(u.getObjectByName('cord-unit').position,pos);
+  lab.trigger('attack',2);lab.update(2);const r=u.getObjectByName('reach-ring').scale.x;
+  lab.update(2.3);assert.ok(u.getObjectByName('reach-ring').scale.x<r);assert.ok(u.getObjectByName('short-sparks').visible);
+  const snap=u.getObjectByName('cord-unit').position.clone();lab.update(2.1);lab.update(2.3);assert.deepEqual(u.getObjectByName('cord-unit').position,snap);
+  lab.trigger('idle',3);lab.update(3);assert.equal(u.getObjectByName('short-sparks').visible,false);lab.dispose();
+ }
+});
+
+test('Cute pass shares spec geometry, front feet, cyan expressions and old-blocky comparison',()=>{
+ for(const look of LOOKS){
+  const lab=createLab({look});assert.ok(SHAPES.includes('cute-pass'));lab.setShape('cute-pass');
+  assert.equal(lab.units[0].children.length,7);
+  for(const u of lab.units[0].children){
+   assert.ok(u.userData.cute);assert.ok(triangles(u)<300);assert.ok(u.children.length>=3&&u.children.length<=6);
+   const spec=TOASTERS[u.name],body=spec.find(p=>p.name==='body'),mesh=u.getObjectByName('body');
+   if(!body.prism)assert.deepEqual([mesh.geometry.parameters.width,mesh.geometry.parameters.height,mesh.geometry.parameters.depth],body.size);
+   assert.equal(u.getObjectByName('eye-left').material.color.getHexString(),PALETTE.eyes.slice(1).toLowerCase());
+   const team=u.getObjectByName('team');assert.ok(team.position.y>=body.size[1]);
+   u.traverse(p=>{if(p.geometry?.parameters.radialSegments)assert.equal(p.geometry.parameters.radialSegments,5);});
+  }
+  const u=lab.units[0].children[0],eye=u.getObjectByName('eye-left');assert.equal(eye.material.color.getHex(),0x75f4ff);
+  lab.setExpression('happy');lab.update(.1);const happy=eye.scale.y;lab.setExpression('alarmed');lab.update(.2);assert.ok(eye.scale.y>happy);
+  const foot=u.getObjectByName('foot-left');assert.ok(foot.position.z+foot.geometry.parameters.depth/2>.76/2);
+  lab.trigger('move',1);lab.update(1.47);const x=u.position.x;lab.update(1.5);assert.equal(u.position.x,x);
+  lab.setBeforeCute(true);assert.ok(!lab.units[0].children[0].userData.cute);lab.setBeforeCute(false);assert.ok(lab.units[0].children[0].userData.cute);lab.dispose();
  }
 });

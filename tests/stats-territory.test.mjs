@@ -36,8 +36,8 @@ function factionRows(heading) {
 const byName = (faction) => Object.fromEntries(UPGRADES.filter((u) => u.faction === faction).map((u) => [u.name, u]));
 
 test('the v2 kind lists are untouched, so the current game keeps playing', () => {
-  assert.deepEqual([...UNIT_KINDS].sort(), ['brute', 'grunt', 'lancer', 'worker']);
-  assert.deepEqual([...STRUCTURE_KINDS].sort(), ['forge', 'turret']);
+  assert.deepEqual([...UNIT_KINDS].sort(), ['brute', 'dart', 'grunt', 'howler', 'lancer', 'spiker', 'worker']);
+  assert.deepEqual([...STRUCTURE_KINDS].sort(), ['forge', 'mill', 'toaster', 'turret', 'well']);
   assert.equal(STATS.match.unitCap, 40);
 });
 

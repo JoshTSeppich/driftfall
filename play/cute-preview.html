@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cute Toasters Preview</title>
+<script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js","three/addons/":"../node_modules/three/examples/jsm/"}}</script>
+<style>html,body{margin:0;height:100%;background:#EDE9E0;font:13px system-ui;color:#303844}canvas{display:block}#ui{position:fixed;left:12px;top:10px;display:flex;gap:6px;flex-wrap:wrap}button{border:0;border-radius:8px;padding:7px 11px;background:#303844;color:#F2D7A6;font-weight:700;cursor:pointer}button[aria-pressed=true]{background:#32D9E8;color:#303844}</style></head><body>
+<div id="ui"><b style="align-self:center">CUTE SPEC v1.0 (GPT)</b><button data-e="determined" aria-pressed="true">Determined</button><button data-e="happy">Happy</button><button data-e="alarmed">Alarmed</button><button id="team">Team: cyan</button><button id="hop" aria-pressed="true">Roll</button></div>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TOASTERS, PALETTE, EXPRESSIONS, WHEELS, CORD } from './toaster-spec.mjs';
+import { applyToyEdges, TOY_MATERIALS } from './toy-render.mjs';
+const r=new THREE.WebGLRenderer({antialias:true}); r.setPixelRatio(Math.min(devicePixelRatio,1.5)); r.setSize(innerWidth,innerHeight);
+r.outputColorSpace=THREE.SRGBColorSpace; r.toneMapping=THREE.ACESFilmicToneMapping; r.toneMappingExposure=1.05; r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap; document.body.appendChild(r.domElement);
+const scene=new THREE.Scene(); scene.background=new THREE.Color('#EDE9E0');
+scene.environment=new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(),0.04).texture; scene.environmentIntensity=0.35;
+const cam=new THREE.PerspectiveCamera(35,innerWidth/innerHeight,0.1,200); cam.position.set(2,13,20); const ctl=new OrbitControls(cam,r.domElement); ctl.target.set(1.5,0.6,0.6);
+const key=new THREE.DirectionalLight(0xffedd7,2.6); key.position.set(-8,14,9); key.castShadow=true; key.shadow.mapSize.set(2048,2048); Object.assign(key.shadow.camera,{left:-10,right:10,top:10,bottom:-10,near:0.5,far:40}); key.shadow.bias=-0.00015; key.shadow.normalBias=0.025; scene.add(key);
+const fill=new THREE.DirectionalLight(0xd7edff,0.65); fill.position.set(7,5,-4); scene.add(fill);
+const rim=new THREE.DirectionalLight(0xffffff,0.9); rim.position.set(4,9,-10); scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xe8f5ff,0x65727d,0.85));
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshStandardMaterial({color:'#EDE9E0',roughness:0.95})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+const rough={cream:0.48,charcoal:0.35,team:0.38,toast:0.82,feet:0.65,eyes:0.5,heat:0.5};
+let team='cyan', expr='determined'; const units=[];
+function mat(c,part){const hex=c==='team'?PALETTE[team]:PALETTE[c]; const m=new THREE.MeshStandardMaterial({color:hex,roughness:rough[c]??0.5,metalness:c==='charcoal'?0.08:c==='feet'?0.1:0});
+ if(part.emissive){m.emissive=new THREE.Color(hex); if(c==='eyes'){m.emissive=new THREE.Color('#2EE6F2'); m.emissiveIntensity=0.9; m.color=new THREE.Color('#0b4f57');} else m.emissiveIntensity=1.2;}
+ if(!part.emissive&&!part.decal&&!part.prism){ try{applyToyEdges(m,{band:0.025,intensity:0.18,tint:0xfff0d5,inset:0.07});}catch(e){} }
+ return m;}
+function box(part,x){let g; if(part.prism){g=new THREE.CylinderGeometry(0.5,0.5,1,5); g.rotateX(Math.PI/2);} else g=new THREE.BoxGeometry(1,1,1);
+ const n=g.attributes.position.count, h=new Float32Array(n*3); for(let i=0;i<n;i++){h[i*3]=part.size[0]/2;h[i*3+1]=part.size[1]/2;h[i*3+2]=part.size[2]/2;}
+ g.setAttribute('aHalf',new THREE.BufferAttribute(h,3)); // unit box scaled to size; aHalf = half-size (toy edge shader contract)
+ const m=new THREE.Mesh(g,mat(part.colour,part)); m.scale.set(...part.size); m.position.set(x,part.pos[1],part.pos[2]); m.castShadow=!part.decal; m.receiveShadow=true; m.userData.part=part; return m;}
+function build(kind,ox){const root=new THREE.Group(); root.position.x=ox; const parts=TOASTERS[kind].map(p=>({...p})); const body=parts[0];
+ const W=body.size[0], H=body.size[1], D=body.size[2], isWheel=kind==='bagel';
+ const lift = isWheel?0:WHEELS.lift*WHEELS.diameterOfBodyH*H;
+ for(const p of parts){ if(p.name==='foot') continue; const q={...p,pos:[p.pos[0],p.pos[1]+lift,p.pos[2]]}; root.add(box(q,q.pos[0])); if(q.mirror) root.add(box(q,-q.pos[0])); }
+ const wheels=[];
+ if(!isWheel){ const dia=WHEELS.diameterOfBodyH*H, tw=WHEELS.widthOfBodyW*W;
+  const tyreM=new THREE.MeshStandardMaterial({color:PALETTE.charcoal,roughness:0.6,metalness:0.05}), hubM=new THREE.MeshStandardMaterial({color:PALETTE.cream,roughness:0.45});
+  for(const sx of [-1,1]) for(const sz of [-1,1]){ const w=new THREE.Group();
+   const tyre=new THREE.Mesh(new THREE.CylinderGeometry(dia/2,dia/2,tw,WHEELS.sides),tyreM); tyre.rotation.z=Math.PI/2; tyre.castShadow=true; w.add(tyre);
+   const hub=new THREE.Mesh(new THREE.CylinderGeometry(dia*WHEELS.hubOfDiameter/2,dia*WHEELS.hubOfDiameter/2,tw*1.08,WHEELS.sides),hubM); hub.rotation.z=Math.PI/2; w.add(hub);
+   w.position.set(sx*(W/2+WHEELS.outsideSides*W-tw/2), dia/2, sz*(D/2-WHEELS.frontInset*D)); root.add(w); wheels.push(w);} }
+ // CORD: coil at the back, then a thick cable trailing behind to a plug, team stripe + travelling glow beads
+ const exitY=lift+CORD.exitHeightOfBodyH*H, back=-D/2; const pts=[];
+ for(let i=0;i<=40;i++){ const t=i/40, a=t*CORD.coilTurns*Math.PI*2; pts.push(new THREE.Vector3(Math.sin(a)*CORD.coilRadius, exitY+Math.cos(a)*CORD.coilRadius-CORD.coilRadius*t, back-t*CORD.coilLength)); }
+ const tail=[[0.25,CORD.radius,back-CORD.coilLength-0.35],[W/2+0.55,CORD.radius,back-0.6],[W/2+0.95,CORD.radius,back+0.4],[W/2+1.15,CORD.radius,D/2+0.9],[W/2+1.0,CORD.radius,D/2+1.9]];
+ for(const [x,y,z] of tail) pts.push(new THREE.Vector3(x,y,z));
+ const curve=new THREE.CatmullRomCurve3(pts);
+ const cord=new THREE.Mesh(new THREE.TubeGeometry(curve,160,CORD.radius,6),new THREE.MeshStandardMaterial({color:PALETTE[team],emissive:PALETTE[team],emissiveIntensity:CORD.colourEmissive,roughness:0.45})); cord.castShadow=true; root.add(cord);
+ const stripeM=new THREE.MeshStandardMaterial({color:PALETTE.charcoal,roughness:0.5});
+ const stripe=new THREE.Mesh(new THREE.TubeGeometry(curve,160,CORD.radius*0.45,5),stripeM); stripe.scale.set(1,1,1); stripe.position.y=-CORD.radius*0.5; root.add(stripe);
+ const plugM=new THREE.MeshStandardMaterial({color:PALETTE.charcoal,roughness:0.4}); const plug=new THREE.Mesh(new THREE.BoxGeometry(...CORD.plug.size),plugM); const end=curve.getPoint(1); plug.position.set(end.x,CORD.plug.size[1]/2,end.z+0.12); plug.castShadow=true; root.add(plug);
+ for(const sx of [-1,1]){ const prong=new THREE.Mesh(new THREE.BoxGeometry(0.035,0.06,0.1),new THREE.MeshStandardMaterial({color:'#c9ced4',metalness:0.8,roughness:0.3})); prong.position.set(end.x+sx*0.05,0.08,end.z+0.3); root.add(prong); }
+ const beadM=new THREE.MeshStandardMaterial({color:'#ffffff',emissive:PALETTE[team],emissiveIntensity:3}); const beads=[];
+ const len=curve.getLength(); const nb=Math.max(2,Math.floor(len/CORD.pulseSpacing)); for(let i=0;i<nb;i++){ const b=new THREE.Mesh(new THREE.BoxGeometry(CORD.radius*2.6,CORD.radius*2.6,CORD.pulseLength),beadM); root.add(b); beads.push(b);}
+ root.userData={wheels,beads,curve,len};
+ scene.add(root); units.push({root,kind}); }
+function rebuild(){for(const u of units) scene.remove(u.root); units.length=0; const order=['crumb','popper','zapper','four-slice','broiler','flak-popper','bagel']; let x=-14; for(const k of order){const w=TOASTERS[k][0].size[0]; x+=w/2; build(k,x); x+=w/2+2.4;} applyExpr();}
+function applyExpr(){const E=EXPRESSIONS[expr]; for(const u of units){const face=u.root.children.find(c=>c.userData.part?.name==='face').userData.part;
+ for(const c of u.root.children){const p=c.userData.part; if(!p||p.name!=='eye') continue; const s=Math.sign(c.position.x)||1; const fw=face.size[0], fh=face.size[1];
+  c.scale.set(E.w*fw,E.h*fh,p.size[2]); c.position.x=s*E.x*fw; c.position.y=face.pos[1]+E.y*fh; c.rotation.z=-s*E.rot*Math.PI/180;}}}
+rebuild();
+document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{expr=b.dataset.e; document.querySelectorAll('[data-e]').forEach(x=>x.setAttribute('aria-pressed',x===b)); applyExpr();});
+document.getElementById('team').onclick=e=>{team=team==='cyan'?'orange':'cyan'; e.target.textContent='Team: '+team; rebuild();};
+let hop=true; document.getElementById('hop').onclick=e=>{hop=!hop; e.target.setAttribute('aria-pressed',hop);};
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth,innerHeight);});
+const clock=new THREE.Clock(); r.setAnimationLoop(()=>{const t=clock.getElapsedTime(); units.forEach((u,i)=>{const ph=(t*2.2+i*0.37)%1; const y=hop?Math.max(0,Math.sin(ph*Math.PI))*0.07:0; u.root.position.y=y; u.root.rotation.z=hop?Math.sin(t*4.4+i)*0.03:0; if(u.kind==='bagel') u.root.children.forEach(c=>{if(c.userData.part?.prism) c.rotation.z=t*1.5;}); const ud=u.root.userData; ud.wheels.forEach(w=>w.rotation.x=hop?-t*4:0); ud.beads.forEach((b,j)=>{const f=1-(((t*CORD.pulseSpeed/ud.len)+j/ud.beads.length)%1); const p=ud.curve.getPoint(f), q=ud.curve.getPoint(Math.min(1,f+0.01)); b.position.copy(p); b.lookAt(q);});}); ctl.update(); r.render(scene,cam);});
+</script></body></html>

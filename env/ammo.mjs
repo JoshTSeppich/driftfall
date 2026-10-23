@@ -44,13 +44,17 @@ export const AMMO_TUNING = Object.freeze({
 // Armed kinds: slots (the most slices held) and the attack that spends them. Beats are in milliseconds (COMBAT.md
 // section 4): impactMs is when the sim's hit lands on screen, recoverMs when the body is back at idle.
 const ARMED = Object.freeze({
-  grunt: { slots: 3, attack: { name: "Pop Shot", slices: 1, windupMs: 160, impactMs: 375, recoverMs: 520 } },
-  lancer: { slots: 4, attack: { name: "Hot Coil", slices: 1, windupMs: 200, impactMs: 300, recoverMs: 480 } },
-  brute: { slots: 4, attack: { name: "Quad Volley", slices: 4, windupMs: 240, impactMs: 420, recoverMs: 700 } },
-  spiker: { slots: 2, attack: { name: "Crouton Flak", slices: 1, windupMs: 200, impactMs: 400, recoverMs: 520 } },
-  howler: { slots: 3, attack: { name: "Bread Shell", slices: 1, windupMs: 260, impactMs: 480, recoverMs: 700 } },
-  dart: { slots: 2, attack: { name: "Ram", slices: 1, windupMs: 120, impactMs: 300, recoverMs: 400 } },
+  // Slots are sized so one full load is about one kill (Popper: six 10-damage shots into a 60 hp Popper).
+  grunt: { slots: 6, attack: { name: "Pop Shot", slices: 1, windupMs: 160, impactMs: 375, recoverMs: 520 } },
+  lancer: { slots: 6, attack: { name: "Hot Coil", slices: 1, windupMs: 200, impactMs: 300, recoverMs: 480 } },
+  brute: { slots: 8, attack: { name: "Quad Volley", slices: 4, windupMs: 240, impactMs: 420, recoverMs: 700 } },
+  spiker: { slots: 6, attack: { name: "Crouton Flak", slices: 1, windupMs: 200, impactMs: 400, recoverMs: 520 } },
+  howler: { slots: 4, attack: { name: "Bread Shell", slices: 1, windupMs: 260, impactMs: 480, recoverMs: 700 } },
+  // Bagel: STATS.units.dart.ammo is false, so it needs power but no slices (see needsSlices); the row is its animation.
+  dart: { slots: 1, attack: { name: "Ram", slices: 1, windupMs: 120, impactMs: 300, recoverMs: 400 } },
 });
+// Bagels roll on power alone: they are never "hungry", never resupplied and spend nothing.
+const needsSlices = (kind) => STATS.units[kind]?.ammo !== false;
 const DEFAULT_ARMED = Object.freeze({
   slots: 3,
   attack: Object.freeze({ name: "Toast Shot", slices: 1, windupMs: 200, impactMs: 360, recoverMs: 500 }),
@@ -123,7 +127,7 @@ function coreOf(state, side) {
 }
 
 const fightersOf = (state, side) =>
-  state.units.filter((u) => u.owner === side && isLive(u) && ammoOf(u.kind)).sort(byId);
+  state.units.filter((u) => u.owner === side && isLive(u) && ammoOf(u.kind) && needsSlices(u.kind)).sort(byId);
 
 const crumbsOf = (state, side) => state.units.filter((u) => u.owner === side && isCrumb(u) && isLive(u)).sort(byId);
 
@@ -141,6 +145,7 @@ export function unitState(state, unit) {
   if (!poweredOf(state, unit)) return "unpowered";
   const row = ammoOf(unit.kind);
   if (!row) return null;
+  if (!needsSlices(unit.kind)) return "fed";
   return slicesOf(state, unit) < row.attack.slices ? "hungry" : "fed";
 }
 
@@ -153,7 +158,7 @@ export function canFire(state, unit) {
   if (!isAmmoOn(state)) return true;
   if (!poweredOf(state, unit)) return false;
   const row = ammoOf(unit.kind);
-  if (!row) return true;
+  if (!row || !needsSlices(unit.kind)) return true;
   return slicesOf(state, unit) >= row.attack.slices;
 }
 
@@ -162,7 +167,7 @@ export function spendShot(state, unit, targetId = null) {
   if (!canFire(state, unit)) return false;
   const row = ammoOf(unit.kind);
   if (!row) return true;
-  const cost = row.attack.slices;
+  const cost = needsSlices(unit.kind) ? row.attack.slices : 0;
   state.ammo.slices[unit.id] = slicesOf(state, unit) - cost;
   emit(state, {
     e: "shot", id: unit.id, player: unit.owner, kind: unit.kind, attack: row.attack.name, slices: cost,

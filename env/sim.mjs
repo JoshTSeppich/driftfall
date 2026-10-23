@@ -13,7 +13,7 @@ import { applyCommands } from './commands.mjs';
 import { stepProduction, stepGathering } from './economy.mjs';
 import { stepMovement } from './movement.mjs';
 import { stepCombat } from './combat.mjs';
-import { STATS, sideValue } from './stats.mjs';
+import { STATS, sideValue, canonKind } from './stats.mjs';
 import { applyRuleCommands, stepRulesPre, stepRulesPost, runProduction } from './sim-territory.mjs';
 
 const DEFAULT_MAX_TICKS = 2000;
@@ -28,6 +28,14 @@ export function maxTicksOf(state) {
 /** Which side acts first on the tick being computed from `tick` (§8): side 0 on even ticks, side 1 on odd. */
 export function sideOrder(tick) {
   return tick % 2 === 0 ? [0, 1] : [1, 0];
+}
+
+// Toaster names are aliases (env/stats.mjs ROSTER): { type: 'train', kind: 'popper' } means 'grunt'. Anything that is not
+// a known name passes through unchanged, so the normal reject reasons still apply.
+function withCanonKind(command) {
+  if (!command || typeof command !== 'object' || typeof command.kind !== 'string') return command;
+  const kind = canonKind(command.kind);
+  return kind && kind !== command.kind ? { ...command, kind } : command;
 }
 
 /** Create a new match from a seed: the initial state at tick 0. */
@@ -47,7 +55,7 @@ export function step(state, commands) {
   state.events = [];
 
   const lists = Array.isArray(commands) ? commands : [];
-  const perSide = [0, 1].map((p) => (Array.isArray(lists[p]) ? lists[p] : []));
+  const perSide = [0, 1].map((p) => (Array.isArray(lists[p]) ? lists[p].map(withCanonKind) : []));
 
   // 1. Commands, one side then the other.
   for (const player of sideOrder(state.tick)) {

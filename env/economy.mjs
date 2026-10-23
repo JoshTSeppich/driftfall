@@ -9,7 +9,7 @@
 // The chain is OFF by default: nothing below "Mining chain" runs until enableChain(state) has added
 // `state.chain`, so the v2 game and every green build behave exactly as before.
 
-import { STATS, kindStats } from "./stats.mjs";
+import { STATS, kindStats, rowOf } from "./stats.mjs";
 import { distance, isFree, allocId, emit, structuresOf, unitsOf } from "./state.mjs";
 
 // ---------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ import { distance, isFree, allocId, emit, structuresOf, unitsOf } from "./state.
 // ---------------------------------------------------------------------------------------------
 
 function statsFor(kind, state) {
-  const s = kindStats(kind) || (state && state.chain ? chainStats(state).structures[kind] : null);
+  const s = rowOf(state, kind) || (state && state.chain ? chainStats(state).structures[kind] : null);
   if (!s) throw new Error(`economy: no stats for kind '${kind}'`);
   return s;
 }

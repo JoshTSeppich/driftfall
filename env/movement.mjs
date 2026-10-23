@@ -15,8 +15,9 @@
 // at all (walled off by rocks, crystals or structures) is cleared and a `blocked` event is logged.
 
 import { findPath } from './path.mjs';
-import { STATS } from './stats.mjs';
+import { STATS, rowOf } from './stats.mjs';
 import { findEntity, isPassable, isFree, distance, emit } from './state.mjs';
+import { fenceBlocker, stepFences } from './fence.mjs';
 
 /** Look up the stats row for a unit kind. Tolerates the common table layouts. */
 function unitStats(kind) {
@@ -24,13 +25,13 @@ function unitStats(kind) {
   return STATS.units?.[kind] ?? STATS.unit?.[kind] ?? STATS[kind] ?? null;
 }
 
-function unitSpeed(unit) {
-  const speed = unitStats(unit.kind)?.speed;
+function unitSpeed(unit, state) {
+  const speed = (state ? rowOf(state, unit.kind) : unitStats(unit.kind))?.speed;
   return Number.isInteger(speed) && speed > 0 ? speed : 1;
 }
 
-function unitRange(unit) {
-  const range = unitStats(unit.kind)?.range;
+function unitRange(unit, state) {
+  const range = (state ? rowOf(state, unit.kind) : unitStats(unit.kind))?.range;
   return Number.isInteger(range) && range >= 0 ? range : 1;
 }
 
@@ -66,7 +67,7 @@ export function destinationOf(state, unit) {
     case 'attack': {
       const target = findEntity(state, order.target);
       if (!target) return null;
-      return { x: target.x, y: target.y, within: unitRange(unit) };
+      return { x: target.x, y: target.y, within: unitRange(unit, state) };
     }
 
     case 'gather': {
@@ -121,15 +122,21 @@ function unitsInTickOrder(state) {
  * Run the movement phase on `state` in place. Emits `move`, `blocked` and `order` events.
  */
 export function stepMovement(state) {
-  const grid = {
+  const plainGrid = {
     width: state.width,
     height: state.height,
     blocked: (x, y) => !isPassable(state, x, y),
   };
+  // Power fences (env/fence.mjs): live enemy ground lines are walls for this unit. Null unless fences are on.
+  stepFences(state);
+  const fences = fenceBlocker(state);
+  let grid = plainGrid;
 
   for (const unit of unitsInTickOrder(state)) {
     // The unit may have been removed by an earlier phase; never move a ghost.
     if (!unit || unit.hp <= 0) continue;
+    const walls = fences && fences(unit);
+    grid = walls ? { ...plainGrid, blocked: (x, y) => plainGrid.blocked(x, y) || walls(x, y), walls } : plainGrid;
 
     const dest = destinationOf(state, unit);
     if (!dest) {
@@ -144,7 +151,7 @@ export function stepMovement(state) {
     }
 
     // Brutes (speed 2) only step on even ticks; everyone else every tick.
-    if (state.tick % unitSpeed(unit) !== 0) continue;
+    if (state.tick % unitSpeed(unit, state) !== 0) continue;
 
     const from = { x: unit.x, y: unit.y };
     const goal = { x: dest.x, y: dest.y };
@@ -161,13 +168,13 @@ export function stepMovement(state) {
     if (detouring.has(unit)) {
       // Already on a detour: keep planning around other units so the plain path cannot lead straight back into
       // the unit that blocked it. If no detour exists any more, the plain path below is used as usual.
-      const detour = findPath(avoidingUnits(state, unit), from, goal, { within: dest.within });
+      const detour = findPath(avoidingUnits(state, unit, grid.walls), from, goal, { within: dest.within });
       if (detour && detour.length > 0) next = detour[0];
     }
     if (!isFree(state, next.x, next.y)) {
       // Someone is standing there. First time: just wait. Still blocked next moving tick: try a detour that
       // treats every other unit as an obstacle. No detour (head-on in a gap): keep waiting.
-      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit), from, goal, { within: dest.within }) : null;
+      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit, grid.walls), from, goal, { within: dest.within }) : null;
       if (!detour || detour.length === 0) {
         waiting.add(unit);
         continue;
@@ -189,10 +196,10 @@ export function stepMovement(state) {
 }
 
 /** A planning grid where other units' tiles count as blocked too (used only for detours). */
-function avoidingUnits(state, self) {
+function avoidingUnits(state, self, walls) {
   return {
     width: state.width,
     height: state.height,
-    blocked: (x, y) => !isPassable(state, x, y) || state.units.some((u) => u !== self && u.x === x && u.y === y),
+    blocked: (x, y) => !isPassable(state, x, y) || (walls && walls(x, y)) || state.units.some((u) => u !== self && u.x === x && u.y === y),
   };
 }

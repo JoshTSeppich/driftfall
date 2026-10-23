@@ -19,14 +19,15 @@ export function boot() {
   const bloom=new UnrealBloomPass(new T.Vector2(innerWidth,innerHeight),.28,.45,1.1);composer.addPass(bloom);composer.addPass(new OutputPass());
   // Four-sample target is used for every look; OutputPass applies tone mapping once.
   const controls=new OrbitControls(lab.camera,canvas);controls.target.set(0,.6,0);controls.enableDamping=true;controls.minDistance=2;controls.maxDistance=28;controls.maxPolarAngle=Math.PI*.48;
-  if(['windmill-dam','grid-terrain-kit'].includes(document.querySelector('#shape').value)){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}
+  if(['power-stations','windmill-dam','grid-terrain-kit'].includes(document.querySelector('#shape').value)){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}
   let team='cyan',stress=false,auto=true,lastDemo=-10,step=0,last=performance.now(),frames=0,fps=0;
   const status=document.querySelector('#action');
   function pickLook(i){glossy=i===2;bloom.enabled=glossy;lab.setLook(LOOKS[i]);lab.scene.environment=toy||glossy?env.texture:null;resize();document.querySelectorAll('[data-look]').forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));}
+  document.querySelector('#cute-before').onchange=e=>lab.setBeforeCute(e.target.checked);
   document.querySelector('#toy-before').onchange=e=>{toy=!e.target.checked;configureToyRenderer(renderer,toy);lab.setToy(toy);lab.scene.environment=toy||glossy?env.texture:null;};
   function action(name){lab.trigger(name);status.textContent=name.toUpperCase();}
   document.querySelectorAll('[data-look]').forEach((b,i)=>b.onclick=()=>pickLook(i));
-  document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='toy-render'){controls.target.set(0,.6,0);lab.camera.position.set(9,11,10);}if(['windmill-dam','terrain-kit','grid-terrain-kit'].includes(e.target.value)){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
+  document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='toy-render'){controls.target.set(0,.6,0);lab.camera.position.set(9,11,10);}if(['power-stations','windmill-dam','terrain-kit','grid-terrain-kit'].includes(e.target.value)){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
   document.querySelector('#terrain-inspection').onchange=e=>{const stage=document.querySelector('#stage');stage.classList.toggle('terrain720',e.target.value==='720');stage.classList.toggle('terrainthumb',e.target.value==='thumb');resize();};
   function playReactionSound(kind){
     const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;

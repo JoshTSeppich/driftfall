@@ -3,8 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTestState } from '../env/state.mjs';
 import { step } from '../env/sim.mjs';
-import { enablePower, POWER, stepPower } from '../env/power.mjs';
-import { powerView, pentagon } from '../play/power-view.mjs';
+import { enablePower, POWER, stepPower, lineKey } from '../env/power.mjs';
+import { powerView, pentagon, fenceView } from '../play/power-view.mjs';
 
 function world(units) {
   const s = createTestState({
@@ -79,4 +79,22 @@ test('a cut shows sparks for a while, and the cut unit is listed as dark', () =>
   for (let i = 0; i < POWER.sparkTicks; i++) step(s, [[], []]);
   v = powerView(s, 0);
   assert.equal(v.sparks.length, 0, 'sparks fade out');
+});
+
+test('fenceView: nothing without power; posts, fences, high lines and pegs when there is some', () => {
+  assert.deepEqual(fenceView(createTestState({ width: 10, height: 10 }), 0), { posts: [], wires: [], overhead: [], fenced: [], pegs: [] });
+  const s = world([{ id: 7, owner: 0, kind: 'worker', x: 9, y: 9, hp: 40 }]);
+  s.units[0].power = { state: 'plugged', anchor: 1, cord: { pts: [{ x: 5, y: 5 }, { x: 8.5, y: 7.5 }] } };
+  s.power.points.push({ id: 20, owner: 0, kind: 'extension', x: 5, y: 12, range: 0 }, { id: 21, owner: 0, kind: 'pylon', x: 12, y: 5, range: 0 });
+  s.power.fenceLinks.add(lineKey(1, 20));
+  const v = fenceView(s, 0);
+  assert.equal(v.posts.find((p) => p.id === 21).tall, true);
+  assert.deepEqual(v.wires.map((w) => w.state), ['live']);
+  assert.equal(v.overhead.length, 2, 'the pylon reaches the Strip and the box overhead; neither is a wall');
+  assert.equal(v.wires.length, 1, 'only the ordered ground fence is a wire');
+  assert.deepEqual(v.pegs, [{ id: 7, x: 8.5, y: 7.5 }]);
+  s.power.points.push({ id: 30, owner: 0, kind: 'extension', x: 25, y: 25, range: 0 }, { id: 31, owner: 0, kind: 'extension', x: 31, y: 25, range: 0 });
+  s.power.fenceLinks.add(lineKey(30, 31));
+  const dark = fenceView(s, 0).wires.find((w) => w.from.x === 25);
+  assert.equal(dark.state, 'dark', 'a fence on a network with no energy is drawn dim');
 });

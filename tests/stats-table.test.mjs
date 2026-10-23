@@ -19,12 +19,14 @@ const SPEC_STRUCTURES = {
 
 const isPosNum = (v) => typeof v === 'number' && Number.isFinite(v) && v > 0;
 
-test('unit kinds list is exactly the four spec units', () => {
-  assert.deepEqual([...UNIT_KINDS].sort(), Object.keys(SPEC_UNITS).sort());
+// The four spec units keep their classic numbers; the Toaster-Wars roster adds Broiler, Flak Popper and Bagel
+// (howler, spiker, dart) and the kitchen (mill, well, toaster). tests/toaster-roster.test.mjs covers those.
+test('unit kinds list is the four spec units plus the three Toaster-Wars kinds', () => {
+  assert.deepEqual([...UNIT_KINDS].sort(), [...Object.keys(SPEC_UNITS), 'dart', 'howler', 'spiker'].sort());
 });
 
 test('structure kinds list is the buildable ones; the Core is kept in STATS.core', () => {
-  assert.deepEqual([...STRUCTURE_KINDS].sort(), ['forge', 'turret']);
+  assert.deepEqual([...STRUCTURE_KINDS].sort(), ['forge', 'mill', 'toaster', 'turret', 'well']);
 });
 
 test('every unit kind has every required field as a positive number', () => {

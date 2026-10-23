@@ -7,7 +7,7 @@
 //     sparks: cut cords still visible (where the raider stood), age 0..1
 //     dark:   your battery and powered-down units (red blink on battery, dark eyes on down)
 //   drawPowerOverlay(ov, state, side, selection, project, tp) lives in play/territory-wire.mjs.
-import { POWER } from '../env/power.mjs';
+import { POWER, buildLines, lineKey } from '../env/power.mjs';
 
 const TAU_STEP = (2 * Math.PI) / 5;
 
@@ -53,6 +53,34 @@ export function powerView(state, side, selection = []) {
   for (const c of P.cuts || []) {
     const age = Math.min(1, (state.tick - c.tick) / POWER.sparkTicks);
     out.sparks.push({ id: c.id, x: c.x, y: c.y, age });
+  }
+  return out;
+}
+
+// Stations, fences and pegs (POWER-NETWORK.md sections 9 and 11, step 5). Pure data for the overlay to draw:
+//   posts:    every station of both sides { id, owner, kind, x, y, lit, tall } (low charcoal posts; pylons are tall)
+//   wires:    ground fences of both sides { owner, from, to, state: 'live' | 'dark' } (thick glowing rail / dim rail)
+//   overhead: high lines { owner, from, to } (thin dashed beam over the ground, never a wall, with a ground shadow)
+//   fenced:   tile keys "x,y" of your fenced land (team-tint pentagon pattern)
+//   pegs:     the corners your plugged cords bend round { id, x, y } (peg dots), at most 3 per cord
+export function fenceView(state, side) {
+  const out = { posts: [], wires: [], overhead: [], fenced: [], pegs: [] };
+  const P = state.power;
+  if (!P) return out;
+  const graph = buildLines(state);
+  for (const s of graph.stations) out.posts.push({ id: s.id, owner: s.owner, kind: s.kind, x: s.x, y: s.y, lit: graph.lit.has(s.id), tall: s.kind === 'pylon' });
+  const on = P.fenceLinks || new Set();
+  for (const l of graph.lines) {
+    if (l.type === 'high') out.overhead.push({ owner: l.owner, from: { x: l.a.x, y: l.a.y }, to: { x: l.b.x, y: l.b.y } });
+    else if (on.has(lineKey(l.a.id, l.b.id))) {
+      out.wires.push({ owner: l.owner, from: { x: l.a.x, y: l.a.y }, to: { x: l.b.x, y: l.b.y }, state: graph.lit.has(l.a.id) ? 'live' : 'dark' });
+    }
+  }
+  const fenced = P.enclosure && P.enclosure.fenced[side];
+  if (fenced) out.fenced = [...fenced].sort();
+  for (const u of state.units) {
+    if (u.owner !== side || u.hp <= 0 || !u.power || !u.power.cord) continue;
+    for (const p of u.power.cord.pts.slice(1)) out.pegs.push({ id: u.id, x: p.x, y: p.y });
   }
   return out;
 }

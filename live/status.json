@@ -1,17 +1,172 @@
 {
- "build": 222,
- "at": "2026-10-23T15:28:39.648Z",
- "seconds": 170.6,
+ "build": 225,
+ "at": "2026-10-23T15:45:26.277Z",
+ "seconds": 49.7,
  "state": "red",
- "nextBuildAt": "2026-10-23T15:31:39.648Z",
- "headline": "Red: 1 test file(s) failing.",
+ "nextBuildAt": "2026-10-23T15:48:26.277Z",
+ "headline": "Red: 15 test file(s) failing.",
  "tests": {
-  "files": 79,
-  "pass": 1216,
-  "fail": 3,
-  "seconds": 301.9
+  "files": 85,
+  "pass": 1210,
+  "fail": 61,
+  "seconds": 143.4
  },
  "failures": [
+  {
+   "file": "tests/anticheat.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "mutating, freezing and hoarding observations and stats changes nothing outside the player",
+    "the observation holds exactly the spec §10 fields and no internal state",
+    "a forged reply, a flood of messages and early replies cannot change the match",
+    "process.exit, an uncaught error and a crash in a timer each cost only that player the match",
+    "thrown values of every shape (null, symbols, objects with hostile toString) are errors, not crashes",
+    "a player cannot read the other player's source or any file outside its own folder"
+   ],
+   "error": "ReferenceError [Error]: withCanonKind is not defined"
+  },
+  {
+   "file": "tests/build.test.mjs",
+   "owners": [],
+   "imports": [
+    "scripts/build.mjs",
+    "tests/a.mjs",
+    "tests/e.json"
+   ],
+   "tests": [
+    "the same sources give the same hash",
+    "production build of the real game"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+  },
+  {
+   "file": "tests/builtin-ai.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/sim.mjs",
+    "env/state.mjs",
+    "env/stats.mjs",
+    "players/builtin/ai.mjs",
+    "players/sample-player.mjs"
+   ],
+   "tests": [
+    "normal on side 0: builds, trains, expands and attacks inside 5 minutes",
+    "normal on side 1: builds, trains, expands and attacks inside 5 minutes",
+    "easy on side 0: builds, trains, expands and attacks inside 5 minutes",
+    "easy on side 1: builds, trains, expands and attacks inside 5 minutes",
+    "normal guards its expansion with a Turret",
+    "easy is slower than normal: first blow lands later, and it still plays legally when it thinks every 4th tick"
+   ],
+   "error": "ReferenceError [Error]: withCanonKind is not defined"
+  },
+  {
+   "file": "tests/combat-counters.test.mjs",
+   "owners": [
+    "haiku",
+    "fable"
+   ],
+   "imports": [
+    "env/combat.mjs",
+    "env/stats.mjs",
+    "env/state.mjs",
+    "env/sim.mjs"
+   ],
+   "tests": [
+    "Lancer beats a Grunt that starts 4 tiles away",
+    "Brute beats three Grunts that all attack it",
+    "Brute beats a Turret",
+    "Turret beats a Grunt",
+    "a Lancer that keeps stepping away survives a Brute for at least 40 ticks"
+   ],
+   "error": "ReferenceError [Error]: withCanonKind is not defined"
+  },
+  {
+   "file": "tests/commands-validation.test.mjs",
+   "owners": [
+    "haiku"
+   ],
+   "imports": [
+    "env/commands.mjs",
+    "env/state.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "odd tick: side 1 commands are applied before side 0 (both build on one tile)",
+    "even tick: side 0 commands are applied before side 1 (both build on one tile)",
+    "side order alternates: ticks 2 and 3 go to side 0 and side 1",
+    "reject events appear in the order the sides were handled"
+   ],
+   "error": "ReferenceError [Error]: withCanonKind is not defined"
+  },
+  {
+   "file": "tests/determinism-fuzz.test.mjs",
+   "owners": [
+    "sonnet",
+    "haiku",
+    "fable"
+   ],
+   "imports": [
+    "env/rng.mjs",
+    "env/stats.mjs",
+    "env/sim.mjs",
+    "env/state.mjs",
+    "env/log.mjs"
+   ],
+   "tests": [
+    "seed 1200785376: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 469934147: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 1199342297: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 793828992: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 274931087: two fuzzed runs and a replay of the same commands give identical logs",
+    "seed 802628746: two fuzzed runs and a replay of the same commands give identical logs"
+   ],
+   "error": "ReferenceError [Error]: canonKind is not defined"
+  },
+  {
+   "file": "tests/economy-build-train.test.mjs",
+   "owners": [
+    "fable"
+   ],
+   "imports": [
+    "env/economy.mjs"
+   ],
+   "tests": [
+    "sim.step: build then train work end to end through the real tick loop"
+   ],
+   "error": "ReferenceError [Error]: canonKind is not defined"
+  },
+  {
+   "file": "tests/fanatic-fable.test.mjs",
+   "owners": [
+    "fable"
+   ],
+   "imports": [
+    "env/referee.mjs"
+   ],
+   "tests": [
+    "fanatic-fable beats the built-in AI by Core inside 40 seconds from either side"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+  },
+  {
+   "file": "tests/fence-enclosure.test.mjs",
+   "owners": [
+    "haiku"
+   ],
+   "imports": [
+    "env/state.mjs",
+    "env/power.mjs",
+    "env/fence.mjs"
+   ],
+   "tests": [
+    "a pocket bigger than 400 tiles is not fenced"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+  },
   {
    "file": "tests/opening-clock.test.mjs",
    "owners": [
@@ -24,59 +179,193 @@
    ],
    "tests": [
     "the Core floor and clock numbers are in the stats table",
-    "each rush bot loses to a Turret plus worker-pull defender and no match ends before 3:00",
-    "a built-in mirror does not end before 3:00"
+    "each rush bot loses to a Turret plus worker-pull defender and no match ends before 3:00"
    ],
    "error": "AssertionError [ERR_ASSERTION]: Core hp must be at least 3000, got 1000"
+  },
+  {
+   "file": "tests/sim-tiers-research.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/sim.mjs",
+    "env/sim-territory.mjs",
+    "env/tiers.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "a queued tier-2 unit pauses (no progress, no draw) when Hold drops, and resumes when it returns"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:"
+  },
+  {
+   "file": "tests/stats-table.test.mjs",
+   "owners": [
+    "haiku"
+   ],
+   "imports": [
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "unit kinds list is exactly the four spec units",
+    "structure kinds list is the buildable ones; the Core is kept in STATS.core"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+  },
+  {
+   "file": "tests/stats-territory.test.mjs",
+   "owners": [
+    "haiku"
+   ],
+   "imports": [
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "the v2 kind lists are untouched, so the current game keeps playing"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+  },
+  {
+   "file": "tests/toaster-roster.test.mjs",
+   "owners": [
+    "haiku",
+    "fable"
+   ],
+   "imports": [
+    "env/stats.mjs",
+    "env/sim-territory.mjs",
+    "env/sim.mjs",
+    "env/ammo.mjs",
+    "env/toast.mjs"
+   ],
+   "tests": [
+    "every roster unit has a full data row, and the base is a Power Strip that costs the match",
+    "fed Popper fires, spends a slice per shot and goes hungry when empty",
+    "an attack is a shot, not a hit every tick: the cadence is the unit stat",
+    "an unpowered toaster cannot fire",
+    "Mill, Well and Toaster turn wheat, water and power into toast",
+    "the cord and hunger end the old 15 second melee rush"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: worker has a shot"
+  },
+  {
+   "file": "tests/viewer3d-integration.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "every unit, structure and tile kind is named by the module that renders it"
+   ],
+   "error": "- audio.mjs (haiku) in node: createAudio(ctx) threw: TypeError: (window.AudioContext || window.webkitAudioContext) is not a constructor |     at AudioContext.getContext (file:///Users/joshuaseppich/dev/rts/node_modules/three/build/three.mod"
   }
  ],
  "parse": {
-  "checked": 62,
+  "checked": 65,
   "errors": []
  },
  "match": {
   "ok": true,
-  "seed": 223,
+  "seed": 226,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3470,
-    3530
+    3480,
+    3520
    ]
   },
-  "ms": 696
+  "ms": 888
  },
  "changed": {
   "first": false,
   "added": [
    {
-    "file": "players/defender-sonnet/bot.mjs",
+    "file": "env/bakery.mjs",
     "owner": null
    },
    {
-    "file": "tests/opening-clock.test.mjs",
+    "file": "env/cord-wrap.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/cord-wrap-power.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/cord-wrap.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/fence-enclosure.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/toaster-roster.test.mjs",
     "owner": null
    }
   ],
-  "changed": [],
+  "changed": [
+   {
+    "file": "env/ammo.mjs",
+    "owner": null
+   },
+   {
+    "file": "env/combat.mjs",
+    "owner": "haiku"
+   },
+   {
+    "file": "env/economy.mjs",
+    "owner": "fable"
+   },
+   {
+    "file": "env/fence.mjs",
+    "owner": null
+   },
+   {
+    "file": "env/movement.mjs",
+    "owner": "fable"
+   },
+   {
+    "file": "env/power.mjs",
+    "owner": null
+   },
+   {
+    "file": "env/sim-territory.mjs",
+    "owner": null
+   },
+   {
+    "file": "env/stats.mjs",
+    "owner": "haiku"
+   },
+   {
+    "file": "tests/fence.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/power-lines.test.mjs",
+    "owner": null
+   }
+  ],
   "removed": [],
-  "total": 2
+  "total": 16
  },
  "files": {
-  "env": 30,
+  "env": 33,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 81,
+  "tests": 87,
   "players": 19,
   "live": 19
  },
  "previous": {
-  "build": 221,
-  "state": "green",
-  "at": "2026-10-23T15:22:49.078Z",
-  "failing": []
+  "build": 224,
+  "state": "red",
+  "at": "2026-10-23T15:41:36.552Z",
+  "failing": [
+   "tests/opening-clock.test.mjs"
+  ]
  }
 }

@@ -118,3 +118,37 @@ Reach or denial.
 4. Enclosure flood-fill every 48 ticks, plus the no-softlock placement checks.
 5. HUD and render: posts, wires, high pylons, fenced tint, peg dots, shrinking reach ring.
 6. Bots: the Match Room bot builds a ramp fence and races to fence the Golden Fields; the Reporter reports fences.
+
+## 11. GPT's review (23 Oct). ADOPTED: these override sections 3-7 where they differ
+
+GPT's verdict: 8/10, and 9.5/10 with these changes. The danger is that the best strategy becomes "build an
+impenetrable fence" instead of commanding toaster armies.
+
+1. **Power graph and fence graph are separate.** Power links auto-connect deterministically, may form cycles and
+   never block. Replace the order-dependent shared-neighbour rule with: link to the nearest K = 3 stations in reach,
+   ties broken by id. A **fence is an explicit order**: a player activates a ground link as a fence. Fences cost
+   **1 energy per 8 tiles** as upkeep.
+2. **Enclosure is contestable and bounded.** A loop needs at least 3 stations and fences a bounded area (cap 400
+   tiles). Capture takes **6 s held**, so the enemy can react. The wheat bonus is **+15%**, capped.
+3. **Brown-out is local, not one global switch.** Each connected component has its own capacity. On overload, shed
+   loads in order: wheat bonus, then fences, then military supply, always keeping a small essential reserve.
+   Restored power takes a **2 s restart**.
+4. **Visual layers:**
+   - Powered fence: a solid team-colour rail.
+   - High relay: a thin elevated dashed beam that never blocks.
+   - Unit cord: a thin dark cable, drawn prominently only when threatened.
+   - Browned-out fence: a dim rail with occasional sparks.
+5. **Cord routing is cheap and event-driven.** Use a visibility graph around obstacle corners, with **at most 3 wrap
+   points**. Routes are cached and recomputed only when a unit changes anchoring region or an obstacle moves.
+6. **No accidental spaghetti deaths.** An enemy crossing a cord **threatens** it (it flashes red) but does not cut it.
+   Cutting is an explicit attack or a short deliberate interaction. This changes section 20's walk-over cut and
+   needs agreement with the cord-leash owner.
+7. **Numbers:**
+   - Extension Box link reach 8.
+   - Relay Pylon reach 16.
+   - Rock short 5 s.
+8. **No softlock, relaxed:** every player keeps a **reachable** neutral expansion route. It doesn't have to be
+   **safe**, so real encirclement is still allowed.
+9. **Signature moment, "The Great Unplugging":** when a station dies, its cords recoil to the surviving anchors with a
+   FWIP, and edge toasters hop back with flickering eyes. A broken dam changes the river, exposing crossings or
+   flooding low outlets. **The battlefield visibly rearranges when the network changes.**

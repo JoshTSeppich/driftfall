@@ -16,6 +16,7 @@
 
 import { distance, isFree, isPassable, allocId, emit } from './state.mjs';
 import { STATS } from './stats.mjs';
+import { newCord, cordMove } from './cord-wrap.mjs';
 
 // Numbers from TERRITORY.md section 20. Cord lengths are in tiles, Chebyshev like every other distance here.
 // Unit kinds are the engine's; the Toastinator names are a presentation layer (worker = Crumb, grunt = Popper,
@@ -35,7 +36,7 @@ const unitById = (state, id) => (typeof id === 'number' ? state.units.find((u) =
 
 /** Turn the power rules on for a state. Every unit gets its power record on the first tick it is seen. */
 export function enablePower(state) {
-  state.power = { points: [], plugging: new Map(), cuts: [], reserveCd: [0, 0], view: null };
+  state.power = { points: [], plugging: new Map(), cuts: [], reserveCd: [0, 0], view: null, fenceLinks: new Set() };
   return state.power;
 }
 
@@ -79,6 +80,19 @@ function refresh(state) {
   const points = allPoints(state);
   state.power.view = { points, netOf: networksOf(points) };
   return state.power.view;
+}
+
+// Wrap mode (state.power.wrap, off by default): the cord bends round cliffs, rocks and water, and every bend costs
+// length (env/cord-wrap.mjs). Returns the cordMove result for stepping to (x, y), or null when the unit has no anchor.
+function wrapTrial(state, unit, view, x, y) {
+  const st = unit.power;
+  const anchor = view.points.find((p) => p.id === st.anchor);
+  if (!anchor) return null;
+  const cord = st.cord && st.cord.anchorId === anchor.id ? st.cord : { ...newCord(anchor), anchorId: anchor.id };
+  const blocked = (bx, by) => state.rockSet.has(`${bx},${by}`);
+  const move = cordMove(cord, { x, y }, blocked, cordOf(unit.kind));
+  if (move.ok) move.cord.anchorId = anchor.id;
+  return move;
 }
 
 // The nearest point of this owner within `cord` tiles of (x, y), or null. Ties go to the earlier point in list order.
@@ -125,6 +139,10 @@ export function stepVerdict(state, unit, x, y) {
   const net = view.netOf.get(st.anchor);
   if (!net) return 'cord';
   if (!net.lit) return 'stuck';
+  if (state.power.wrap) {
+    const trial = wrapTrial(state, unit, view, x, y);
+    if (trial) return trial.ok ? null : 'cord';
+  }
   const reach = view.points.some((p) => p.owner === unit.owner && distance(p, { x, y }) <= cordOf(unit.kind));
   return reach ? null : 'cord';
 }
@@ -183,7 +201,9 @@ export function stepPower(state) {
     if (u.hp <= 0) continue;
     const st = u.power || (u.power = { state: 'plugged', anchor: null, battery: 0 });
     if (st.state === 'plugged') {
-      const p = nearestPoint(points, u.owner, u.x, u.y, cordOf(u.kind));
+      let p = nearestPoint(points, u.owner, u.x, u.y, cordOf(u.kind));
+      // A wrapped cord keeps its anchor while the anchor stands, however far the bends have stretched it.
+      if (P.wrap && st.cord && st.anchor === st.cord.anchorId) p = points.find((q) => q.id === st.anchor) || p;
       if (p) st.anchor = p.id;
       else {
         st.state = 'battery';
@@ -287,11 +307,164 @@ export function enforceCords(state) {
     const was = before.get(u.id);
     if (!was || (was.x === u.x && was.y === u.y)) continue;
     const reason = stepVerdict(state, u, u.x, u.y);
-    if (!reason) continue;
+    if (!reason) {
+      if (state.power.wrap && u.power && u.power.state === 'plugged') {
+        const trial = wrapTrial(state, u, state.power.view, u.x, u.y);
+        if (trial && trial.ok) u.power.cord = trial.cord;
+      }
+      continue;
+    }
     if (isFree(state, was.x, was.y)) { u.x = was.x; u.y = was.y; }
     if (u.order) { u.order = null; emit(state, { e: 'order', id: u.id, order: null }); }
     emit(state, { e: 'cord-limit', id: u.id, reason });
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Power Stations and lines (POWER-NETWORK.md sections 3 and 5, build step 1). Opt-in on top of the cord rules above:
+// buildLines() reads the same points but never changes how plugs or networks behave. Pure and deterministic.
+//
+// Every station has a link reach (how far its wire goes), a plug radius (units plug in), a line type and an energy
+// flag. A link spans the SMALLER reach of its two ends. A Relay Pylon's long reach only works pylon to pylon; its
+// links to anything else use the short reach. Any line with a pylon at an end is a high line (never blocks).
+
+export const STATION = Object.freeze({
+  strip: Object.freeze({ link: 10, plug: 14, line: 'ground', energy: true }),
+  outlet: Object.freeze({ link: 10, plug: 10, line: 'ground', energy: false }),
+  extension: Object.freeze({ link: 8, plug: 8, line: 'ground', energy: false }),
+  pylon: Object.freeze({ link: 16, plug: 4, line: 'high', energy: false, shortLink: 8 }),
+  generator: Object.freeze({ link: 6, plug: 0, line: 'ground', energy: true }),
+  windmill: Object.freeze({ link: 6, plug: 0, line: 'ground', energy: true }),
+  dam: Object.freeze({ link: 6, plug: 0, line: 'ground', energy: true }),
+});
+
+/** The spec of a station kind, or null. Unknown kinds are not stations. */
+export const stationSpec = (kind) => STATION[kind] ?? null;
+
+// Toaster-roster renames unit kinds; cord lengths are looked up through this so both names work.
+const CORD_ALIAS = Object.freeze({ crumb: 'worker', popper: 'grunt', zapper: 'lancer', four_slice: 'brute', 'four-slice': 'brute' });
+/** Cord length in tiles for a unit kind (engine kind or Toastinator name). */
+export const cordLength = (kind) => POWER.cord[kind] ?? POWER.cord[CORD_ALIAS[kind]] ?? 8;
+
+/** Every station of every side, id order. Strips come from Cores, outlets from complete claims. */
+export function stationsOf(state) {
+  const out = [];
+  for (const s of state.structures) {
+    if (s.kind === 'core' && s.hp > 0) out.push({ id: s.id, owner: s.owner, kind: 'strip', x: s.x, y: s.y });
+  }
+  for (const c of state.claims || []) {
+    if (c.complete && c.hp > 0 && !c.dead) out.push({ id: c.id, owner: c.owner, kind: 'outlet', x: c.x, y: c.y });
+  }
+  for (const p of (state.power && state.power.points) || []) {
+    if (STATION[p.kind] && !(p.hp <= 0)) out.push({ id: p.id, owner: p.owner, kind: p.kind, x: p.x, y: p.y });
+  }
+  return out.sort((a, b) => a.id - b.id);
+}
+
+/** Tiles on the straight line a to b, grid supercover (every tile the segment touches). Both ends included. */
+export function supercover(a, b) {
+  const tiles = [[a.x, a.y]];
+  const nx = Math.abs(b.x - a.x), ny = Math.abs(b.y - a.y);
+  const sx = b.x > a.x ? 1 : -1, sy = b.y > a.y ? 1 : -1;
+  let x = a.x, y = a.y;
+  for (let ix = 0, iy = 0; ix < nx || iy < ny;) {
+    const decision = (1 + 2 * ix) * ny - (1 + 2 * iy) * nx; // which edge the segment crosses next
+    if (decision === 0) { x += sx; y += sy; ix++; iy++; tiles.push([x - sx, y], [x, y - sy]); }
+    else if (decision < 0) { x += sx; ix++; }
+    else { y += sy; iy++; }
+    tiles.push([x, y]);
+  }
+  return tiles;
+}
+
+/** True when a ground line a to b has line of sight: no rock, cliff or water tile on the supercover (ends excluded). */
+export function lineOfSight(state, a, b) {
+  for (const [x, y] of supercover(a, b)) {
+    if ((x === a.x && y === a.y) || (x === b.x && y === b.y)) continue;
+    if (state.rockSet.has(`${x},${y}`)) return false;
+  }
+  return true;
+}
+
+/** Reach of a link between two stations, or 0 when their kinds may not link at all. */
+export function linkReach(a, b) {
+  const sa = STATION[a.kind], sb = STATION[b.kind];
+  if (!sa || !sb) return 0;
+  const pa = a.kind === 'pylon', pb = b.kind === 'pylon';
+  const ra = pa && !pb ? sa.shortLink : sa.link;
+  const rb = pb && !pa ? sb.shortLink : sb.link;
+  return Math.min(ra, rb);
+}
+
+const lineKind = (a, b) => (STATION[a.kind].line === 'high' || STATION[b.kind].line === 'high' ? 'high' : 'ground');
+
+// Do segments p1p2 and p3p4 properly cross (integer tile centres; touching at a shared end does not count)?
+const orient = (a, b, c) => Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+export function segmentsCross(p1, p2, p3, p4) {
+  const same = (p, q) => p.x === q.x && p.y === q.y;
+  if (same(p1, p3) || same(p1, p4) || same(p2, p3) || same(p2, p4)) return false;
+  const d1 = orient(p1, p2, p3), d2 = orient(p1, p2, p4), d3 = orient(p3, p4, p1), d4 = orient(p3, p4, p2);
+  return d1 * d2 < 0 && d3 * d4 < 0;
+}
+
+/** How many nearest stations each station links to (POWER-NETWORK.md section 11, item 1). */
+export const LINK_NEAREST = 3;
+
+/**
+ * The power graph of every side. Each station picks the nearest LINK_NEAREST own stations in reach (ties by id) that it
+ * can legally link to (kind rules, and line of sight for ground links); a link exists when either end picks it, so
+ * cycles are fine. Power links never block anything: only a fence (env/fence.mjs, an explicit order) is a wall.
+ * Returns { stations, lines: [{a, b, owner, type}], lit: Set of station ids on a lit network }. A network is lit when
+ * it holds a Strip or an energy station (generator, windmill, dam); brown-out is per network, so it is local.
+ */
+export function buildLines(state) {
+  const stations = stationsOf(state);
+  const byId = new Map(stations.map((s) => [s.id, s]));
+  const neighbours = new Map(stations.map((s) => [s.id, new Set()]));
+  const lines = [];
+  for (const s of stations) {
+    const near = [];
+    for (const q of stations) {
+      if (q.owner !== s.owner || q.id === s.id) continue;
+      const d = distance(s, q);
+      if (d > 0 && d <= linkReach(s, q) && (lineKind(s, q) === 'high' || lineOfSight(state, s, q))) near.push({ q, d });
+    }
+    near.sort((u, v) => u.d - v.d || u.q.id - v.q.id);
+    for (const { q } of near.slice(0, LINK_NEAREST)) {
+      if (neighbours.get(s.id).has(q.id)) continue;
+      neighbours.get(s.id).add(q.id);
+      neighbours.get(q.id).add(s.id);
+      const [a, b] = s.id < q.id ? [s, q] : [q, s];
+      lines.push({ a: { id: a.id, x: a.x, y: a.y }, b: { id: b.id, x: b.x, y: b.y }, owner: s.owner, type: lineKind(s, q) });
+    }
+  }
+  lines.sort((u, v) => u.a.id - v.a.id || u.b.id - v.b.id);
+  const lit = new Set();
+  const seen = new Set();
+  for (const s of stations) {
+    if (seen.has(s.id)) continue;
+    const members = [s];
+    seen.add(s.id);
+    for (let k = 0; k < members.length; k++) {
+      for (const n of neighbours.get(members[k].id)) {
+        if (!seen.has(n)) { seen.add(n); members.push(byId.get(n)); }
+      }
+    }
+    if (members.some((m) => STATION[m.kind].energy)) for (const m of members) lit.add(m.id);
+  }
+  return { stations, lines, lit };
+}
+
+/** The key of a link between two station ids, smaller id first. */
+export const lineKey = (idA, idB) => (idA < idB ? `${idA}-${idB}` : `${idB}-${idA}`);
+
+/**
+ * Fences that stand right now: ground links a player activated (state.power.fenceLinks, a Set of lineKey) whose network
+ * is lit. A fence on a dark network (brown-out) is passable, so it is not listed.
+ */
+export function liveGroundLines(graph, state) {
+  const on = state && state.power && state.power.fenceLinks;
+  return graph.lines.filter((l) => l.type === 'ground' && on && on.has(lineKey(l.a.id, l.b.id)) && graph.lit.has(l.a.id));
 }
 
 // The nearest free, passable tile next to a structure (rings 1 then 2), or null.

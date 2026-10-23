@@ -15,7 +15,10 @@ import { enableMarket, stepMarket } from './market.mjs';
 import { STATS, kindStats } from './stats.mjs';
 import { applyDriftEffects, doTunnel, stepTunnels } from './effects.mjs';
 import { kindTier, tierReason, enableResearch, doResearch, stepTiers, stepProductionGated } from './tiers.mjs';
-import { enablePower, stepPower, doPlug, doPlaceCord, snapshotPower, enforceCords } from './power.mjs';
+import { enablePower, stepPower, doPlug, doPlaceCord, snapshotPower, enforceCords, stepVerdict } from './power.mjs';
+import { enableAmmo, setAmmoHooks, stepAmmo } from './ammo.mjs';
+import { enableToast } from './toast.mjs';
+import { enableBakery, stepBakery } from './bakery.mjs';
 
 // Claim numbers: STATS.territory when the stats owner has landed it, TERRITORY.md section 3 otherwise.
 const fromStats = STATS.territory || {};
@@ -71,6 +74,26 @@ export function createTerritoryMatch(seed, opts = {}) {
   enableMarket(state); // prices drift with scarcity; trading itself needs a Trading House (env/market.mjs)
   enablePower(state); // the cord is the leash (TERRITORY.md section 20, env/power.mjs)
   state.factions = opts.factions || ['coil', 'burrow'];
+  if (opts.hunger !== false) enableHunger(state, waterKeys);
+  return state;
+}
+
+// Toaster Wars (Joshua, 09:27): toast is ammo in EVERY territory match. Fed / hungry / unpowered apply to every fighter
+// (env/ammo.mjs), the Strip stores the toast, and the Mill -> Well -> Toaster kitchen makes it (env/bakery.mjs).
+// opts.hunger === false turns it all off (a few old tests want the bare rules). The Power Strip gets its toaster hp.
+export function enableHunger(state, waterKeys = null) {
+  enableToast(state);
+  enableAmmo(state, {});
+  setAmmoHooks(state, {
+    // Cut off (powered down) or in a browned-out network: cannot move or fire. On battery still counts as powered.
+    isPowered: (s, u) => {
+      const why = s.power ? stepVerdict(s, u, u.x, u.y) : null;
+      return why !== 'down' && why !== 'stuck';
+    },
+  });
+  state.waterSet = waterKeys;
+  enableBakery(state);
+  for (const s of state.structures) if (s.kind === 'core') s.hp = STATS.toaster.coreHp;
   return state;
 }
 
@@ -221,6 +244,7 @@ export function stepRulesPre(state) {
   if (state.research) stepTiers(state);
   if (state.budget) stepBudget(state);
   if (state.power) { snapshotPower(state); stepPower(state); }
+  if (state.ammo) { stepBakery(state); stepAmmo(state); }
 }
 
 /** Production for this tick: the real stepProduction, minus structures a tier gate has paused. */

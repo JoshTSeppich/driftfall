@@ -12,7 +12,8 @@ const SMOKE_HEX = 0x6b6f78;
 const DUSK_HEX = 0x1a1d24;
 
 // Building heights in tile units (1 = one grid tile). Used to place the rise and the scaffold.
-const HEIGHT = { core: 0.95, forge: 0.8, turret: 0.85, generic: 0.6 };
+// core = Power Strip, forge = Assembly Line, turret = Heat Lamp; mill, well and toaster are the kitchen (plain blocks).
+const HEIGHT = { core: 0.95, forge: 0.8, turret: 0.85, mill: 0.9, well: 0.5, toaster: 0.7, generic: 0.6 };
 
 // ---------- pure helpers (no THREE, no DOM) ----------
 

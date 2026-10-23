@@ -249,6 +249,8 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     quality: q.get('quality') ?? 'high', debug: q.get('debug') === '1', autoplay: false,
   });
   const ctx = engine.ctx;
+  try { ctx.toy = (await imp('./toy-render.mjs')).installToy(ctx, engine, { query: q }); }   // premium toy look; ?toy=0 keeps the old one
+  catch (err) { console.warn('[play] toy look', err); }
   if (assetsMod?.loadAssets) { try { ctx.assets = (await assetsMod.loadAssets(ctx)) ?? ctx.assets; } catch (err) { console.warn('[play] assets', err); } }
   ctx.log = { stats: STATS };
   ctx.hudRoot = els.hud;
