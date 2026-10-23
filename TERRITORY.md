@@ -445,3 +445,22 @@ This refines section 17: you don't gather toast or bread; you gather four ingred
   stacks of toast; jump-to-alert and control-group centring are essential.
 - Performance budget unchanged: 60 fps with 200 units (view culling, coarse Reach graph for paths, fog only near units).
 - **Wiring the bigger map into the live page is now the integrator's FIRST item**: Joshua is still seeing 40 × 40.
+
+## 20. The cord is the leash (Joshua, 20:42: "the toasters can't go farther than their electrical cord")
+The defining rule of **Toaster Wars**.
+- **Every toaster is plugged in.** Each unit trails a visible cord back to the nearest power point it's plugged into:
+  the **Power Strip** (your base), an **Outlet** (your claims), or an **Extension Box** (cheap, places power further
+  out). **Cord length** depends on the unit: Crumbs 12 tiles, Poppers 8, Zappers 10, Four-Slice 6, Bagel 16;
+  Cord upgrades lengthen them.
+- **You can't move past the end of your cord.** Move orders stop at the cord limit (shown as a pentagon ring when
+  you select units). To go further, build Outlets and Extension Boxes: **your power network is your territory**.
+- **Generators feed the network.** A network needs Energy (river dams, generator sites) to stay live. If a network's
+  power is cut (generator lost, line severed), its toasters **brown out**: slower, weaker, and stuck where they are.
+- **Cords can be cut.** Enemy units can sever an exposed cord or line; an unplugged toaster runs on a tiny **battery**
+  (10 s) then **powers down** (eyes go dark, falls over) until re-plugged by a Crumb. Raids are about cutting cords.
+- **Battery packs** (a late upgrade) let raiders work briefly off-cord; air units use long cords and drift on them
+  like kites.
+- **Readability:** cords are drawn as thin charcoal lines with a team-colour glow; your live network is a soft
+  pentagon-tiled glow on the ground; the cord limit ring shows on selection; a cut cord sparks and blinks red.
+- This replaces the abstract "claim" timers: you claim land by **powering** it (an Outlet in a Reach, and no enemy
+  power there). Hold the river and generators and you hold the war.

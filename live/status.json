@@ -1,15 +1,15 @@
 {
- "build": 81,
- "at": "2026-10-23T02:26:57.211Z",
- "seconds": 121.4,
+ "build": 85,
+ "at": "2026-10-23T02:47:03.542Z",
+ "seconds": 121.5,
  "state": "red",
- "nextBuildAt": "2026-10-23T02:29:57.211Z",
- "headline": "Red: 1 test file(s) failing.",
+ "nextBuildAt": "2026-10-23T02:50:03.542Z",
+ "headline": "Red: 2 test file(s) failing.",
  "tests": {
-  "files": 72,
-  "pass": 1079,
-  "fail": 0,
-  "seconds": 215.5
+  "files": 73,
+  "pass": 1109,
+  "fail": 1,
+  "seconds": 216
  },
  "failures": [
   {
@@ -27,6 +27,17 @@
    ],
    "tests": [],
    "error": ""
+  },
+  {
+   "file": "tests/live-spotlight.test.mjs",
+   "owners": [],
+   "imports": [
+    "live/spotlight.mjs"
+   ],
+   "tests": [
+    "mountSpotlight renders cards from the live Control Room when it is reachable (skips otherwise)"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
   }
  ],
  "parse": {
@@ -35,78 +46,46 @@
  },
  "match": {
   "ok": true,
-  "seed": 82,
+  "seed": 86,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3470,
-    3530
+    3460,
+    3540
    ]
   },
-  "ms": 631
+  "ms": 644
  },
  "changed": {
   "first": false,
-  "added": [
-   {
-    "file": "env/rocks.mjs",
-    "owner": null
-   },
-   {
-    "file": "env/toast.mjs",
-    "owner": null
-   },
-   {
-    "file": "tests/coil-core.test.mjs",
-    "owner": null
-   },
-   {
-    "file": "tests/coil-motions.test.mjs",
-    "owner": null
-   },
-   {
-    "file": "tests/coil-render-three.test.mjs",
-    "owner": null
-   },
-   {
-    "file": "tests/rocks.test.mjs",
-    "owner": null
-   },
-   {
-    "file": "tests/toast-economy.test.mjs",
-    "owner": null
-   }
-  ],
+  "added": [],
   "changed": [
-   {
-    "file": "env/commands.mjs",
-    "owner": "haiku"
-   },
    {
     "file": "tests/style-lab.test.mjs",
     "owner": null
    }
   ],
   "removed": [],
-  "total": 9
+  "total": 1
  },
  "files": {
   "env": 28,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 74,
+  "tests": 75,
   "players": 18,
   "live": 19
  },
  "previous": {
-  "build": 80,
+  "build": 84,
   "state": "red",
-  "at": "2026-10-23T02:21:55.763Z",
+  "at": "2026-10-23T02:42:01.993Z",
   "failing": [
-   "tests/builtin-ai.test.mjs"
+   "tests/builtin-ai.test.mjs",
+   "tests/live-spotlight.test.mjs"
   ]
  }
 }

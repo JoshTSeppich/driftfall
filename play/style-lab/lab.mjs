@@ -1,3 +1,7 @@
+import {buildPower,posePower} from './cords-power.mjs';
+import {buildColdToast,poseColdToast} from './cold-toast.mjs';
+import {buildDefroster,poseDefroster} from './defroster.mjs';
+import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
@@ -26,11 +30,13 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
-  const g = new T.Group(); g.name = kind;
+  const g = kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (['crumb','popper','four-slice','zapper','flak-popper'].includes(kind)) {
+  if (kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+    // Rigid Bible rigs are built in bible.mjs.
+  } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
     part(box(),'team',[0,h/2+.18,0],[w,h,.8],'body');
     part(box(),'steel',[0,h+.2,0],[w+.04,.12,.84],'chrome');
@@ -67,6 +73,39 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
         const bolt=part(oct(),'steel',[x,h+.42,0],[.09,.22,.09],`bolt${i}`);
         bolt.material=material(0xffbb55,look);bolt.material.emissive.setHex(0xff7722);bolt.visible=false;
       }
+    }
+  } else if (kind === 'bagel') {
+    // Hollow five-sided toaster tire; four rigid pieces, no surface detail.
+    const outline=new T.Shape(), hole=new T.Path();
+    for(let i=0;i<5;i++){
+      const a=-Math.PI/2+i*Math.PI*2/5, b=-Math.PI/2-i*Math.PI*2/5;
+      const x=Math.cos(a)*.8,y=Math.sin(a)*.8;
+      if(i===0){outline.moveTo(x,y);hole.moveTo(Math.cos(b)*.36,Math.sin(b)*.36);}
+      else {outline.lineTo(x,y);hole.lineTo(Math.cos(b)*.36,Math.sin(b)*.36);}
+    }
+    outline.closePath();hole.closePath();outline.holes.push(hole);
+    const tire=new T.ExtrudeGeometry(outline,{depth:.4,bevelEnabled:false,steps:1,curveSegments:1});
+    tire.translate(0,0,-.2);tire.userData.facets=5;
+    part(tire,'team',[0,0,0],[1,1,1],'body');
+    for(const z of [-.25,.25])part(new T.CylinderGeometry(.22,.22,.14,5).rotateX(Math.PI/2),'steel',[0,0,z],[1,1,1],z<0?'axle-back':'axle-front');
+    part(new T.BoxGeometry(.16,.44,.16).translate(0,.22,0),'tooth',[.38,0,.25],[1,1,1],'brake');
+  } else if (kind === 'broiler') {
+    // Open-front oven shell, one rigid mesh; broad door pivots at its bottom hinge.
+    const shell=[new T.BoxGeometry(1.35,.16,1).translate(0,.43,0),new T.BoxGeometry(1.35,.16,1).translate(0,1.35,0),new T.BoxGeometry(.16,.84,1).translate(-.595,.89,0),new T.BoxGeometry(.16,.84,1).translate(.595,.89,0),new T.BoxGeometry(1.03,.84,.14).translate(0,.89,-.43)];
+    part(mergeGeometries(shell),'team',[0,0,0],[1,1,1],'body');shell.forEach(g=>g.dispose());
+    for(const x of [-.46,.46])part(box(),'steel',[x,.18,0],[.32,.36,.65],x<0?'leg-left':'leg-right');
+    part(new T.BoxGeometry(1.14,.8,.13).translate(0,.4,0),'steel',[0,.47,.55],[1,1,1],'door');
+    part(box(),'tooth',[0,.85,.2],[.64,.16,.55],'siege-toast').visible=false;
+    const flame=part(new T.ConeGeometry(.32,.65,5),'team',[0,1.12,.2],[1,1,1],'flame');
+    flame.material=material(0xffa12b,look);flame.visible=false;
+  } else if (kind === 'ground-patches') {
+    // Two low ground slabs and four broad crop masses; no individual stalks or grass.
+    mats.wheat=material(0xe8b84d,look);mats.meadow=material(0x69a34c,look);
+    part(box(),'sand',[-.95,.04,0],[1.7,.08,1.65],'wheat-soil');
+    part(box(),'meadow',[.95,.04,0],[1.7,.08,1.65],'dairy-turf');
+    for(let i=0;i<2;i++) {
+      part(new T.BoxGeometry(1.42,.22,.38).translate(0,.11,0),'wheat',[-.95,.08,(i-.5)*.76],[1,1,1],`wheat-row${i}`);
+      part(new T.BoxGeometry(.58,.19,.48).translate(0,.095,0),'tooth',[.95,.08,(i-.5)*.76],[1,1,1],`dairy-block${i}`);
     }
   } else if (kind === 'generator') {
     // Five chunky rigid parts: the wheel spins around its own front-facing axle.
@@ -124,20 +163,23 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   const key=new T.DirectionalLight(0xffdfb0,4);key.position.set(3,8,4);scene.add(key);
   let shards;
   let shape='all';
-  const roster=['crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator'];
-  let dam=false;
+  const roster=['cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip'];
+  let dam=false, expression='determined';
   let team='cyan', objects=[], units=[], stress=[], active='idle', started=0, now=0, stressOn=false, fill=0;
   const dummy=new T.Object3D();
-  const actions=['spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','death','rank-up','shimmer','construction'];
+  const actions=['cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
   function rebuild(){
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
     const ground=buildModel('ground',look,team); objects.push(ground);
     units=roster.filter(k=>shape==='all'||shape===k).map(k=>buildModel(k,look,team));
     objects.push(...units);
+    if(shape==='defroster'){
+      const ally=buildModel('crumb',look,team);ally.name='repair-ally';ally.position.set(2,0,2.2);objects.push(ally);
+    }
     const river=new T.Mesh(new T.BoxGeometry(2.3,.08,1.65),material(0x287baf,look));
     river.name='river-tile';river.position.y=-.06;objects.push(river);
     const crystal=buildModel('crystal',look,team);crystal.position.set(-3,0,-1.7);objects.push(crystal);
-    const strip=buildModel('power-strip',look,team);strip.position.set(2,0,-2);objects.push(strip);
+    
     objects.forEach(o=>scene.add(o));
     const rings=new T.Group();rings.name='selection-rings';
     units.forEach((u,i)=>{const ring=new T.Mesh(new T.RingGeometry(.65,.7,5),material(teamColor(team),look));ring.rotation.x=-Math.PI/2;ring.position.set(units.length===1?0:(i-(units.length-1)/2)*1.8,.012,1.2);ring.material.side=T.DoubleSide;rings.add(ring);});
@@ -162,11 +204,12 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   }
   let previous=0;
   function trigger(action,t=now){if(!actions.includes(action))throw new Error('Unknown action');active=action;started=t;fill=0;
-    units.forEach(u=>{u.visible=true;u.userData.motion={height:0,toast:0,lever:0,lean:0};if(action==='hit')u.userData.motion.leanVelocity=9;});}
+    units.forEach(u=>{u.visible=true;u.userData.bagelAngle=u.userData.motion?.rollAngle||u.userData.bagelAngle||0;if(u.name!=='bagel'||!u.userData.motion)u.userData.motion={height:0,toast:0,lever:0,lean:0};if(action==='hit')u.userData.motion.leanVelocity=9;});}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
-      const generator=u.name==='generator', generating=generator&&['generate','attack','gather'].includes(active), churn=u.name==='churn', churning=churn&&['churn','attack','gather'].includes(active), pump=u.name==='pump', pumping=pump&&['pump','attack','gather'].includes(active), mill=u.name==='mill', grinding=mill&&['grind','attack','gather'].includes(active), heavy=u.name==='four-slice'||mill||pump||churn||generator, zapper=u.name==='zapper', flakker=u.name==='flak-popper', homeX=units.length===1?0:(index-(units.length-1)/2)*1.8, state=u.userData.motion??={};
+      const bagel=u.name==='bagel';
+      const broiler=u.name==='broiler', sieging=broiler&&['siege','attack'].includes(active), patch=u.name==='ground-patches', harvesting=patch&&['harvest','gather','attack'].includes(active), generator=u.name==='generator', generating=generator&&['generate','attack','gather'].includes(active), churn=u.name==='churn', churning=churn&&['churn','attack','gather'].includes(active), pump=u.name==='pump', pumping=pump&&['pump','attack','gather'].includes(active), mill=u.name==='mill', grinding=mill&&['grind','attack','gather'].includes(active), heavy=broiler||u.name==='four-slice'||mill||pump||churn||generator||patch, zapper=u.name==='zapper', flakker=u.name==='flak-popper', homeX=units.length===1?0:(index-(units.length-1)/2)*1.8, state=u.userData.motion??={};
       const shot=age%1.1, firing=zapper&&active==='attack', heat=firing?clamp(shot/.2)*(shot<.2?1:Math.max(0,1-(shot-.2)/.09)):0;
       const moving=active==='move'||(active==='gather'&&age>.8&&age<2.6);
       const speed=heavy?1.5:2.5, cycle=age*speed, phase=cycle%1;
@@ -177,9 +220,19 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
       const flakAttack=flakker&&active==='attack';
       const steps=Math.max(1,Math.ceil(elapsed/.008)),dt=elapsed/steps;
       for(let j=0;j<steps;j++) {
-        height=spring(state,'height',hop+((zapper||flakker||mill||pump||churn||generator)&&!moving?.015*(1+Math.sin(age*4)):0),dt,heavy?220:300,heavy?21:18);
+        if(bagel){
+          spring(state,'rollSpeed',moving?9:0,dt,120,22);
+          state.rollAngle??=u.userData.bagelAngle||0;
+          state.rollAngle+=Math.max(0,state.rollSpeed)*dt;
+          spring(state,'tip',moving?0:Math.PI/2,dt,180,16);
+          spring(state,'brake',moving?-.35:.6+Math.sin(age*4)*.025,dt,240,14);
+        }
+        height=spring(state,'height',hop+((broiler||zapper||flakker||mill||pump||churn||generator||patch)&&!moving?.015*(1+Math.sin(age*4)):0),dt,heavy?220:300,heavy?21:18);
         toast=spring(state,'toast',snap?.95:fill*.4,dt,450,19);
         lever=spring(state,'lever',snap?-.25:fill?-.18:(zapper||flakker)?Math.sin(age*4)*.025:0,dt,230,12);
+        spring(state,'door',sieging?1.65:0,dt,260,13);
+        spring(state,'cropSway',patch?Math.sin(age*(harvesting?16:3))*(harvesting?.3:.035):0,dt,240,13);
+        spring(state,'dairyBounce',patch?Math.max(0,Math.sin(age*(harvesting?16:3)))*(harvesting?.12:.012):0,dt,240,13);
         spring(state,'stoneSpeed',mill?(grinding?7:.45):0,dt,90,14);
         state.stoneAngle=(state.stoneAngle||0)+(state.stoneSpeed||0)*dt;
         spring(state,'wheelSpeed',generator?(generating?10:1.2):0,dt,100,15);
@@ -195,7 +248,17 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
       u.position.set(homeX,Math.max(0,height||0),1.2);u.rotation.set(aim||0,lean||0,0);
       u.scale.set(1,Math.max(.76,Math.min(1.2,1+(state.heightVelocity||0)*.09)),1);
       if(moving){const travel=(Math.floor(cycle)+ease(flight))*.45;u.position.x+=Math.sin(travel)*.8;u.position.z+=Math.cos(travel)*.5;u.rotation.z=-(lean||0);}
-      if(active==='gather'&&index===0){u.position.x=age<.8?-3:-3+4.5*ease((age-.8)/1.8);u.position.z=-1.6;}
+      if(bagel){
+        // A pentagon rolls about each successive ground corner, rather than skating.
+        const a=Math.PI/5, angle=state.rollAngle||0;
+        const edge=Math.floor((angle+a)/(2*a)), local=angle-edge*2*a;
+        const tip=state.tip||0, support=.8*Math.cos(local);
+        u.position.set(homeX+edge*1.6*Math.sin(a)+.8*Math.sin(local),support*Math.cos(tip)+.2*Math.sin(tip),1.2);
+        u.rotation.set(tip,0,-angle);
+        const stretch=1+Math.sin(age*18)*(moving?.025:.008);
+        u.scale.set(1/Math.sqrt(stretch),stretch,1/Math.sqrt(stretch));
+      }
+      if(active==='gather'&&index===0&&!bagel){u.position.x=age<.8?-3:-3+4.5*ease((age-.8)/1.8);u.position.z=-1.6;}
       if(active==='hit')u.position.x+=Math.sin(age*24)*Math.exp(-age*8)*.25;
       if(active==='spawn'){const p=ease(age/.55);u.position.set(2+(homeX-2)*p,Math.sin(p*Math.PI)*1.8,-2+3.2*p);u.scale.multiplyScalar(Math.max(.01,p));}
       if(active==='rank-up')u.position.y+=Math.sin(clamp(age/.3)*Math.PI)*.4;
@@ -207,6 +270,15 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
           if(active==='gather'&&index===0&&age<.8){m.position.y+=(1-fill)*.8;m.position.x-=(1-fill)*.5;}
           if(active==='deliver'||(active==='gather'&&age>=2.6)){const p=active==='deliver'?age:age-2.6;m.position.y+=Math.max(0,1.7*p-2*p*p);m.scale.multiplyScalar(1-clamp(p/.65));}
           m.rotation.x=snap?-.7:0;
+        }
+        if(bagel){
+          if(m.name==='brake')m.rotation.z=state.brake||0;
+          if(m.name.startsWith('axle'))m.position.z+=(m.name==='axle-front'?1:-1)*Math.sin(age*5)*.012;
+        }
+        if(broiler&&m.name==='door')m.rotation.x=state.door||0;
+        if(patch) {
+          if(m.name.startsWith('wheat-row'))m.rotation.z=(state.cropSway||0)*(m.name.endsWith('0')?1:-1);
+          if(m.name.startsWith('dairy-block'))m.position.y+=state.dairyBounce||0;
         }
         if(churn) {
           if(m.name==='plunger'||m.name==='handle')m.position.y+=state.dasher||0;
@@ -242,6 +314,24 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
         if(m.name.startsWith('bolt')){m.visible=firing&&shot>=.2&&shot<.48;m.position.y+=(shot-.2)*7;m.position.z+=(shot-.2)*10;m.material.emissiveIntensity=4;}
         if(active==='death'){const p=clamp((age-.09)/.12);m.scale.multiplyScalar(1-p);}
       });
+      if(u.userData.bible)poseBible(u,{active,age,phase,moving,shot,expression});
+      if(u.name==='cords-power')posePower(u,{active,age,elapsed,spring});
+      if(u.name==='cold-toast')poseColdToast(u,{active,age,elapsed,spring});
+      if(u.name==='defroster')poseDefroster(u,{active,age,elapsed,spring,target:scene.getObjectByName('repair-ally')||units.find(a=>a.name==='crumb')});
+      // The launched slice follows a world-space parabola, independent of suspension recoil.
+      if(broiler) {
+        const slice=u.getObjectByName('siege-toast'), flame=u.getObjectByName('flame');
+        const p=shot-.28, launched=sieging&&p>=0&&p<.72;
+        slice.visible=flame.visible=launched;
+        if(launched){
+          const volley=Math.floor(age/1.1);
+          if(state.volley!==volley||!state.launch){state.launch=u.localToWorld(slice.userData.home.clone());state.volley=volley;}
+          const world=state.launch.clone();world.y+=5*p-7*p*p;world.z+=4*p;
+          slice.position.copy(u.worldToLocal(world));slice.rotation.x=-p*5;
+          flame.position.copy(slice.position);flame.position.y+=.28;
+          flame.material.emissive.setHex(0xff6611);flame.material.emissiveIntensity=2;
+        }
+      }
       // Capture the muzzle in world space once per volley; body recoil cannot bend the flight.
       u.updateMatrixWorld(true);
       const volley=Math.floor(age/1.1);
@@ -263,11 +353,10 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
     river.visible=!!pumpUnit&&!stressOn;
     if(pumpUnit){river.position.x=pumpUnit.position.x;river.position.z=pumpUnit.position.z;}
     const crystal=objects.find(o=>o.name==='crystal');crystal.traverse(m=>{if(m.isMesh&&!m.userData.ink){m.material.emissive.setHex(teamColor(team));m.material.emissiveIntensity=.2+.5*Math.max(0,Math.sin(t*2.6+m.id*.7));}});
-    const strip=objects.find(o=>o.name==='power-strip');strip.traverse(m=>{if(m.isMesh&&!m.userData.ink){m.position.copy(m.userData.home);m.scale.copy(m.userData.scale);if(active==='construction'){const p=ease((age-(m.id%4)*.1)/.14);m.position.y+=(1-p)*3;m.scale.multiplyScalar(p);}}});
     for(let i=0;i<200;i++){
       const phase=(t*2.5+i*.173)%1, hop=.3*4*phase*(1-phase);
       dummy.position.set((i%20-9.5)*.64,hop*.32,(Math.floor(i/20)-4.5)*.8);
-      const stretch=1+.18*(1-2*phase);dummy.scale.set(.32/Math.sqrt(stretch),.32*stretch,.32/Math.sqrt(stretch));
+      const stretch=1;dummy.scale.set(.32/Math.sqrt(stretch),.32*stretch,.32/Math.sqrt(stretch));
       dummy.rotation.set(0,Math.sin(t+i)*.15,Math.sin(t*2+i)*.06);dummy.updateMatrix();stress.forEach(b=>b.setMatrixAt(i,dummy.matrix));
     }
     stress.forEach(b=>b.instanceMatrix.needsUpdate=true);
@@ -285,6 +374,7 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   return { scene,camera,actions,get units(){return units;},get fill(){return fill;},get stressCount(){return stressOn?200:0;},trigger,update,
     setShape(value){if(value!=='all'&&!roster.includes(value))throw new Error('Unknown shape');shape=value;rebuild();},
     setLook(value){if(!LOOKS.includes(value))throw new Error('Unknown look');look=value;rebuild();},setTeam(value){team=value;rebuild();},
+    setExpression(value){if(!['determined','proud','alarmed','angry'].includes(value))throw new Error('Unknown expression');expression=value;},
     setDam(value){dam=!!value;},
     setStress(value){stressOn=value;stress.forEach(b=>b.visible=value);},
     resize(w,h){camera.aspect=w/h;camera.updateProjectionMatrix();scene.traverse(o=>{if(o.material?.uniforms?.viewport)o.material.uniforms.viewport.value.set(w,h);});},
