@@ -1,42 +1,59 @@
 {
- "build": 205,
- "at": "2026-10-23T13:49:59.331Z",
- "seconds": 156.5,
- "state": "green",
- "nextBuildAt": "2026-10-23T13:52:59.331Z",
- "headline": "Green: 1138 tests pass in 73 files, all 59 modules parse, new match recorded.",
+ "build": 208,
+ "at": "2026-10-23T14:08:54.613Z",
+ "seconds": 163.1,
+ "state": "red",
+ "nextBuildAt": null,
+ "headline": "Red: 1 test file(s) failing.",
  "tests": {
   "files": 73,
   "pass": 1138,
-  "fail": 0,
-  "seconds": 254.1
+  "fail": 1,
+  "seconds": 271.4
  },
- "failures": [],
+ "failures": [
+  {
+   "file": "tests/style-lab.test.mjs",
+   "owners": [],
+   "imports": [
+    "play/style-lab/lab.mjs"
+   ],
+   "tests": [
+    "Pop Shot reference is seekable, interruptible and emits one presentation hit without spending ammo"
+   ],
+   "error": "Error: Unknown shape"
+  }
+ ],
  "parse": {
   "checked": 59,
   "errors": []
  },
  "match": {
   "ok": true,
-  "seed": 206,
+  "seed": 209,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3470,
-    3530
+    3460,
+    3540
    ]
   },
-  "ms": 598
+  "ms": 739
  },
  "changed": {
   "first": false,
   "added": [],
-  "changed": [],
+  "changed": [
+   {
+    "file": "tests/style-lab.test.mjs",
+    "owner": null
+   }
+  ],
   "removed": [],
-  "total": 0
+  "total": 1
  },
  "files": {
   "env": 28,
@@ -47,9 +64,11 @@
   "live": 19
  },
  "previous": {
-  "build": 204,
-  "state": "green",
-  "at": "2026-10-23T13:44:22.812Z",
-  "failing": []
+  "build": 207,
+  "state": "red",
+  "at": "2026-10-23T14:01:14.852Z",
+  "failing": [
+   "tests/perf.test.mjs"
+  ]
  }
 }

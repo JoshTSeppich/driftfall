@@ -24,6 +24,11 @@ export function boot() {
   document.querySelectorAll('[data-look]').forEach((b,i)=>b.onclick=()=>pickLook(i));
   document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='terrain-kit'){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
   document.querySelector('#terrain-inspection').onchange=e=>{const stage=document.querySelector('#stage');stage.classList.toggle('terrain720',e.target.value==='720');stage.classList.toggle('terrainthumb',e.target.value==='thumb');resize();};
+  const manualAttack=()=>{auto=false;document.querySelector('#auto').setAttribute('aria-pressed','false');};
+  document.querySelector('#attack-play').onclick=()=>{manualAttack();lab.playAttack();status.textContent=document.querySelector('#shape').value==='attack-zapper'?'ZAPPER / HOT COIL':'POPPER / POP SHOT';};
+  document.querySelector('#attack-stop').onclick=()=>{manualAttack();lab.stopAttack();};
+  document.querySelector('#attack-time').oninput=e=>{manualAttack();lab.setAnimationTime(Number(e.target.value));};
+  document.querySelector('#attack-loop').onchange=e=>{manualAttack();lab.setAttackLoop(e.target.checked);lab.playAttack();};
   document.querySelector('#toast-bank').oninput=e=>{lab.setToast(Number(e.target.value));document.querySelector('#toast-value').textContent=e.target.value;};
   document.querySelector('#toast-wish').onchange=e=>lab.setWish(e.target.value);
   document.querySelector('#expression').onchange=e=>lab.setExpression(e.target.value);

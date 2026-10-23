@@ -464,3 +464,20 @@ The defining rule of **Toaster Wars**.
   pentagon-tiled glow on the ground; the cord limit ring shows on selection; a cut cord sparks and blinks red.
 - This replaces the abstract "claim" timers: you claim land by **powering** it (an Outlet in a Reach, and no enemy
   power there). Hold the river and generators and you hold the war.
+
+## 20. The cord is the leash (Joshua, 22 Oct 20:42: "the toasters can't go farther than their electrical cord")
+The defining rule of **Toaster Wars**.
+- **Every toaster is plugged in** to a power point: the **Power Strip** (base), an **Outlet** (claims) or an
+  **Extension Box** (cheap, pushes power outward). Cord length by unit: Crumb 12 tiles, Popper 8, Zapper 10,
+  Four-Slice 6, Bagel 16; cord upgrades lengthen them.
+- **You can't move past the end of your cord.** Moves stop at the limit (a pentagon ring on selection). To go further,
+  build Outlets and Extension Boxes: **your power network is your territory**. Claiming a Reach = powering it (an
+  Outlet there and no enemy power).
+- **Generators feed the network** (generator sites, river dams). A network without energy **browns out**: slower,
+  weaker, stuck in place.
+- **Cords can be cut.** An unplugged toaster runs on a 10 s **battery**, then **powers down** (eyes dark, tips over)
+  until a Crumb re-plugs it. Raids are about cutting cords. A late **Battery Pack** upgrade allows short off-cord raids.
+- **No softlocks:** the Power Strip always has a small reserve, so a cut-off player can always rebuild.
+- **Readability without spaghetti (GPT's note):** cords are a hard rule but drawn faintly; they light up on move
+  orders, when cut, or when you inspect power. The live network is a soft pentagon glow on the ground; a cut cord
+  sparks and blinks red.

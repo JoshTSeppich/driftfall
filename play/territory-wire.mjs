@@ -7,7 +7,7 @@ import { marketStrip } from './market-strip.mjs';
 
 /** { on, createState } for a page query. createState(seed) is handed to createLiveMatch; undefined keeps the plain match. */
 export function territoryOptions(q) {
-  const on = q.get('territory') === '1';
+  const on = q.get('territory') !== '0';   // Joshua 10-23 08:03: territory is the DEFAULT; ?territory=0 for the old classic match
   return { on, createState: on ? (seed) => createTerritoryMatch(seed) : undefined };
 }
 

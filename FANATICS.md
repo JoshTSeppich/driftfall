@@ -147,3 +147,62 @@ Evidence: ran `node env/run-match.mjs` with built-in AI on both sides, seeds **7
 9. **Audit mirror fairness and teachable AI pressure.** Side 1 swept this tiny sample. Separate map orientation, deterministic ordering, AI decisions and difficulty before changing balance numbers. **Done:** a larger published seed set with side-swapped team opponents and built-in mirrors reports win rate and timing; investigate departures from the North Star's 45–55% target. Easy visibly builds, expands and attacks in recoverable waves, so the human can learn a response.
 
 10. **Close the match with a reason to rematch.** Show the winning cause, decisive land loss or economy break, and a one-click fresh start. Add the Trading House only with visible quotes, stock and transaction feedback so its strategic purpose is understandable. **Done:** a finished browser match names Core destruction or territory control as the cause, offers a replay/rematch, and lets the player identify a decision to try differently; market trades visibly explain what was paid and received.
+
+## Round 2: Toaster Wars core
+
+Evidence: read NORTHSTAR.md (Toaster Wars core, Done-means list), TERRITORY.md sections 17, 18, 20 and the Toaster
+rules, COMBAT.md sections 1–4, CLASSIC.md, ENV-SPEC-v3-draft.md and sonnet's `env/power.mjs` plan (#616). Judged on paper;
+no browser run and no code changed. Verdict: the core idea is strong (a visible leash, raids on cords, food you can
+see). Three things will break pacing or readability if they ship as written.
+
+1. **Make cord length follow the ground, not the map's straight lines.** Cords are measured Chebyshev (sonnet's plan,
+   TERRITORY s20 "12 tiles"), so a cord reaches across a cliff, through rock and over a choke. Chokes, ramps and
+   Quakes then stop mattering for power, and the leash feels arbitrary. Our own rules already say cliffs and rock block
+   ground movement (ENV-SPEC-v3 s2, s6). **Why it matters:** the Snakenator/Toastinator mirror is decided at the
+   chokes; a leash that ignores them removes the best fights. **Owner:** sonnet (`env/power.mjs`), with fable's sign-off.
+   **Done when:** the cord limit ring on a selected Four-Slice matches the walkable tiles it can reach in 6 cord tiles;
+   a Power point on a plateau cannot plug a unit on the low ground across a cliff; a test covers a Quake that changes
+   the ramp and re-plugs (or un-plugs) the units behind it.
+
+2. **Pick one army bill, and make the rules agree.** Three costs stack on every soldier: 10% of its cost a minute in
+   Shards/Flux (TERRITORY s9), a minute of toast eaten (TERRITORY s17), and one slice per shot (COMBAT s1). The docs
+   also disagree on hunger: TERRITORY s17 says hungry soldiers **strike** (stop attacking, sit with a sign), while
+   COMBAT s2 says Powered + Hungry **can move** and only can't fire. Three bills and two hunger rules make the flow
+   panel unreadable and the balance table impossible to tune. **Why it matters:** "am I broke or out of ammo?" must have
+   one answer on screen. **Owner:** fable (decides the model, one page), then sonnet (`env/ammo.mjs`, `env/budget.mjs`).
+   **Done when:** one hunger rule is in both files; the 10% coin upkeep is either removed or written as the toast
+   bill; a 10-unit army's toast/min appears on the flow panel and matches a test; COMBAT's state table and TERRITORY
+   s17 use the same words.
+
+3. **Make a cut a fight, not a free tap.** Today an enemy standing on a cord line severs it at once, and the cut
+   costs the enemy nothing but a step. A Bagel can unplug a whole Outlet chain before anyone reacts, and the raid
+   becomes the only game. **Why it matters:** raids should be the exciting part of the late game, with a warning the
+   defender can answer. **Owner:** sonnet (cut rule in `env/power.mjs`), gpt (the sparking cord and its countdown).
+   **Done when:** a cord or Extension Box has hp; a cut needs about 3 s of contact or damage on that line; a "cord
+   under attack, 4 s" banner and a red blink show before it severs; a Crumb re-plugs in view and the log names the
+   tile; a lone Popper cannot cut a three-Outlet network in one step (a test).
+
+4. **Cut the v0.1 resource list to what the loop needs.** Right now the docs name Shards, Flux, Alloy, Flour, Water,
+   Butter, Energy, Toast, Waffles, Jam, Honey, Salt, Sugar, Nut butter, Glowmoss, Stormglass, Quakestone, Ironroot and
+   Amberlight, with a Trading House quoting eight. Each one is a counter, a price and a pile on the top bar. Fanatics
+   learn one economy deeply, so the first edition should ship only the chain that makes toast: Flour, Water, Butter,
+   Energy, Toast, and one rare topping (Jam). The rest wait for later editions. **Owner:** fable (scope), haiku
+   (top-bar counters, HUD check). **Done when:** the top bar shows at most six counters, the market quotes at most five
+   rows in v0.1, every Toaster shows one missing-ingredient icon, and a first-timer can name all six without help.
+
+5. **Write the air and late-game leash now, before sonnet builds it.** TERRITORY s20 says air units "use long cords and
+   drift like kites", and the Squall section says air can't fly inside a storm. Nobody has ruled what happens when a
+   Flying Toast (no ground path, long cord) sits under a Squall, when its cord is cut, or when the Fall takes the
+   Outlet it hangs from. Late games also need a brake: cord upgrades plus cheap Outlets make the leash vanish after
+   about 12:00, which erases the late-game map pressure the Fall is meant to create. **Owner:** fable (the rule),
+   sonnet (`env/power.mjs`). **Done when:** a Squall stops air cords the same way it stops air moves; a Flying Toast
+   with its Outlet lost browns out (like a ground unit with no power) and lands after its battery; a test shows the
+   Fall lowers the longest cord a side can build to a fixed maximum.
+
+Also noted, not top 5: TERRITORY.md has two sections numbered "20" and two numbered "14" (doc hygiene, fix when next
+edited); the first 3 minutes need a fed-start rule (every opening unit begins Fed for 3:00) so the Council's #1 "no loss
+before 3:00" still holds once toast ammo exists.
+
+Fanatic's read of the pacing: the 0:00–3:00 opening is the only place this design can lose its readability. A new
+player who is taught cords, toast, Crumbs, Outlets and Drills in one minute will quit. Teach one loop at a time (feed,
+then leash, then raid), and keep the rest hidden behind the Drift banner until the player asks.

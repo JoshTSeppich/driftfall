@@ -5,11 +5,11 @@ import { buildModel, triangles, LOOKS, SHAPES, createLab } from '../play/style-l
 for (const look of LOOKS) test(`${look}: real geometry builds with a stub renderer`, () => {
   const renderer = { render() {}, setSize() {}, dispose() {} };
   const lab = createLab({ renderer, width: 900, height: 600, look });
-  for (const kind of ['toppings', 'thought-moods', 'toast-stacks', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
+  for (const kind of ['attack-zapper', 'attack-popper', 'toppings', 'thought-moods', 'toast-stacks', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
     const model = buildModel(kind, look, 'cyan');
     assert.ok(model instanceof THREE.Group);
     assert.ok(triangles(model) > 0);
-    if (['grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) < 300, `${kind}: ${triangles(model)}`);
+    if (['attack-zapper', 'attack-popper', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) < 300, `${kind}: ${triangles(model)}`);
     if (['toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
   }
   for (const action of lab.actions) { lab.trigger(action, 0); for (let t = 0; t <= 4; t += 0.016) lab.update(t); }
@@ -699,3 +699,63 @@ test('Toppings provides six readable pickup and market icons with spring collect
     lab.dispose();
   }
 });
+
+test('Pop Shot reference is seekable, interruptible and emits one presentation hit without spending ammo',()=>{
+  for(const look of LOOKS){
+    let hits=0;const lab=createLab({look,onAttackHit:()=>hits++});lab.setShape('attack-popper');
+    const u=lab.units[0],body=u.getObjectByName('body'),toast=u.getObjectByName('toast0');
+    assert.equal(u.children.length,5);assert.ok(triangles(u)<300);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    const home=toast.position.y;lab.playAttack();lab.setAnimationTime(0);assert.equal(body.rotation.x,0);
+    lab.setAnimationTime(80);assert.ok(Math.abs(body.rotation.x+Math.PI/15)<1e-9);
+    lab.setAnimationTime(160);assert.equal(toast.position.y,home-.15);
+    lab.setAnimationTime(200);assert.equal(toast.position.y,home+.40);assert.ok(u.getObjectByName('pop-projectile').visible);
+    lab.setAnimationTime(270);const p=u.getObjectByName('pop-projectile').position.clone();
+    lab.setAnimationTime(340);assert.equal(hits,0,'seeking is presentation only');
+    assert.equal(u.getObjectByName('pop-crumbs').children.length,5);assert.ok(u.getObjectByName('pop-flash').visible);
+    lab.setAnimationTime(270);assert.deepEqual(u.getObjectByName('pop-projectile').position,p);
+    lab.setAnimationTime(520);assert.equal(body.rotation.x,0);assert.equal(toast.position.y,home);
+    lab.playAttack();lab.update(0);lab.update(.35);lab.update(.4);assert.equal(hits,1);
+    lab.stopAttack();assert.equal(u.getObjectByName('pop-projectile').visible,false);assert.equal(body.rotation.x,0);
+    lab.playAttack();lab.update(.45);lab.trigger('move',.45);lab.update(.8);assert.equal(hits,1);
+    lab.dispose();
+  }
+});
+
+test('Pop Shot loops repeat the arc, stop clears effects, and movement plants between hops',()=>{
+  let hits=0;const lab=createLab({onAttackHit:()=>hits++});lab.setShape('attack-popper');
+  const u=lab.units[0];lab.setAttackLoop(true);lab.playAttack();
+  lab.update(.27);const p=u.getObjectByName('pop-projectile').position.clone();
+  lab.update(.35);assert.equal(hits,1);lab.update(.79);
+  assert.ok(u.getObjectByName('pop-projectile').position.distanceTo(p)<1e-10);
+  lab.update(.87);assert.equal(hits,2);lab.stopAttack();
+  for(const name of ['pop-projectile','pop-crumbs','pop-flash'])assert.equal(u.getObjectByName(name).visible,false);
+  lab.trigger('move',1);lab.update(1.34);const x=u.position.x;lab.update(1.38);assert.equal(u.position.x,x);
+  lab.update(1.5);assert.ok(u.position.y>0);assert.equal(u.scale.y,1);
+  lab.dispose();
+});
+
+ test('Hot Coil preserves six pivots, one bolt, five beats, target heat and interruptible preview',()=>{
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    let hits=0;const lab=createLab({look,onAttackHit:()=>hits++});lab.setTeam(team);lab.setShape('attack-zapper');
+    const u=lab.units[0],coil=u.getObjectByName('coil0'),heater=u.getObjectByName('heater0');
+    assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    lab.playAttack();lab.setAnimationTime(160);assert.equal(heater.material.emissive.getHex(),0xff8540);assert.ok(heater.material.emissiveIntensity>1);
+    lab.setAnimationTime(200);assert.ok(u.getObjectByName('hot-bolt').visible);assert.ok(coil.position.z<0);
+    lab.setAnimationTime(270);const pos=u.getObjectByName('hot-bolt').position.clone();
+    lab.setAnimationTime(340);assert.equal(u.getObjectByName('hot-bolt').visible,false);assert.ok(u.getObjectByName('hot-flash').visible);
+    const target=u.getObjectByName('hot-target');assert.equal(target.material.color.getHex(),0xd99448);
+    lab.setAnimationTime(375);assert.equal(target.material.color.getHex(),0x805432);
+    lab.setAnimationTime(410);assert.equal(target.material.color.getHex(),0x303844);
+    lab.setAnimationTime(270);assert.deepEqual(u.getObjectByName('hot-bolt').position,pos);assert.equal(hits,0);
+    lab.setAnimationTime(520);assert.equal(coil.position.z,coil.userData.home.z);assert.equal(heater.material.emissiveIntensity,0);assert.equal(target.visible,false);
+    lab.playAttack();lab.update(0);lab.update(.35);lab.update(.4);assert.equal(hits,1);
+    lab.stopAttack();assert.equal(u.getObjectByName('hot-bolt').visible,false);
+    lab.trigger('move',1);lab.update(1.34);const x=u.position.x;lab.update(1.38);assert.equal(u.position.x,x);
+    lab.update(1.5);assert.ok(u.position.y>0);assert.equal(u.scale.y,1);
+    lab.trigger('idle',2);lab.update(2.1);const y=coil.position.y;lab.update(2.3);assert.notEqual(coil.position.y,y);
+    lab.setAttackLoop(true);lab.playAttack();lab.update(2.65);assert.equal(hits,2);lab.update(3.17);assert.equal(hits,3);
+    lab.stopAttack();assert.equal(target.visible,false);lab.dispose();
+  }
+ });

@@ -14,6 +14,7 @@ import { enableMarket, stepMarket } from './market.mjs';
 import { STATS, kindStats } from './stats.mjs';
 import { applyDriftEffects, doTunnel, stepTunnels } from './effects.mjs';
 import { kindTier, tierReason, enableResearch, doResearch, stepTiers, stepProductionGated } from './tiers.mjs';
+import { enablePower, stepPower, doPlug, doPlaceCord, snapshotPower, enforceCords } from './power.mjs';
 
 // Claim numbers: STATS.territory when the stats owner has landed it, TERRITORY.md section 3 otherwise.
 const fromStats = STATS.territory || {};
@@ -59,6 +60,7 @@ export function createTerritoryMatch(seed, opts = {}) {
   enableResearch(state);
   enableChain(state, { factions: state.factions, holds: heldBy, isWater: isWaterTile });
   enableMarket(state); // prices drift with scarcity; trading itself needs a Trading House (env/market.mjs)
+  enablePower(state); // the cord is the leash (TERRITORY.md section 20, env/power.mjs)
   state.factions = opts.factions || ['coil', 'burrow'];
   return state;
 }
@@ -152,15 +154,17 @@ function doLayTrack(state, player, c) {
 
 /** Take the rule commands (claim) out of one side's list and apply them. Returns the rest for commands.mjs. */
 export function applyRuleCommands(state, player, commands) {
-  if (!rulesOn(state) || !Array.isArray(commands)) return commands;
+  if (!(rulesOn(state) || state.power) || !Array.isArray(commands)) return commands;
   const rest = [];
   for (const c of commands) {
     const type = c && typeof c === 'object' ? c.type : null;
-    const mine = type === 'claim' || type === 'tunnel' || (type === 'lay-track' && state.chain) || (type === 'research' && state.research) || (type === 'train' && state.budget);
+    const mine = type === 'claim' || type === 'plug' || type === 'place-power' || type === 'tunnel' || (type === 'lay-track' && state.chain) || (type === 'research' && state.research) || (type === 'train' && state.budget);
     let reason = null;
     try {
       if (!mine && (type === 'train' || type === 'build')) reason = tierReason(state, player, kindTier(c.kind));
       else if (type === 'claim') reason = doClaim(state, player, c);
+      else if (type === 'plug' && state.power) reason = doPlug(state, player, c);
+      else if (type === 'place-power' && state.power) reason = doPlaceCord(state, player, c);
       else if (type === 'lay-track' && state.chain) reason = doLayTrack(state, player, c);
       else if (type === 'tunnel') reason = doTunnel(state, player, c);
       else if (type === 'research' && state.research) reason = doResearch(state, player, c);
@@ -207,6 +211,7 @@ export function stepRulesPre(state) {
   stepTunnels(state);
   if (state.research) stepTiers(state);
   if (state.budget) stepBudget(state);
+  if (state.power) { snapshotPower(state); stepPower(state); }
 }
 
 /** Production for this tick: the real stepProduction, minus structures a tier gate has paused. */
@@ -216,6 +221,7 @@ export function runProduction(state, stepProduction) {
 
 /** After combat: territory hold and the territory win. Returns a result or null. */
 export function stepRulesPost(state) {
+  if (state.power) enforceCords(state);
   if (state.market) stepMarket(state);
   return state.territory ? updateTerritory(state) : null;
 }
