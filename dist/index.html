@@ -12,8 +12,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Driftfall Classic</title>
 <script type="importmap">{ "imports": {
-  "three": "./551e215c93/node_modules/three/build/three.module.js",
-  "three/addons/": "./551e215c93/node_modules/three/examples/jsm/" } }</script>
+  "three": "./684ea56f64/node_modules/three/build/three.module.js",
+  "three/addons/": "./684ea56f64/node_modules/three/examples/jsm/" } }</script>
 <style>
   html, body { margin: 0; height: 100%; background: #171326; color: #e8e4f4; font: 14px/1.4 system-ui, -apple-system, sans-serif; overflow: hidden; user-select: none; }
   #stage, #overlay { position: fixed; inset: 0; width: 100%; height: 100%; }
@@ -55,8 +55,8 @@
 <div id="root"></div>
 <script type="module">
 import * as THREE from 'three';
-import { createEngine, createPlaceholder } from './551e215c93/viewer3d/engine.mjs';
-import { startGame } from './551e215c93/play/app.mjs';
+import { createEngine, createPlaceholder } from './684ea56f64/viewer3d/engine.mjs';
+import { startGame } from './684ea56f64/play/app.mjs';
 const root = document.getElementById('root');
 try {
   await startGame({ THREE, createEngine, createPlaceholder, root, query: new URLSearchParams(location.search) });

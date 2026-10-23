@@ -34,7 +34,7 @@ export function boot() {
   addEventListener('keydown',e=>{if(['1','2','3'].includes(e.key))pickLook(Number(e.key)-1);});
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(document.querySelector('#production').checked){const u=lab.units[0];const box=new T.Box3().setFromObject(u),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());controls.target.copy(center);lab.camera.position.copy(center).add(new T.Vector3(0,1,1.5).normalize().multiplyScalar(Math.max(size.x,size.y,size.z)*2.2));}renderer.setPixelRatio(document.querySelector('#production').checked||document.querySelector('#terrain-inspection').value!=='normal'?1:Math.min(devicePixelRatio,1.5));renderer.setSize(w,h,false);composer.setSize(w,h);lab.resize(w,h);}
   addEventListener('resize',resize);pickLook(1);
-  const sequence=['claim','detect','drop','push-rock','cut-cord','replug','hide','repair','spawn','idle','move','stop','siege','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','rank-up','shimmer','construction','death'];
+  const sequence=['trade','press','convey','drill','produce','claim','detect','drop','push-rock','cut-cord','replug','hide','repair','spawn','idle','move','stop','siege','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','rank-up','shimmer','construction','death'];
   function frame(ms){requestAnimationFrame(frame);const t=ms/1000;
     if(auto&&t-lastDemo>(sequence[(step-1+sequence.length)%sequence.length]==='cut-cord'?12:sequence[(step-1+sequence.length)%sequence.length]==='gather'?4:1.5)){action(sequence[step++%sequence.length]);lastDemo=t;}
     controls.update();lab.update(t);frames++;

@@ -130,7 +130,7 @@ export const STATS = deepFreeze({
   // Opening pacing (FANATICS.md Council #1): until the hardened window ends the Core takes a quarter of the damage, so
   // no rush can end a match before three minutes. hp is 10000 for the same reason (a rush needs minutes, not seconds).
   core: {
-    hp: 10000,
+    hp: 12000,
     trains: ["worker"],
     hardenedSeconds: 180,
     hardenedTicks: ticks(180),

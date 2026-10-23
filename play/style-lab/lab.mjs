@@ -1,3 +1,9 @@
+import {buildTurret,poseTurret} from './turret.mjs';
+import {buildTradingHouse,poseTradingHouse} from './trading-house.mjs';
+import {buildPress,posePress} from './press.mjs';
+import {buildTrack,poseTrack} from './track.mjs';
+import {buildDrill,poseDrill} from './drill.mjs';
+import {buildOven,poseOven} from './toaster-oven.mjs';
 import {buildOutlet,poseOutlet} from './outlet.mjs';
 import {buildSmokeAlarm,poseSmokeAlarm} from './smoke-alarm.mjs';
 import {buildBreadbox,poseBreadbox} from './breadbox.mjs';
@@ -10,7 +16,7 @@ import {buildDefroster,poseDefroster} from './defroster.mjs';
 import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-export const SHAPES=Object.freeze(['outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit']);
+export const SHAPES=Object.freeze(['turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit']);
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
 const teamColor = team => team === 'orange' ? 0xff8a2a : 0x38e0ff;
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -37,11 +43,11 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
-  const g = kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
+  const g = kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+  if (kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
     // Rigid Bible rigs are built in bible.mjs.
   } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
@@ -174,7 +180,7 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   let dam=false, expression='determined';
   let team='cyan', objects=[], units=[], stress=[], active='idle', started=0, now=0, stressOn=false, fill=0;
   const dummy=new T.Object3D();
-  const actions=['claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
+  const actions=['trade','press','convey','drill','produce','claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
   function rebuild(){
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
     const ground=buildModel('ground',look,team); objects.push(ground);
@@ -216,6 +222,12 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
+      if(u.name==='turret'){poseTurret(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='trading-house'){poseTradingHouse(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='press'){posePress(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='track'){poseTrack(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='drill'){poseDrill(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='toaster-oven'){poseOven(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='outlet'){poseOutlet(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='smoke-alarm'){poseSmokeAlarm(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='breadbox'){poseBreadbox(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}

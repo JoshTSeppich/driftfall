@@ -5,12 +5,12 @@ import { buildModel, triangles, LOOKS, SHAPES, createLab } from '../play/style-l
 for (const look of LOOKS) test(`${look}: real geometry builds with a stub renderer`, () => {
   const renderer = { render() {}, setSize() {}, dispose() {} };
   const lab = createLab({ renderer, width: 900, height: 600, look });
-  for (const kind of ['crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
+  for (const kind of ['crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
     const model = buildModel(kind, look, 'cyan');
     assert.ok(model instanceof THREE.Group);
     assert.ok(triangles(model) > 0);
     if (['crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) < 300, `${kind}: ${triangles(model)}`);
-    if (['outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
+    if (['turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
   }
   for (const action of lab.actions) { lab.trigger(action, 0); for (let t = 0; t <= 4; t += 0.016) lab.update(t); }
   lab.setTeam('orange'); lab.setLook(look); lab.setStress(true); lab.update(5);
@@ -82,7 +82,7 @@ test('Flak Popper aims its whole body back and launches vertical toast with spri
 });
 
  test('Five-Facet rule covers models, selection rings, sky and death effects within budgets', () => {
-  for(const kind of ['crumb','popper','four-slice','zapper','flak-popper', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler','mill','pump','churn','generator','ground-patches','power-strip','crystal','ground']) {
+  for(const kind of ['crumb','popper','four-slice','zapper','flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler','mill','pump','churn','generator','ground-patches','power-strip','crystal','ground']) {
     const m=buildModel(kind);
     m.traverse(o=>{
       if(!o.isMesh)return;
@@ -91,7 +91,7 @@ test('Flak Popper aims its whole body back and launches vertical toast with spri
       assert.notEqual(geo.type,'OctahedronGeometry',kind);
       if(geo.type==='ShapeGeometry'&&!geo.userData.flatPanel)assert.equal(geo.userData.facets,5,kind);
     });
-    assert.ok(triangles(m)<(['outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)?800:kind==='ground'?800:300));
+    assert.ok(triangles(m)<(['turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)?800:kind==='ground'?800:300));
   }
   const lab=createLab();
   const rings=lab.scene.getObjectByName('selection-rings');assert.ok(rings);
@@ -500,4 +500,114 @@ test('Outlet has six rigid pivots, five-facet hardware and spring plug-in motion
   assert.equal(u.scale.y,1,'rigid geometry');
   assert.ok(u.getObjectByName('power-strip-end'));
   lab.dispose();
+});
+
+ test('Toaster Oven opens before presenting Popper and Zapper on its spring tray',()=>{
+  const lab=createLab();lab.setShape('toaster-oven');assert.ok(lab.actions.includes('produce'));
+  for(const look of LOOKS){
+    lab.setLook(look);const u=lab.units[0],door=u.getObjectByName('oven-door'),tray=u.getObjectByName('oven-tray');
+    assert.equal(u.children.length,6);assert.ok(triangles(u)<800);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    assert.equal(u.getObjectByName('oven-shell').children[0].material.color.getHex(),0xf2d7a6);
+    lab.trigger('idle',0);lab.update(.1);const rock=u.getObjectByName('oven-shell').rotation.z;lab.update(.3);assert.notEqual(u.getObjectByName('oven-shell').rotation.z,rock);
+    lab.trigger('produce',1);lab.update(1.1);assert.equal(tray.position.z,0);assert.ok(door.rotation.x>0);
+    for(let t=1.1;t<=1.7;t+=.008)lab.update(t);
+    assert.ok(door.rotation.x>1.4);assert.ok(tray.position.z>1);
+    for(const name of ['factory-popper','factory-zapper']){const troop=u.getObjectByName(name);assert.ok(troop.position.z>1);assert.equal(troop.scale.y,.32);}
+    lab.trigger('idle',2);for(let t=2;t<3;t+=.008)lab.update(t);assert.ok(Math.abs(tray.position.z)<.01);
+    lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());assert.equal(u.scale.y,1);}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }
+  lab.dispose();
+ });
+
+ test('Drill has five rigid pivots, a crystal bit and spring drilling on a planted stand',()=>{
+  const lab=createLab();lab.setShape('drill');assert.ok(lab.actions.includes('drill'));
+  for(const look of LOOKS){
+    lab.setLook(look);const u=lab.units[0],motor=u.getObjectByName('drill-motor'),bit=u.getObjectByName('crystal-bit');
+    assert.equal(u.children.length,5);assert.ok(triangles(u)<800);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    lab.trigger('idle',0);lab.update(.1);const y=motor.position.y;lab.update(.3);assert.notEqual(motor.position.y,y);
+    lab.trigger('drill',1);const heights=[],angles=[];
+    for(let i=0;i<90;i++){lab.update(1+i/120);heights.push(motor.position.y);angles.push(bit.rotation.y);assert.equal(u.position.y,0);assert.equal(u.scale.y,1);}
+    assert.ok(Math.max(...heights)-Math.min(...heights)>.08);assert.ok(angles.at(-1)>angles[0]+2);
+    lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }lab.dispose();
+ });
+
+test('Track carries pentagonal crystal slices through straight, corner and junction pieces on springs',()=>{
+  const lab=createLab();lab.setShape('track');assert.ok(lab.actions.includes('convey'));
+  for(const look of LOOKS){
+    lab.setLook(look);const u=lab.units[0];assert.equal(u.children.length,6);assert.ok(triangles(u)<800);
+    for(const name of ['straight','corner','junction']){
+      assert.ok(u.getObjectByName('track-'+name));
+      const slice=u.getObjectByName('slice-'+name);assert.equal(slice.children[0].geometry.parameters.radialSegments,5);
+    }
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    lab.trigger('idle',0);lab.update(.1);const deck=u.getObjectByName('track-straight'),y=deck.position.y;lab.update(.3);assert.notEqual(deck.position.y,y);
+    lab.trigger('convey',1);const positions=[];for(let i=0;i<90;i++){lab.update(1+i/120);positions.push(u.getObjectByName('slice-corner').position.clone());}
+    assert.ok(Math.max(...positions.map(p=>p.x))-Math.min(...positions.map(p=>p.x))>.2);
+    assert.ok(Math.max(...positions.map(p=>p.z))-Math.min(...positions.map(p=>p.z))>.2);
+    lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());assert.equal(u.scale.y,1);}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }lab.dispose();
+});
+
+
+test('Press clamps Shards and Flux before spring-ejecting an Alloy waffle in every look',()=>{
+  const lab=createLab();lab.setShape('press');assert.ok(lab.actions.includes('press'));
+  for(const look of LOOKS){
+    lab.setLook(look);const u=lab.units[0],lid=u.getObjectByName('press-lid'),waffle=u.getObjectByName('alloy-waffle');
+    assert.equal(u.children.length,6);assert.ok(triangles(u)<800);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    lab.trigger('idle',0);lab.update(.1);const a=lid.rotation.x;lab.update(.3);assert.notEqual(lid.rotation.x,a);
+    lab.trigger('press',1);lab.update(1);
+    assert.ok(u.getObjectByName('shards').visible);assert.ok(u.getObjectByName('flux').visible);assert.equal(waffle.visible,false);
+    for(let i=1;i<=55;i++)lab.update(1+i/120);
+    assert.ok(Math.abs(lid.rotation.x)<.2,'iron clamps shut');
+    assert.equal(u.getObjectByName('shards').visible,false);assert.equal(waffle.visible,false);
+    for(let i=56;i<=120;i++)lab.update(1+i/120);
+    assert.ok(lid.rotation.x<-.7);assert.ok(waffle.visible);assert.ok(waffle.position.y>.65);
+    lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());assert.equal(u.scale.y,1);}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }lab.dispose();
+});
+
+
+test('Trading House bustles on six rigid pivots and flips its price board during a cash sale',()=>{
+  const lab=createLab();lab.setShape('trading-house');assert.ok(lab.actions.includes('trade'));
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    lab.setLook(look);lab.setTeam(team);const u=lab.units[0];
+    assert.equal(u.children.length,6);assert.ok(triangles(u)<800);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    const register=u.getObjectByName('cash-register'),board=u.getObjectByName('price-board'),drawer=u.getObjectByName('cash-drawer');
+    assert.equal(u.getObjectByName('counter-rim').material.color.getHex(),team==='orange'?0xff8540:0x32d9e8);
+    lab.trigger('idle',0);lab.update(.1);const y=register.position.y;lab.update(.3);assert.notEqual(register.position.y,y);
+    lab.trigger('trade',1);const angles=[],drawers=[],toast=[];
+    for(let i=0;i<120;i++){lab.update(1+i/120);angles.push(board.rotation.x);drawers.push(drawer.position.z);toast.push(u.getObjectByName('purchase-toast').position.y);assert.equal(u.scale.y,1);}
+    assert.ok(Math.max(...angles)-Math.min(...angles)>2.5,'board flips to a new quote');
+    assert.ok(Math.max(...drawers)-Math.min(...drawers)>.25,'drawer springs open');
+    assert.ok(Math.max(...toast)-Math.min(...toast)>.15,'purchase pops at checkout');
+    lab.trigger('idle',2);for(let i=0;i<120;i++)lab.update(2+i/120);assert.ok(Math.abs(drawer.position.z-.25)<.02);
+    lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }lab.dispose();
+});
+
+
+test('Turret opens its hatch, springs out of the ground before firing and retracts',()=>{
+  const lab=createLab();lab.setShape('turret');
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    lab.setLook(look);lab.setTeam(team);const u=lab.units[0];
+    assert.equal(u.children.length,5);assert.ok(triangles(u)<800);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    const body=u.getObjectByName('turret-body'),shot=u.getObjectByName('turret-shot'),hatch=u.getObjectByName('turret-hatch');
+    lab.trigger('idle',0);lab.update(.1);const idle=body.position.y,idleHatch=hatch.rotation.x;lab.update(.3);assert.notEqual(body.position.y,idle);assert.notEqual(hatch.rotation.x,idleHatch);
+    lab.trigger('attack',1);let fired=false,opened=false;
+    for(let i=0;i<144;i++){lab.update(1+i/120);opened ||= hatch.rotation.x < -1;if(shot.visible){fired=true;assert.ok(body.position.y>1);assert.ok(hatch.rotation.x < -1);}assert.equal(u.position.y,0);}
+    assert.ok(fired);assert.ok(opened);assert.ok(body.position.y<.1);assert.equal(shot.visible,false);
+    lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }lab.dispose();
 });
