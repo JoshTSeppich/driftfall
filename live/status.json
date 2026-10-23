@@ -1,24 +1,34 @@
 {
- "build": 251,
- "at": "2026-10-23T19:28:41.475Z",
- "seconds": 275.3,
+ "build": 254,
+ "at": "2026-10-23T19:51:50.341Z",
+ "seconds": 274.8,
  "state": "red",
- "nextBuildAt": "2026-10-23T19:31:41.475Z",
- "headline": "Red: match did not record.",
+ "nextBuildAt": "2026-10-23T19:54:50.341Z",
+ "headline": "Red: 1 test file(s) failing, match did not record.",
  "tests": {
   "files": 92,
-  "pass": 1336,
-  "fail": 0,
-  "seconds": 443.2
+  "pass": 1338,
+  "fail": 1,
+  "seconds": 442.3
  },
- "failures": [],
+ "failures": [
+  {
+   "file": "tests/perf.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "findpath-sealed-32 is no more than 2x its baseline"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: findpath-sealed-32 is 2.24x its baseline (51.351 us per call, goal sealed by rocks; baseline 17.005 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
+  }
+ ],
  "parse": {
   "checked": 65,
   "errors": []
  },
  "match": {
   "ok": false,
-  "seed": 252,
+  "seed": 255,
   "error": "[timed out]",
   "keptPrevious": true
  },
@@ -38,15 +48,9 @@
   "live": 19
  },
  "previous": {
-  "build": 250,
+  "build": 253,
   "state": "red",
-  "at": "2026-10-23T19:21:06.218Z",
-  "failing": [
-   "tests/builtin-ai.test.mjs",
-   "tests/fanatic-fable.test.mjs",
-   "tests/opening-clock.test.mjs",
-   "tests/sim-determinism.test.mjs",
-   "tests/style-lab.test.mjs"
-  ]
+  "at": "2026-10-23T19:44:15.530Z",
+  "failing": []
  }
 }

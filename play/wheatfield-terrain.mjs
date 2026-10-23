@@ -18,6 +18,7 @@ export const SEAM = 0.14; // how far a seam pixel is pulled toward the cliff col
 export const NAVY = 0x1b3b57; // deep water: darker than the style-bible deep, so the creek reads as a cut in the ground
 export const BAND = 0x4d97a6; // shallow band: clearly lighter than the navy, still cool
 const FOG = 0x26353f;
+export const GOLD = 0xe8b84a; // field gold: the brightest warm thing on the map
 
 const rgb = (n) => [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
@@ -33,8 +34,8 @@ export function tileColour(ch, { deep = false, high = false } = {}) {
     case 'f': return rgbToHex(mix(rgb(QUIET.shallow), rgb(QUIET.ramp), 0.5));   // a ford: shallows over stone
     case 'G': return QUIET.socket;                                // a windmill pad
     case 'L': return QUIET.meadow;
-    case 'S': return rgbToHex(mix(rgb(QUIET.ground), rgb(QUIET.wheat), 0.8));   // a wheat field: the brightest warm thing on the map
-    case 'R': return rgbToHex(mix(rgb(QUIET.ground), rgb(QUIET.wheat), 0.95));  // golden wheat
+    case 'S': return rgbToHex(mix(rgb(QUIET.ground), rgb(GOLD), 0.9));   // a wheat field: the brightest warm thing on the map
+    case 'R': return rgbToHex(mix(rgb(QUIET.ground), rgb(GOLD), 1));  // golden wheat
     case '#': return QUIET.cliff;
     default: return high ? QUIET.high : QUIET.ground;
   }
@@ -90,7 +91,7 @@ export function buildMinimapImage(map) {
 // The system
 // ------------------------------------------------------------------------------------------------------------------
 
-const BLADES = 5;
+const BLADES = 8; // stalks per field tile: two rows of four
 export function createWheatfieldTerrain(ctx, { map }) {
   const root = new THREE.Group(); root.name = 'wheatfield';
   ctx.scene.add(root);
@@ -103,8 +104,11 @@ export function createWheatfieldTerrain(ctx, { map }) {
   ctx.scene.fog = null;
 
   // Ground: one plane, one texture (1024 x 1024), nearest when zoomed in, mipmapped when zoomed out.
+  // The plane lies flat with texture row 0 at its south edge (v = 0), but tile row 0 is the north edge: flip the rows.
   const img = buildTileImage(map, 4);
-  const tex = own(new THREE.DataTexture(img.data, img.width, img.height, THREE.RGBAFormat));
+  const rowBytes = img.width * 4, flipped = new Uint8Array(img.data.length);
+  for (let r = 0; r < img.height; r++) flipped.set(img.data.subarray(r * rowBytes, (r + 1) * rowBytes), (img.height - 1 - r) * rowBytes);
+  const tex = own(new THREE.DataTexture(flipped, img.width, img.height, THREE.RGBAFormat));
   tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearMipmapLinearFilter;
   tex.generateMipmaps = true; tex.anisotropy = 8; tex.flipY = false; tex.needsUpdate = true;
   const ground = new THREE.Mesh(own(new THREE.PlaneGeometry(W * ts, H * ts)), own(new THREE.MeshBasicMaterial({ map: tex, fog: false })));
@@ -145,8 +149,8 @@ export function createWheatfieldTerrain(ctx, { map }) {
   }
 
   // Wheat: five blades per field tile, shrinking with the wheat left. The sim lists a tile's wheat in `crystals`.
-  const bladeGeo = own(new THREE.ConeGeometry(0.075, 0.5, 5));
-  const bladeMat = own(new THREE.MeshLambertMaterial({ color: QUIET.wheat }));
+  const bladeGeo = own(new THREE.BoxGeometry(0.15, 0.6, 0.15));
+  const bladeMat = own(new THREE.MeshLambertMaterial({ color: GOLD }));
   let wheat = null, wheatTiles = [];
   function buildWheat(crystals) {
     if (wheat) { root.remove(wheat); wheat.dispose?.(); }
@@ -166,10 +170,9 @@ export function createWheatfieldTerrain(ctx, { map }) {
       const f = c.amount > 0 ? Math.max(0.25, Math.min(1, c.amount / full)) : 0;
       if (f > 0) shown++;
       for (let k = 0; k < BLADES; k++) {
-        const a = (k * Math.PI * 2) / BLADES + hash(c.x, c.y) * 3;
-        const r = k === 0 ? 0 : 0.2;
-        dummy.position.copy(toWorld(c.x + Math.cos(a) * r, c.y + Math.sin(a) * r, 0.25 * f * ts));
-        dummy.rotation.set(Math.sin(a) * 0.15, 0, Math.cos(a) * 0.15);
+        const row = k < 4 ? -0.25 : 0.25, col = (k % 4) * 0.22 - 0.33;   // tall blocky stalk rows
+        dummy.position.copy(toWorld(c.x + col, c.y + row, 0.3 * f * ts));
+        dummy.rotation.set(0, 0, 0);
         dummy.scale.set(ts, Math.max(f, 0.0001) * (c.rich ? 1.2 : 1) * ts, ts); dummy.updateMatrix();
         wheat.setMatrixAt(i * BLADES + k, dummy.matrix);
       }

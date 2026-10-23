@@ -502,7 +502,7 @@ export function createBuildings(ctx) {
     root.remove(rec.root);
     if (rec.parts.custom) {
       // Bodies from ctx.buildingLook own their geometry and materials (not the shared caches), so free them with the record.
-      rec.root.traverse((o) => {
+      rec.parts.body.traverse((o) => { // the body only: rec.root also holds the shared scaffold and geo/material caches
         o.geometry?.dispose();
         for (const m of [].concat(o.material ?? [])) m.dispose();
       });

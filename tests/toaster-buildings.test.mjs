@@ -82,3 +82,24 @@ test('dispose frees the custom body geometries and materials (haiku #727)', () =
   b.dispose();
   assert.ok(made.every((o) => counts.get(o) >= 1), 'every custom geometry and material was disposed');
 });
+
+test('removing a custom-look building frees its own body only, never the shared scaffold and geometry caches (haiku #733)', () => {
+  const ctx = { THREE, scene: new THREE.Scene(), tileSize: 1, palette: null, gridToWorld: (x, y, h = 0, o = new THREE.Vector3()) => o.set(x - 128, h, y - 128), buildingLook: toasterBuildingLook };
+  const b = createBuildings(ctx);
+  const mk = (id, kind, x) => ({ id, owner: 0, kind, x, y: 5, hp: 100, progress: 0, complete: true, queue: [] });
+  const s1 = { tick: 1, units: [], structures: [mk(1, 'mill', 3), mk(2, 'mill', 6)] };
+  b.update({ tick: 1, alpha: 1, prev: s1, next: s1, events: [] }, 1 / 60);
+  const root = ctx.scene.getObjectByName('buildings');
+  const [first, second] = root.children;
+  const own = new Set(); first.getObjectByName('blades').parent.traverse((o) => { if (o.geometry) own.add(o.geometry); });
+  const shared = new Set();
+  second.traverse((o) => { if (o.geometry) shared.add(o.geometry); for (const m of [].concat(o.material ?? [])) shared.add(m); });
+  const freed = new Set();
+  for (const o of shared) o.addEventListener('dispose', () => freed.add(o));
+  // the second building stays; the first is destroyed and, once it has faded, disposed
+  const s2 = { tick: 2, units: [], structures: [mk(2, 'mill', 6)] };
+  for (let t = 2; t < 40; t++) b.update({ tick: t, alpha: 1, prev: s2, next: { ...s2, tick: t }, events: [] }, 0.25);
+  assert.equal(root.children.length, 1, 'the destroyed building is gone');
+  assert.equal(freed.size, 0, 'nothing the surviving building uses was disposed');
+  b.dispose();
+});

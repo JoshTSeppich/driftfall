@@ -116,3 +116,54 @@ test('Quiet Battlefield contrast: wheat is the brightest warm tile, navy is dark
   }
   assert.ok(SEAM <= 0.2, 'seam is a faint pull toward the cliff colour');
 });
+
+// What the player sees at a world point: sample the ground texture through the plane's own transform and UVs.
+function seenColourAtTile(ground, tex, tx, ty, ctx) {
+  const p = ctx.gridToWorld(tx, ty, 0, new THREE.Vector3());
+  ground.updateMatrixWorld(true);
+  const local = ground.worldToLocal(p.clone());
+  const pg = ground.geometry.parameters;
+  const u = local.x / pg.width + 0.5, v = local.y / pg.height + 0.5;
+  const width = tex.image.width, height = tex.image.height, data = tex.image.data;
+  const col = Math.min(width - 1, Math.floor(u * width));
+  const row = tex.flipY ? Math.floor((1 - v) * height) : Math.floor(v * height);
+  const r = Math.min(height - 1, row) * width + col;
+  return [data[r * 4], data[r * 4 + 1], data[r * 4 + 2]];
+}
+
+test('every base and starting worker stands on ground, and the terrain the player sees there is ground, not water', () => {
+  const ctx = fakeCtx();
+  const t = createWheatfieldTerrain(ctx, { map });
+  const ground = ctx.scene.getObjectByName('wheatfield-ground');
+  const tex = ground.material.map;
+  const spots = [...map.cores, ...map.workers.flat()].map((c) => (Array.isArray(c) ? c : [c.x, c.y]));
+  assert.ok(spots.length >= 4);
+  for (const [x, y] of spots) {
+    assert.notEqual(map.tiles[y][x], '~', `tile ${x},${y} is water in the layout`);
+    const c = seenColourAtTile(ground, tex, x, y, ctx);
+    const want = hex(tileColour(map.tiles[y][x], { high: (map.heights?.[y]?.[x] ?? 0) > 0 }));
+    assert.ok(near(c, want, 14), `terrain at base tile ${x},${y} is ${c}, the layout says ${want}`);
+  }
+  for (const [x, y] of [map.water[100], map.water[map.water.length - 100]]) {
+    const c = seenColourAtTile(ground, tex, x, y, ctx);
+    assert.ok(c[2] > c[0], `water tile ${x},${y} should look blue: ${c}`);
+  }
+  t.dispose();
+});
+
+test('wheat fields are big gold patches: a starter plot, the Lower Farm and the Golden Fields read as warm blocks', () => {
+  const img = buildTileImage(map);
+  const warm = (x, y) => { const p = px(img, x * 4 + 2, y * 4 + 2); return p[0] > p[2] + 40; };
+  let tiles = 0, warmTiles = 0;
+  for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) if (map.tiles[y][x] === 'S' || map.tiles[y][x] === 'R') { tiles++; if (warm(x, y)) warmTiles++; }
+  assert.ok(tiles >= 100, `field tiles ${tiles}`);
+  assert.equal(warmTiles, tiles, 'every field tile is gold');
+  // fields have body: at least 12 warm tiles in a 5 x 5 block somewhere
+  let best = 0;
+  for (let y = 0; y < 251; y += 1) for (let x = 0; x < 251; x += 1) {
+    if (map.tiles[y][x] !== 'S' && map.tiles[y][x] !== 'R') continue;
+    let n = 0; for (let dy = 0; dy < 5; dy++) for (let dx = 0; dx < 5; dx++) if (warm(x + dx, y + dy)) n++;
+    best = Math.max(best, n);
+  }
+  assert.ok(best >= 18, `densest 5x5 block has ${best} warm tiles`);
+});
