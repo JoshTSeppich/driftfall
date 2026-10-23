@@ -403,8 +403,9 @@ export function createInstancedUnits(ctx, opts = {}) {
     const showBar = selected || hb.visible;
     if (showBar) {
       const j = slot(bars);
-      const w = (spec.bar ?? Math.max(0.42, Math.min(0.7, size * 0.9))) * unitScale;
-      dummy.position.set(v.pos.x, v.pos.y + (tr.dy + (toaster?.height(v.kind) ?? drawn?.height(v.kind) ?? spec.height ?? 0.8) + 0.16) * unitScale, v.pos.z);
+      const barScale = toaster ? toaster.unitScale : unitScale;   // the toasters draw at their own scale
+      const w = (spec.bar ?? Math.max(0.42, Math.min(0.7, size * 0.9))) * barScale;
+      dummy.position.set(v.pos.x, v.pos.y + (tr.dy + (toaster?.height(v.kind) ?? drawn?.height(v.kind) ?? spec.height ?? 0.8) + 0.16) * barScale, v.pos.z);
       if (ctx.camera) dummy.quaternion.copy(ctx.camera.quaternion); else dummy.rotation.set(0, 0, 0);
       dummy.scale.set(w, w * 0.14, 1); dummy.updateMatrix();
       bars.mesh.setMatrixAt(j, dummy.matrix);

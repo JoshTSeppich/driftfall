@@ -7,17 +7,20 @@ const cap = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1);
 
 // One plain sentence per thing you can press. Unknown kinds fall back to a safe line, never to "undefined".
 const KIND_LINE = Object.freeze({
-  worker: 'Gathers Shards and builds your buildings.',
+  worker: 'Hauls wheat and builds your buildings.',
   grunt: 'A cheap, sturdy fighter for the front line.',
   lancer: 'Hits from a distance, so keep it behind your grunts.',
   brute: 'A slow heavy hitter that is good against buildings.',
-  forge: 'Trains your fighters.',
+  forge: 'The Assembly Line: trains your fighting toasters.',
+  mill: 'Grinds wheat into flour for the Toaster.',
+  well: 'Draws water for the Toaster. Build it near the river.',
+  toaster: 'Turns flour + water + power into toast, the ammo your toasters fire.',
   turret: 'Guards a spot by shooting enemies that come near.',
-  core: 'Your home base; it trains Workers and takes in Shards.',
+  core: 'Your Power Strip: home base, it trains Crumbs and takes in wheat.',
   depot: 'Drop-off point so Workers walk less.',
-  drill: 'Mines a Shard patch by itself.',
+  drill: 'Mines a wheat patch by itself.',
   siphon: 'Pulls Flux from a vent by itself.',
-  press: 'Turns Shards and Flux into Alloy.',
+  press: 'Presses wheat into plates.',
   tradinghouse: 'Buy and sell resources at prices that follow scarcity.',
 });
 const ACTION_LINE = Object.freeze({
@@ -39,7 +42,7 @@ export function describe(entry, { prices = {} } = {}) {
     || ACTION_LINE[entry.action]
     || (entry.action === 'build' ? `Build a ${name}.` : entry.action === 'train' ? `Train a ${name}.` : `${name}.`);
   const verb = entry.action === 'build' ? 'Build ' : entry.action === 'train' ? 'Train ' : '';
-  const price = cost !== undefined ? `, ${cost} Shards` : '';
+  const price = cost !== undefined ? `, ${cost} Wheat` : '';
   const how = entry.action === 'build' ? ' Then click a free spot.' : '';
   return { key, cost, sentence, title: `${verb}${name} (${key})${price}. ${sentence}${how}` };
 }
@@ -62,8 +65,8 @@ export function nextIdleWorker(snap, side, memo = {}) {
 
 export function idleButtonHtml(count) {
   if (!count) return '';
-  return `<button class="idle-btn" data-action="idle" title="${esc(`Idle Workers: ${count}. ${ACTION_LINE.idle} (${IDLE_KEY})`)}">`
-    + `<kbd>${IDLE_KEY}</kbd> Idle Workers <b>${count}</b> (${IDLE_KEY})</button>`;
+  return `<button class="idle-btn" data-action="idle" title="${esc(`Idle Crumbs: ${count}. ${ACTION_LINE.idle} (${IDLE_KEY})`)}">`
+    + `<kbd>${IDLE_KEY}</kbd> Idle Crumbs <b>${count}</b> (${IDLE_KEY})</button>`;
 }
 
 // First-3-minutes coach ---------------------------------------------------------------------------------------------
@@ -76,19 +79,19 @@ const key = (c, kind, fallback) => String(c.ctx.keys?.[kind] ?? fallback).toUppe
 // Ordered; the first rule that is not finished and wants to show wins. finished() latches the rule off for good.
 const RULES = [
   { id: 'select-worker', finished: (c) => c.ctx.selected?.some((e) => e.kind === 'worker'),
-    show: () => true, text: () => 'Click a Worker, or drag a box around your units, to select them.' },
+    show: () => true, text: () => 'Click a Crumb, or drag a box around your units, to select them.' },
   { id: 'train-worker', finished: (c) => c.workers.length >= 4 || c.cores.some((s) => s.queue.length),
     show: (c) => c.cores.some((s) => s.complete && !s.queue.length) && c.snap.shards[c.side] >= (STATS.units.worker?.cost ?? 50),
-    text: (c) => `Click your Core, then press ${key(c, 'worker', 'W')} to train a Worker.` },
+    text: (c) => `Click your Power Strip, then press ${key(c, 'worker', 'W')} to train a Crumb.` },
   { id: 'build-forge', finished: (c) => c.structs.some((s) => s.kind === 'forge'),
     show: (c) => c.snap.shards[c.side] >= (STATS.structures.forge?.cost ?? 100),
-    text: (c) => `Select a Worker, press ${key(c, 'forge', 'F')}, then click open ground to build a Forge.` },
+    text: (c) => `Select a Worker, press ${key(c, 'forge', 'F')}, then click open ground to build an Assembly Line.` },
   { id: 'train-army', finished: (c) => c.army.length >= 4,
     show: (c) => c.structs.some((s) => s.kind === 'forge' && s.complete) && c.army.length < 4 && c.snap.shards[c.side] >= (STATS.units.grunt?.cost ?? 50),
-    text: () => 'Click your Forge and train fighters; they defend your base.' },
+    text: () => 'Click your Assembly Line and train toasters; they defend your base. They need toast to fire.' },
   { id: 'idle-worker', finished: () => false,
     show: (c) => c.snap.tick >= 30 * c.tps && idleWorkers(c.snap, c.side).length > 0,
-    text: () => `A Worker is idle. Press ${IDLE_KEY} to select it, then right-click a Shard to mine.` },
+    text: () => `A Crumb is idle. Press ${IDLE_KEY} to select it, then right-click wheat to haul it.` },
   { id: 'attack', finished: () => false,
     show: (c) => c.snap.tick >= 100 * c.tps && c.army.length >= 4,
     text: () => 'Select your army, press A, then click the enemy base to attack.' },

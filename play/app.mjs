@@ -1,4 +1,4 @@
-// Driftfall Classic: the playable client (owner: sonnet, Playable Client).
+// Toaster Wars (default) / Driftfall Classic (?classic=1): the playable client (owner: sonnet, Playable Client).
 // A human plays side 0 against a built-in bot (side 1) live in the browser. env/live.mjs runs the sim at a fixed
 // 24 ticks per second and the bot; input becomes commands on the next tick (play/input.mjs); the viewer3d systems
 // draw it through a "live world" that has the same frame() shape as viewer3d/world.mjs.
@@ -22,6 +22,7 @@ import { cardWithRecall } from './items-ui.mjs';
 import { createFeedback } from './feel.mjs';
 import { createSoundPlayer } from './sound-player.mjs';
 import { stingerFor } from '../viewer3d/audio.mjs';
+import { toasterOptions, toasterTopBar, toasterPanel, PAGE_TITLE } from './toaster-play.mjs';
 import { territoryOptions, territoryPanel, drawReachBorders, drawPowerOverlay } from './territory-wire.mjs';
 import { reachViews, drawReachMinimap } from './reach-view.mjs';
 
@@ -181,7 +182,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   const seed = Number(q.get('seed') ?? 7) || 7;
   const side = q.get('side') === '1' ? 1 : 0;
   const tps = Number(q.get('tps') ?? TICKS_PER_SECOND) || TICKS_PER_SECOND;
-  const els = buildDom(root);
+  const els = buildDom(root, toasterOptions(q).on);
   const imp = importer ?? ((f) => import(f));
 
   // The sim ----------------------------------------------------------------------------------------------------
@@ -193,7 +194,9 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   let aiModule = null;
   try { aiModule = await imp(aiName === 'sample' ? '../players/sample-player.mjs' : aiName === 'builtin' ? '../players/builtin/ai.mjs' : `../players/${aiName}/bot.mjs`); }
   catch (err) { console.warn('[play] bot not loaded', err); toast(els, `Bot "${aiName}" failed to load`); }
-  const terr = territoryOptions(q); // ?territory=1: Reaches, tiers, the Drift and the flow panel (needs createState in env/live.mjs)
+  const toaster = toasterOptions(q); // Toaster Wars by default; ?classic=1 keeps the old Driftfall Classic page
+  if (toaster.on && typeof document !== 'undefined') document.title = PAGE_TITLE;
+  const terr = toaster.on ? toaster : territoryOptions(q); // ?territory=1: Reaches, tiers, the Drift and the flow panel (needs createState in env/live.mjs)
   const driver = createLiveMatch({
     seed, human: side, createState: terr.createState, tps, ai: aiModule ?? { name: 'idle', act: () => [] },
     maxTicks: Number(q.get('ticks') ?? DEFAULT_MATCH_TICKS) || DEFAULT_MATCH_TICKS,
@@ -235,7 +238,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   driver.on('end', (result) => {
     game.over = true;
     if (watch) { showWatchEnd(els, result, seed, q); return; }
-    showResult(els, result, side); sounds.play([{ name: stingerFor(result, side) }]);
+    showResult(els, result, side, toaster.on); sounds.play([{ name: stingerFor(result, side) }]);
   });
 
   // Engine and systems -----------------------------------------------------------------------------------------
@@ -602,17 +605,22 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     const snap = snapNow();
     const myUnits = snap.units.filter((u) => u.owner === side).length;
     const queued = snap.structures.filter((s) => s.owner === side).reduce((n, s) => n + s.queue.length, 0);
-    els.shards.textContent = String(snap.shards[side]);
-    els.supply.textContent = `${myUnits + queued}/${STATS.match.unitCap}`;
-    const secs = Math.floor(snap.tick / tps);
-    els.clock.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
-    const a = input.ui.alert;
-    els.alert.textContent = a && snap.tick - a.tick < tps * 6 ? `${a.text} (Space)` : '';
+    if (toaster.on) {
+      const topHtml = toasterTopBar(state, { side, tps, alert: input.ui.alert });
+      if (topHtml !== els.top._html) { els.top._html = topHtml; els.top.innerHTML = topHtml; }
+    } else {
+      els.shards.textContent = String(snap.shards[side]);
+      els.supply.textContent = `${myUnits + queued}/${STATS.match.unitCap}`;
+      const secs = Math.floor(snap.tick / tps);
+      els.clock.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+      const a = input.ui.alert;
+      els.alert.textContent = a && snap.tick - a.tick < tps * 6 ? `${a.text} (Space)` : '';
+    }
     // Selection panel (portraits) and command card (icons) come from hud.mjs / command-card.mjs
     const picked = input.mine(snap);
     const selHtml = renderSelectionPanel(snap, picked, { side });
     if (selHtml !== els.selection._html) { els.selection._html = selHtml; els.selection.innerHTML = selHtml; }
-    const tHtml = territoryPanel(state, side);
+    const tHtml = toaster.on ? toasterPanel(state, side) : territoryPanel(state, side);
     if (tHtml !== els.territory._html) { els.territory._html = tHtml; els.territory.innerHTML = tHtml; els.territory.hidden = !tHtml; }
     const card = cardWithRecall(input.commandCard(snap), snap, side, picked);
     const cardOpts = { shards: snap.shards[side], mode: input.ui.mode };
@@ -628,14 +636,14 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   driver.start();
   els.boot.hidden = true;
   if (watch) { root.classList.add('watch'); toast(els, `Watching the AIs, seed ${seed}`); }
-  else toast(els, 'Select your Workers and right-click a Shard to mine. F builds a Forge.');
+  else toast(els, toaster.on ? 'Select your Crumbs and right-click wheat to haul it. Build a Mill, a Well and a Toaster: toast is your ammo.' : 'Select your Workers and right-click a Shard to mine. F builds a Forge.');
   return game;
 }
 
 // ---------------------------------------------------------------------------------------------------------------
 // DOM
 // ---------------------------------------------------------------------------------------------------------------
-function buildDom(root) {
+function buildDom(root, toasterOn = false) {
   root.innerHTML = `
     <div id="stage"><canvas id="view"></canvas></div>
     <canvas id="overlay"></canvas>
@@ -649,7 +657,7 @@ function buildDom(root) {
     <div id="toast"></div>
     <div id="result" hidden></div>
     <div id="hud"></div>
-    <div id="boot"><b>DRIFTFALL</b><br>loading…</div>`;
+    <div id="boot"><b>${toasterOn ? 'TOASTER WARS' : 'DRIFTFALL'}</b><br>loading…</div>`;
   const $ = (id) => root.querySelector('#' + id);
   return { canvas: $('view'), overlay: $('overlay'), minimap: $('minimap'), shards: $('shards'), supply: $('supply'), clock: $('clock'),
     top: $('top'), alert: $('alert'), selection: $('selection'), card: $('card'), toast: $('toast'), territory: $('territory'), result: $('result'), hud: $('hud'), boot: $('boot') };
@@ -661,10 +669,10 @@ function toast(els, text) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { els.toast.style.opacity = '0'; }, 3200);
 }
 
-function showResult(els, result, side) {
+function showResult(els, result, side, toasterOn = false) {
   const won = result.winner === side, draw = result.winner === null;
   els.result.hidden = false;
-  els.result.innerHTML = `<h1 class="${draw ? '' : won ? 'win' : 'lose'}">${draw ? 'DRAW' : won ? 'VICTORY' : 'DEFEAT'}</h1><p>${result.reason === 'core' ? 'A Core fell.' : result.reason === 'timeout' ? 'Time ran out; the stronger side wins.' : 'Both Cores fell.'}</p><p class="dim">Press Enter for a new game</p>`;
+  els.result.innerHTML = `<h1 class="${draw ? '' : won ? 'win' : 'lose'}">${draw ? 'DRAW' : won ? 'VICTORY' : 'DEFEAT'}</h1><p>${result.reason === 'core' ? toasterOn ? 'A Power Strip fell.' : 'A Core fell.' : result.reason === 'timeout' ? 'Time ran out; the stronger side wins.' : toasterOn ? 'Both Power Strips fell.' : 'Both Cores fell.'}</p><p class="dim">Press Enter for a new game</p>`;
 }
 
 // Watch mode ------------------------------------------------------------------------------------------------------

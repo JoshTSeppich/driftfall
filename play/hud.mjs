@@ -89,7 +89,7 @@ export function renderSelectionPanel(snap, picked, { side, stats = STATS } = {})
     status = e.queue.length ? `Training ${esc(kindName(e.queue[0]))}${e.queue.length > 1 ? ` (+${e.queue.length - 1} queued)` : ''}` : 'Idle';
     queue = e.queue.length ? `<div class="chips">${e.queue.map((k, i) => `<span${i === 0 ? ' class="on"' : ''}>${esc(kindName(k))}</span>`).join('')}</div>` : '';
   } else {
-    status = e.carrying ? `Carrying ${e.carrying} Shards` : 'Idle';
+    status = e.carrying ? `Carrying ${e.carrying} wheat` : 'Idle';
   }
   // Units show their rank stars and two item slots; structures carry neither.
   const gear = structure ? '' : slotsHtml(e);

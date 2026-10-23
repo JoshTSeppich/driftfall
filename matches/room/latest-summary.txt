@@ -1,3 +1,3 @@
-Match: fanatic-sonnet (side 0) vs fanatic-haiku (side 1), seed 996. Result: {"winner":1,"reason":"core","tick":459,"value":[150,1345]} (24 ticks = 1 s).
+Match: fanatic-haiku (side 0) vs builtin (side 1), seed 996. Result: {"winner":1,"reason":"core","tick":459,"value":[150,1345]} (24 ticks = 1 s).
 0-10s: progress×80, mine@1×62, deliver@1×62, mine@0×61, deliver@0×60, queue×43, mine×36, order×33
 10-20s: hit×281, order×226, mine@1×64, deliver@1×63, queue×53, mine@0×46, deliver@0×45, die×32

@@ -119,7 +119,7 @@ export function placeCheck(state, stats, side, kind, x, y) {
   if (state.structures.some((s) => s.x === x && s.y === y)) return { ok: false, reason: 'blocked' };
   if (state.units.some((u) => u.x === x && u.y === y)) return { ok: false, reason: 'unit in the way' };
   const cost = stats.structures[kind]?.cost ?? Infinity;
-  if (state.shards[side] < cost) return { ok: false, reason: 'not enough Shards' };
+  if (state.shards[side] < cost) return { ok: false, reason: 'not enough wheat' };
   return { ok: true, reason: null };
 }
 
@@ -298,7 +298,7 @@ export function createInput({ side = 0, stats }) {
     const pending = ui.outbox.filter((c) => c.type === 'train').reduce((n, c) => n + (c.kind === kind ? cost : (stats.units[c.kind]?.cost ?? 0)), 0);
     const supply = state.units.filter((u) => u.owner === side).length + state.structures.reduce((n, s) => n + (s.owner === side ? s.queue.length : 0), 0)
       + ui.outbox.filter((c) => c.type === 'train').length;
-    if (state.shards[side] - pending < cost) { toast('Not enough Shards'); return true; }
+    if (state.shards[side] - pending < cost) { toast('Not enough wheat'); return true; }
     if (structs[0].queue.length >= (stats.match?.queueMax ?? 5)) { toast('Queue is full'); return true; }
     if (supply + 1 > (stats.match?.unitCap ?? 40)) { toast('Unit cap reached'); return true; }
     ui.outbox.push({ type: 'train', building: structs[0].id, kind });
@@ -339,7 +339,7 @@ export function createInput({ side = 0, stats }) {
         return null;
       case 'build':
         if (!units.some((u) => u.kind === 'worker')) return null;
-        if (state.shards[side] < stats.structures[kind].cost) { toast('Not enough Shards'); return null; }
+        if (state.shards[side] < stats.structures[kind].cost) { toast('Not enough wheat'); return null; }
         ui.mode = { type: 'place', kind }; return null;
       case 'train':
         if (!queueTrain(state, kind)) toast('Cannot train that here');

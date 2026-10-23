@@ -8,7 +8,7 @@ import {
   TOASTERS, TOASTER_KINDS, COLORS, WHEELS, CORD, toasterKindOf, triangleCount, mainPartCount,
 } from '../play/toaster-models.mjs';
 import { CUTENESS } from '../play/toaster-spec.mjs';
-import { createToasterUnits } from '../play/toaster-units.mjs';
+import { createToasterUnits, UNIT_SCALE } from '../play/toaster-units.mjs';
 import { createInstancedUnits } from '../play/units-instanced.mjs';
 import { toastinatorFor } from '../play/coil-motion.mjs';
 import { CAMERA } from '../play/camera.mjs';
@@ -255,6 +255,23 @@ test('createInstancedUnits: the toaster look is the default when the toy look is
   assert.equal(toyCtx.scene.children.length, 0);
 });
 
+test('the health bar floats just above a toaster at the toaster scale (0.9), not the old unit scale (1.45)', () => {
+  const state = { tick: 1, units: [{ id: 1, kind: 'crumb', owner: 0, x: 2, y: 3, hp: 1 }], structures: [] };
+  const frame = { tick: 1, alpha: 0, prev: state, next: state, events: [] };
+  const ctx = fixture(); ctx.toy = { look: {} };
+  const u = createInstancedUnits(ctx, { look: '3d' });
+  u.setSelection([1]);
+  u.update(frame, 1 / 60);
+  const m = new THREE.Matrix4();
+  u._batches.bars.mesh.getMatrixAt(0, m);
+  const barY = m.elements[13];
+  const v = u._views.get(1);
+  // the bar sits 0.16 model units above the toaster top, plus the small hover bob of its spec (up to 0.1)
+  const above = (barY - v.pos.y) / UNIT_SCALE - TOASTERS.crumb.height;
+  assert.ok(above > 0.16 - 0.01 && above < 0.16 + 0.1, `bar sits ${above.toFixed(3)} model units above the toaster top`);
+  u.dispose();
+});
+
 test('draw calls before and after for 200 units (reported)', () => {
   const units = [];
   for (let i = 0; i < 200; i++) units.push({ id: i + 1, kind: i % 5 < 3 ? 'grunt' : 'lancer', owner: i % 2, x: 4 + (i % 20), y: 4 + Math.floor(i / 20), hp: 10 });
@@ -284,9 +301,10 @@ test('wheels roll by the distance the unit really moved, with a small bounce; st
     t.begin(); t.emit(v, null, info({ pose: 'walk', time: 1 + i / 60 })); t.end();
     maxY = Math.max(maxY, bodyY()); minY = Math.min(minY, bodyY());
   }
-  const r = TOASTERS.crumb.wheels[0].r * 0.9;
-  const spun = spinOf() - spin0;
-  assert.ok(Math.abs(Math.abs(spun) - ((1.2 / r) % (Math.PI * 2 / 5 * 5))) < 1.0 || Math.abs(spun) > 0.1, `wheels turned (${spun})`);
+  // the wheel turns by the ground it covers (1.2 tiles) over its radius in world units (r x UNIT_SCALE, tileSize 1)
+  const turned = (1.2 / (TOASTERS.crumb.wheels[0].r * UNIT_SCALE)) % (Math.PI * 2);
+  const off = spinOf() - spin0 - turned;
+  assert.ok(Math.abs(Math.atan2(Math.sin(off), Math.cos(off))) < 1e-6, `wheels turned by the distance rolled (off ${off})`);
   assert.ok(maxY - minY > 0.005 && maxY - minY < 0.15, `a small bounce (${maxY - minY})`);
   for (let i = 0; i < 90; i++) { t.begin(); t.emit(v, null, info({ pose: 'idle', time: 2 + i / 60 })); t.end(); }
   const a = spinOf(); t.begin(); t.emit(v, null, info({ pose: 'idle', time: 4 })); t.end();

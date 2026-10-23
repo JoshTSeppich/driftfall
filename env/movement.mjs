@@ -124,11 +124,13 @@ function unitsInTickOrder(state) {
 export function stepMovement(state) {
   // Rocks, crystals and structures do not change during this phase, so they are flattened to a bitmap once. The old
   // per-tile isPassable() scanned every crystal and structure inside every path search (80% of a bot match's time).
-  const solid = solidMap(state);
+  // Built on first use, so a tick with nothing to path costs nothing.
+  let solidBits = null;
+  const getSolid = () => (solidBits ??= solidMap(state));
   const plainGrid = {
     width: state.width,
     height: state.height,
-    blocked: (x, y) => solid[y * state.width + x] === 1,
+    blocked: (x, y) => getSolid()[y * state.width + x] === 1,
   };
   // Power fences (env/fence.mjs): live enemy ground lines are walls for this unit. Null unless fences are on.
   stepFences(state);
@@ -171,13 +173,13 @@ export function stepMovement(state) {
     if (detouring.has(unit)) {
       // Already on a detour: keep planning around other units so the plain path cannot lead straight back into
       // the unit that blocked it. If no detour exists any more, the plain path below is used as usual.
-      const detour = findPath(avoidingUnits(state, unit, grid.walls, solid), from, goal, { within: dest.within });
+      const detour = findPath(avoidingUnits(state, unit, grid.walls, getSolid()), from, goal, { within: dest.within });
       if (detour && detour.length > 0) next = detour[0];
     }
     if (!isFree(state, next.x, next.y)) {
       // Someone is standing there. First time: just wait. Still blocked next moving tick: try a detour that
       // treats every other unit as an obstacle. No detour (head-on in a gap): keep waiting.
-      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit, grid.walls, solid), from, goal, { within: dest.within }) : null;
+      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit, grid.walls, getSolid()), from, goal, { within: dest.within }) : null;
       if (!detour || detour.length === 0) {
         waiting.add(unit);
         continue;

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Driftfall Classic: play live against the bot (owner: sonnet, Playable Client).
+<!-- TOASTER WARS (default; ?classic=1 = Driftfall Classic): play live against the bot (owner: sonnet, Playable Client).
      Open play/index.html from the repo-root server. Query: ?ai=sonnet|haiku|fable|sample  ?seed=7  ?ticks=21600  ?quality=low  ?mute=1
      Mouse: drag = box select (12 max), click, double-click = all of that kind, right-click = smart command (move / attack / mine / rally),
             wheel = zoom, screen edges or arrows = scroll, minimap click = move camera, minimap right-click = command.
@@ -10,7 +10,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Driftfall Classic</title>
+<title>TOASTER WARS</title>
 <script type="importmap">{ "imports": {
   "three": "../node_modules/three/build/three.module.js",
   "three/addons/": "../node_modules/three/examples/jsm/" } }</script>
@@ -22,6 +22,8 @@
   #top { position: fixed; left: 0; right: 0; top: 0; display: flex; gap: 22px; align-items: baseline; padding: 6px 14px; background: linear-gradient(#0009, #0000); pointer-events: none; }
   .watch #bottom { display: none; } .watch #top { justify-content: space-between; padding: 4px 18px; background: #0b0918cc; font-size: 15px; }
   .watch #top .wc { color: #b9b3d6; } .watch #top .ws b { margin-right: 6px; font-size: 15px; color: inherit; }
+  #top .res.blink { animation: blink .9s steps(2, start) infinite; color: #ff7a5a; } #top .res.warn { color: #ffb13b; }
+  @keyframes blink { 50% { opacity: .25; } }
   #top .res { color: #b9b3d6; } #top b { color: #33e0ff; font-size: 16px; } #alert { color: #ffb13b; font-weight: 600; }
   #bottom { position: fixed; left: 0; right: 0; bottom: 0; height: 168px; display: flex; gap: 10px; padding: 4px 10px; box-sizing: border-box; background: linear-gradient(#0000, #0b0918 22%); align-items: flex-end; }
   #bottom { pointer-events: none; } #bottom > * { pointer-events: auto; } #selection { pointer-events: none; } #selection button { pointer-events: auto; }
@@ -70,7 +72,7 @@ try {
   console.error(err);
   const boot = root.querySelector('#boot') ?? root;
   boot.hidden = false; boot.classList.add('error');
-  boot.innerHTML = `<b>DRIFTFALL</b><br>could not start<br><small>${String(err?.message ?? err)}</small>`;
+  boot.innerHTML = `<b>TOASTER WARS</b><br>could not start<br><small>${String(err?.message ?? err)}</small>`;
 }
 </script>
 </body>

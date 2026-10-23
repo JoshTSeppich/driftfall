@@ -483,7 +483,7 @@ export function createToasterUnits(ctx, { scale = UNIT_SCALE, capacity = 512 } =
   }
 
   return {
-    name: 'toaster-units', begin, emit, end, dispose, root, batches, decals, edges,
+    name: 'toaster-units', begin, emit, end, dispose, root, batches, decals, edges, unitScale,
     cords: { mesh: cordMesh, get count() { return cordCount; }, get triangles() { return cordI / 3; } },
     height: (kind) => TOASTERS[toasterKindOf(kind)].height,
     get draws() { return Object.values(batches).filter((b) => b.used).length + (decals.mesh.count ? 1 : 0) + (cordI > 0 ? 1 : 0); },
