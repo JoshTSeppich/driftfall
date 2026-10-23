@@ -32,7 +32,7 @@ import {buildDefroster,poseDefroster} from './defroster.mjs';
 import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-export const SHAPES=Object.freeze(['cute-pass','power-stations','squad','toy-render','attack-specialists','attack-four-slice','attack-zapper','attack-popper','toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit','grid-terrain-kit','windmill-dam','hit-defeat']);
+export const SHAPES=Object.freeze(['wheels-cords','cute-pass','power-stations','squad','toy-render','attack-specialists','attack-four-slice','attack-zapper','attack-popper','toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit','grid-terrain-kit','windmill-dam','hit-defeat']);
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
 const teamColor = team => team === 'orange' ? 0xff8a2a : 0x38e0ff;
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -59,11 +59,11 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan', specialAttack='broiler',beforeCute=false) {
-  const g = kind==='cute-pass'?buildCutePass(buildModel,look,team):kind==='power-stations'?buildPowerStations(look,team):kind==='squad'?buildSquad(look,team):kind==='hit-defeat'?buildHitDefeat(look,team):kind==='toy-render'?buildToyShowcase(beforeCute?buildModel:cuteModel,look,team):kind==='windmill-dam'?buildWindmillDam(look,team):kind==='grid-terrain-kit'?buildGridTerrain(look,team):kind==='attack-specialists'?buildSpecialAttack(buildModel(specialAttack,look===LOOKS[1]?LOOKS[0]:look,team),specialAttack):kind==='attack-four-slice'?buildQuadVolley(look,team):kind==='attack-zapper'?buildHotCoil(look,team):kind==='attack-popper'?buildPopShot(look,team):kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
+  const g = ['cute-pass','wheels-cords'].includes(kind)?buildCutePass(buildModel,look,team):kind==='power-stations'?buildPowerStations(look,team):kind==='squad'?buildSquad(look,team):kind==='hit-defeat'?buildHitDefeat(look,team):kind==='toy-render'?buildToyShowcase(beforeCute?buildModel:cuteModel,look,team):kind==='windmill-dam'?buildWindmillDam(look,team):kind==='grid-terrain-kit'?buildGridTerrain(look,team):kind==='attack-specialists'?buildSpecialAttack(buildModel(specialAttack,look===LOOKS[1]?LOOKS[0]:look,team),specialAttack):kind==='attack-four-slice'?buildQuadVolley(look,team):kind==='attack-zapper'?buildHotCoil(look,team):kind==='attack-popper'?buildPopShot(look,team):kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (kind==='cute-pass'||kind==='power-stations'||kind==='squad'||kind==='hit-defeat'||kind==='toy-render'||kind==='windmill-dam'||kind==='grid-terrain-kit'||kind==='attack-specialists'||kind==='attack-four-slice'||kind==='attack-zapper'||kind==='attack-popper'||kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+  if (kind==='wheels-cords'||kind==='cute-pass'||kind==='power-stations'||kind==='squad'||kind==='hit-defeat'||kind==='toy-render'||kind==='windmill-dam'||kind==='grid-terrain-kit'||kind==='attack-specialists'||kind==='attack-four-slice'||kind==='attack-zapper'||kind==='attack-popper'||kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
     // Rigid Bible rigs are built in bible.mjs.
   } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
@@ -179,7 +179,7 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan', specialAttack='
     part(new T.CylinderGeometry(6.5,6.1,.45,5),'sand',[0,-.3,0]);
     for(let i=0;i<14;i++) part(oct(),i%2?'steel':'sand',[Math.sin(i*2.4)*5.4,.05,Math.cos(i*2.4)*5.4],[.25+i%3*.13,.2+i%2*.22,.35]);
   } else throw new Error(`Unknown model ${kind}`);
-  if(!['cute-pass','power-stations','squad','hit-defeat','toy-render','windmill-dam','grid-terrain-kit'].includes(kind))rebuildBlocky(g,kind,team);
+  if(!['wheels-cords','cute-pass','power-stations','squad','hit-defeat','toy-render','windmill-dam','grid-terrain-kit'].includes(kind))rebuildBlocky(g,kind,team);
   g.updateMatrixWorld(true); g.traverse(o=>{ if(o.isMesh){o.userData.home=o.position.clone();o.userData.scale=o.scale.clone();} });
   if(look===LOOKS[1]&&kind!=='toy-render') addInk(g);
   return g;
@@ -214,7 +214,7 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
     river.name='river-tile';river.position.y=-.06;objects.push(river);
     const crystal=buildModel('crystal',look,team);crystal.position.set(-3,0,-1.7);objects.push(crystal);
     
-    if(['cute-pass','power-stations','toy-render','windmill-dam','terrain-kit','grid-terrain-kit'].includes(shape)){for(const o of [ground,river,crystal])o.visible=false;}
+    if(['wheels-cords','cute-pass','power-stations','toy-render','windmill-dam','terrain-kit','grid-terrain-kit'].includes(shape)){for(const o of [ground,river,crystal])o.visible=false;}
     objects.forEach(o=>scene.add(o));
     const rings=new T.Group();rings.name='selection-rings';
     units.forEach((u,i)=>{const ring=new T.Mesh(new T.RingGeometry(.65,.7,5),material(teamColor(team),look));ring.rotation.x=-Math.PI/2;ring.position.set(units.length===1?0:(i-(units.length-1)/2)*1.8,.012,1.2);ring.material.side=T.DoubleSide;rings.add(ring);});
@@ -255,7 +255,7 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
       if(u.userData.cute){poseCute(u,{active,age,expression,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
-      if(u.name==='cute-pass'){u.visible=!(active==='death'&&age>=.3);u.children.forEach(c=>c.userData.cute?poseCute(c,{active,age,expression,homeX:c.userData.showcaseX}):poseToyShowcase({children:[c]},{active,age}));return;}
+      if(['cute-pass','wheels-cords'].includes(u.name)){u.visible=!(active==='death'&&age>=.3);u.children.forEach(c=>c.userData.cute?poseCute(c,{active,age,expression,homeX:c.userData.showcaseX}):poseToyShowcase({children:[c]},{active,age}));return;}
       if(u.name==='power-stations'){posePowerStations(u,{active,age});return;}
       if(u.name==='squad'){poseSquad(u,{active,age,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='hit-defeat'){poseHitDefeat(u,{active,age,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
@@ -451,7 +451,7 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
       for(let i=0;i<16;i++){const a=i*2.399;dummy.position.set([-2.3,0,2.1][i%3]+Math.sin(a)*spread*1.8,.55+Math.sin(spread*Math.PI)*1.2-spread*.5,1.2+Math.cos(a)*spread*1.8);dummy.rotation.set(p*6+a,p*4,Math.sin(a));dummy.scale.setScalar(age<.09?.18:1-p*.65);dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);}shards.instanceMatrix.needsUpdate=true;
     }
     const rings=scene.getObjectByName('selection-rings');
-    rings.visible=shape!=='cute-pass'&&shape!=='power-stations'&&!stressOn&&shape!=='toy-render'&&shape!=='terrain-kit'&&shape!=='grid-terrain-kit'&&shape!=='windmill-dam';
+    rings.visible=shape!=='wheels-cords'&&shape!=='cute-pass'&&shape!=='power-stations'&&!stressOn&&shape!=='toy-render'&&shape!=='terrain-kit'&&shape!=='grid-terrain-kit'&&shape!=='windmill-dam';
     rings.children.forEach((r,i)=>{r.visible=units[i].visible;r.position.x=units[i].position.x;r.position.z=units[i].position.z;});
     const shake=units.reduce((v,u)=>v+(u.userData.cameraShake??0),0);
     camera.position.x+=shake;

@@ -1,3 +1,4 @@
+import {addWheelsCord,poseWheelsCord} from './wheels-cords.mjs';
 import * as T from 'three';
 import {TOASTERS,PALETTE,EXPRESSIONS} from '../toaster-spec.mjs';
 
@@ -7,7 +8,7 @@ export function buildCute(kind,look,team){
  const body=new T.Group(),left=new T.Group(),right=new T.Group(),action=new T.Group();
  body.name='chassis';left.name='left-pivot';right.name='right-pivot';action.name='action-pivot';root.add(body,left,right,action);
  const specs=TOASTERS[kind],chassis=specs.find(p=>p.name==='body'),face=specs.find(p=>p.name==='face');let toast=0;
- for(const p of specs)for(const sign of p.mirror?[-1,1]:[1]){
+ for(const p of specs.filter(p=>p.name!=='foot'))for(const sign of p.mirror?[-1,1]:[1]){
   const size=[...p.size],pos=[...p.pos];pos[0]*=sign;
   if(p.name==='foot'){pos[0]=sign*(chassis.size[0]*.60-size[0]/2);pos[2]=chassis.size[2]*.70-size[2]/2;}
   const decal=p.decal||p.name==='eye';
@@ -19,7 +20,7 @@ export function buildCute(kind,look,team){
   m.userData.home=m.position.clone();m.castShadow=!decal;m.receiveShadow=true;
   (p.name==='foot'?(sign<0?left:right):['toast','emitter','barrel','door','glow'].includes(p.name)?action:body).add(m);
  }
- root.userData.face=face;root.userData.bodyHeight=chassis.size[1];
+ addWheelsCord(root,chassis,team);root.userData.face=face;root.userData.bodyHeight=chassis.size[1];
  return root;
 }
 export function poseCute(root,{active,age,expression='determined',homeX=0}){
@@ -27,11 +28,14 @@ export function poseCute(root,{active,age,expression='determined',homeX=0}){
  const moving=active==='move',cycle=age/.6,phase=cycle%1,f=Math.min(1,phase/.72),hop=moving?4*f*(1-f):0;
  root.position.set(homeX+(moving?(Math.floor(cycle)+f*f*(3-2*f))*.22:0),.28*hop,0);
  root.scale.set(1+.04*hop,1-.08*Math.cos(f*Math.PI*2)*(moving?1:0),1);root.rotation.x=-.12*hop;root.rotation.z=root.name==='bagel'&&moving?-cycle*Math.PI*2/5:0;
+ root.position.x=homeX;
  const e=EXPRESSIONS[expression]??EXPRESSIONS.determined,face=root.userData.face;
  root.traverse(p=>{
   if(p.userData.home)p.position.copy(p.userData.home);
   if(p.name.startsWith('eye-')){const sign=p.name==='eye-left'?-1:1;p.scale.set(face.size[0]*e.w/p.geometry.parameters.width,face.size[1]*e.h/p.geometry.parameters.height,1);p.position.set(sign*face.size[0]*e.x,face.pos[1]+face.size[1]*e.y,p.userData.home.z);p.rotation.z=-sign*e.rot*Math.PI/180;}
  });
+ poseWheelsCord(root,{active,age});
+ if(root.name==='bagel'){const angle=(root.position.x-homeX)/.625;const chassis=root.getObjectByName('chassis');chassis.rotation.z=-angle;chassis.position.set(-Math.sin(angle)*.625,(1-Math.cos(angle))*.625,0);root.position.y+=.625*(Math.cos(angle-Math.round(angle/(Math.PI*2/5))*Math.PI*2/5)-1);}
  const spring=.035*Math.sin(age*11)*Math.exp(-.3*(age%1));
  const action=root.getObjectByName('action-pivot');const rise=spring+(active==='attack'?.65*Math.sin(Math.min(1,(age%1)/.38)*Math.PI):0);
  action.children.forEach(p=>p.position.y+=rise);

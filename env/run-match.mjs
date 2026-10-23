@@ -3,7 +3,8 @@
 //
 //   node env/run-match.mjs --seed 7 --p0 players/a.mjs --p1 players/b.mjs --out match.json
 //
-// Optional: --think MS (default from stats), --hard MS, --max-ticks N, --quiet (print only the result line).
+// Optional: --think MS (default from stats), --hard MS, --max-ticks N, --quiet (print only the result line),
+// --classic (the old createMatch game; the default is the Toaster Wars territory match).
 // Exit code 0 when the match ran, 1 for a usage problem, 2 when the referee itself failed.
 
 import fs from 'node:fs';
@@ -15,7 +16,7 @@ import { runMatch } from './referee.mjs';
 const USAGE = 'usage: node env/run-match.mjs --seed N --p0 <player.mjs> --p1 <player.mjs> [--out match.json] [--think MS] [--hard MS] [--max-ticks N]';
 
 export function parseArgs(argv) {
-  const opts = { seed: 1, p0: null, p1: null, out: null, think: null, hard: null, maxTicks: null, quiet: false };
+  const opts = { seed: 1, p0: null, p1: null, out: null, think: null, hard: null, maxTicks: null, quiet: false, territory: true };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     const next = () => {
@@ -48,6 +49,9 @@ export function parseArgs(argv) {
         break;
       case '--max-ticks':
         opts.maxTicks = num('--max-ticks');
+        break;
+      case '--classic':
+        opts.territory = false;
         break;
       case '--quiet':
         opts.quiet = true;
@@ -82,7 +86,8 @@ async function main() {
     return 1;
   }
 
-  const options = { seed: opts.seed, players: [path.resolve(opts.p0), path.resolve(opts.p1)] };
+  // Toaster Wars is the default (Joshua, 09:27): the territory match with hunger, cords and the kitchen. --classic = old game.
+  const options = { seed: opts.seed, players: [path.resolve(opts.p0), path.resolve(opts.p1)], territory: opts.territory };
   if (opts.think !== null) options.thinkMs = opts.think;
   if (opts.hard !== null) options.hardMs = opts.hard;
   if (opts.maxTicks !== null) options.maxTicks = opts.maxTicks;

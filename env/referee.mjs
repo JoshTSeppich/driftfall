@@ -24,6 +24,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createMatch, step, checkEnd } from './sim.mjs';
+import { createTerritoryMatch } from './sim-territory.mjs';
 import { observe } from './state.mjs';
 import { STATS, sideValue } from './stats.mjs';
 import { createLog, appendTick, finishLog } from './log.mjs';
@@ -198,6 +199,8 @@ function stripYou(observation) {
   return copy;
 }
 
+const TERRITORY_MATCH_TICKS = 24 * 60 * 15; // env/live.mjs DEFAULTS.maxTicks
+
 export async function runMatch(options = {}) {
   const { seed = 1, players } = options;
   if (!Array.isArray(players) || players.length !== 2) throw new Error('runMatch needs players: [path0, path1]');
@@ -207,10 +210,14 @@ export async function runMatch(options = {}) {
   const maxTicks = options.maxTicks ?? DEFAULTS.maxTicks;
   const maxCommandChars = options.maxCommandChars ?? DEFAULTS.maxCommandChars;
 
-  const state = createMatch(seed);
+  // Toaster Wars: options.territory plays the territory match (hunger, cords, kitchen, Wheatfield). options.createState
+  // lets a caller bring its own state; the default stays the classic match so the referee's own tests keep their numbers.
+  const state = typeof options.createState === 'function' ? options.createState(seed)
+    : options.territory ? createTerritoryMatch(seed, options.territoryOpts || {}) : createMatch(seed);
   // A shorter match than the stats table (tests use this): sim.mjs reads state.maxTicks in its own end check,
   // so the timeout rule stays in one place.
   if (options.maxTicks !== undefined) state.maxTicks = maxTicks;
+  else if (state.territory) state.maxTicks = TERRITORY_MATCH_TICKS; // a Toaster Wars match runs the live 15 minutes
   const handles = [new PlayerHandle(0, players[0], seed), new PlayerHandle(1, players[1], seed)];
 
   try {

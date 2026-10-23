@@ -2,7 +2,7 @@ import {poseCute} from './cute-pass.mjs';
 import * as T from 'three';
 
 export function configureToyRenderer(renderer,enabled=true){
- renderer.toneMapping=enabled?T.AgXToneMapping:T.ACESFilmicToneMapping;
+ renderer.toneMapping=enabled?T.ACESFilmicToneMapping:T.ACESFilmicToneMapping;
  renderer.toneMappingExposure=enabled?1.15:1;
  renderer.outputColorSpace=T.SRGBColorSpace;
  renderer.shadowMap.enabled=enabled;renderer.shadowMap.type=T.PCFSoftShadowMap;
@@ -81,7 +81,7 @@ export function createToyStage(scene){
  function batch(roots){
   clear();const groups=new Map();
   for(const root of roots)root.traverse(o=>{
-   if(!o.isMesh||o.isInstancedMesh||o.userData.ink||!o.material?.isMeshStandardMaterial||o.material.transparent)return;
+   if(o.name==='power-cord'||!o.isMesh||o.isInstancedMesh||o.userData.ink||!o.material?.isMeshStandardMaterial||o.material.transparent)return;
    // Identical local geometry shares one GPU buffer, including differently placed pivots.
    o.updateWorldMatrix(true,false);const pos=o.getWorldPosition(new T.Vector3()),chunk=[Math.floor(pos.x/8),Math.floor(pos.z/8)].join(',');
    const g=o.geometry,key=[chunk,o.material.uuid,Array.from(g.attributes.position.array).join(','),g.index?Array.from(g.index.array).join(','):''].join('|');

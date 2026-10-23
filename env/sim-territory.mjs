@@ -74,6 +74,7 @@ export function createTerritoryMatch(seed, opts = {}) {
   enableMarket(state); // prices drift with scarcity; trading itself needs a Trading House (env/market.mjs)
   enablePower(state); // the cord is the leash (TERRITORY.md section 20, env/power.mjs)
   state.factions = opts.factions || ['coil', 'burrow'];
+  state.springs = generateMap(seed, { map }).wells || [];
   if (opts.hunger !== false) enableHunger(state, waterKeys);
   return state;
 }

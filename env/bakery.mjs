@@ -29,7 +29,8 @@ export const BAKERY = Object.freeze({
   toasterTicks: sec(5),
   slicesPerBake: 2, // one flour + one water makes two slices of toast
   pantryCap: 6, // flour or water waiting for a Toaster, per side
-  wellReach: 4, // a Well must stand this close to a water tile
+  wellReach: 4, // a Well must stand this close to a water tile or a map spring
+  springEvery: 2, // a spring well draws every second beat
   pilotTicks: sec(20),
   pilotFloor: 4,
   startStack: 8, // slices in the Power Strip's stack at tick 0
@@ -37,7 +38,7 @@ export const BAKERY = Object.freeze({
 
 export function enableBakery(state, opts = {}) {
   if (!state.bakery) {
-    state.bakery = { next: {}, pilotAt: [0, 0], water: state.waterSet || null };
+    state.bakery = { next: {}, pilotAt: [0, 0], water: state.waterSet || null, springs: state.springs || [] };
     if (isToastOn(state) && Number.isInteger(opts.startStack ?? BAKERY.startStack)) {
       state.toast.stack[0] = state.toast.stack[1] = opts.startStack ?? BAKERY.startStack;
     }
@@ -47,12 +48,20 @@ export function enableBakery(state, opts = {}) {
 
 const pantryOf = (state, side) => state.toast.pantry[side];
 
-function nearWater(state, s) {
-  const water = state.bakery.water;
-  if (!water || water.size === 0) return true;
+// Where a Well stands decides its water (maps/WHEATFIELD.md): by the creek or river it is fast ('creek'), by a map spring
+// tile (the home well) it is slow ('spring'), anywhere else it is dry (null). A map with no water at all lets a Well work
+// anywhere, so the classic maps still play.
+function waterAt(state, s) {
+  const B = state.bakery;
+  const hasWater = B.water && B.water.size > 0;
+  const hasSprings = B.springs && B.springs.length > 0;
+  if (!hasWater && !hasSprings) return "creek";
   const r = BAKERY.wellReach;
-  for (let y = s.y - r; y <= s.y + r; y++) for (let x = s.x - r; x <= s.x + r; x++) if (water.has(`${x},${y}`)) return true;
-  return false;
+  if (hasWater) {
+    for (let y = s.y - r; y <= s.y + r; y++) for (let x = s.x - r; x <= s.x + r; x++) if (B.water.has(`${x},${y}`)) return "creek";
+  }
+  if (hasSprings && B.springs.some(([x, y]) => Math.max(Math.abs(x - s.x), Math.abs(y - s.y)) <= r)) return "spring";
+  return null;
 }
 
 // A building is powered when a lit power point of its owner covers it (the Strip, an Outlet, a box or a generator).
@@ -84,8 +93,12 @@ export function stepBakery(state) {
         emit(state, { e: "mill", player: s.owner, id: s.id, wheat: BAKERY.wheatPerFlour, flour: pantry.flour });
       }
     } else if (s.kind === "well" && due(s, BAKERY.wellTicks)) {
-      s.dry = !nearWater(state, s);
-      if (!s.dry && pantry.water < BAKERY.pantryCap) {
+      const source = waterAt(state, s);
+      s.dry = !source;
+      s.spring = source === "spring";
+      // A spring well is slow: it only draws on every second beat.
+      s.beat = (s.beat || 0) + 1;
+      if (source && (source === "creek" || s.beat % BAKERY.springEvery === 0) && pantry.water < BAKERY.pantryCap) {
         pantry.water += 1;
         emit(state, { e: "well", player: s.owner, id: s.id, water: pantry.water });
       }

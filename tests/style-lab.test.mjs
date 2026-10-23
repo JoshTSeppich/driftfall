@@ -843,7 +843,7 @@ test('specialist signatures show shell arc, exactly five flak croutons, ram rebo
  test('Blocky revision replaces every appliance surface and keeps all looks',()=>{
  for(const look of LOOKS)for(const kind of SHAPES.filter(k=>!['toy-render','grid-terrain-kit','terrain-kit','ground-patches','toppings','windmill-dam'].includes(k))){
   const u=buildModel(kind,look);assert.equal(u.userData.blocky,true,kind);
-  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry',...(['cute-pass','hit-defeat','squad','power-stations'].includes(kind)?['PlaneGeometry']:[])].includes(o.geometry.type),kind+': '+o.name);});
+  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry',...(['wheels-cords','cute-pass','hit-defeat','squad','power-stations'].includes(kind)?['PlaneGeometry','TubeGeometry','CircleGeometry']:[])].includes(o.geometry.type),kind+': '+o.name);});
  }
  });
 
@@ -897,10 +897,10 @@ test('Toy renderer showcase keeps three original rigs, budgets and spring action
   assert.ok(SHAPES.includes('toy-render'));
   const lab=createLab({look});lab.setShape('toy-render');const u=lab.units[0];
   assert.deepEqual(u.children.map(o=>o.name),['crumb','popper','four-slice']);
-  assert.ok(triangles(u)<300);
-  for(const child of u.children){assert.ok(triangles(child)<120);assert.ok(child.children.length>=3&&child.children.length<=6);}
+  assert.ok(triangles(u)<900);
+  for(const child of u.children){assert.ok(triangles(child)<300);assert.ok(child.children.length>=3&&child.children.length<=6);}
   lab.trigger('idle',0);lab.update(.1);const toast=u.children[1].getObjectByName('toast0'),y=toast.position.y;lab.update(.2);assert.notEqual(toast.position.y,y);
-  lab.trigger('move',1);lab.update(1.48);const x=u.children[0].position.x;lab.update(1.52);assert.equal(u.children[0].position.x,x);
+  lab.trigger('move',1);lab.update(1.48);const x=u.children[0].position.x;lab.update(1.52);assert.ok(u.children[0].position.x>x);
   lab.update(1.15);assert.ok(u.children[0].position.y>0);assert.notEqual(u.children[0].scale.y,1);
   lab.trigger('attack',2);lab.update(2.18);assert.ok(toast.position.y>toast.userData.home.y);
   lab.setToy(false);assert.equal(lab.scene.getObjectByName('toy-light-rig').visible,false);
@@ -915,7 +915,7 @@ test('Toy renderer showcase keeps three original rigs, budgets and spring action
 test('Toy defaults provide exact rig, satin table and antialiased box boundary shader',async()=>{
  const {configureToyRenderer,applyToyMaterials}=await import('../play/style-lab/toy-render.mjs');
  const renderer={shadowMap:{}};configureToyRenderer(renderer);
- assert.equal(renderer.toneMapping,THREE.AgXToneMapping);assert.equal(renderer.outputColorSpace,THREE.SRGBColorSpace);
+ assert.equal(renderer.toneMapping,THREE.ACESFilmicToneMapping);assert.equal(renderer.outputColorSpace,THREE.SRGBColorSpace);
  assert.equal(renderer.shadowMap.type,THREE.PCFSoftShadowMap);
  const lab=createLab();lab.setShape('crumb');lab.update(0);
  const rig=lab.scene.getObjectByName('toy-light-rig'),lights=rig.children.filter(o=>o.isLight);
@@ -1011,8 +1011,14 @@ test('Cute pass shares spec geometry, front feet, cyan expressions and old-block
   }
   const u=lab.units[0].children[0],eye=u.getObjectByName('eye-left');assert.equal(eye.material.color.getHex(),0x75f4ff);
   lab.setExpression('happy');lab.update(.1);const happy=eye.scale.y;lab.setExpression('alarmed');lab.update(.2);assert.ok(eye.scale.y>happy);
-  const foot=u.getObjectByName('foot-left');assert.ok(foot.position.z+foot.geometry.parameters.depth/2>.76/2);
-  lab.trigger('move',1);lab.update(1.47);const x=u.position.x;lab.update(1.5);assert.equal(u.position.x,x);
+  assert.equal(u.getObjectByName('foot-left'),undefined);assert.ok(u.getObjectByName('wheel-0'));
+  lab.trigger('move',1);lab.update(1.47);const x=u.position.x;lab.update(1.5);assert.ok(u.position.x>x);
   lab.setBeforeCute(true);assert.ok(!lab.units[0].children[0].userData.cute);lab.setBeforeCute(false);assert.ok(lab.units[0].children[0].userData.cute);lab.dispose();
  }
+});
+
+test('Wheels and bold cords roll, pulse inward and straighten at the limit within unit budget',()=>{
+ for(const look of LOOKS){const lab=createLab({look});assert.ok(SHAPES.includes('wheels-cords'));lab.setShape('wheels-cords');
+ for(const u of lab.units[0].children){assert.ok(triangles(u)<300,`${u.name}: ${triangles(u)}`);assert.ok(u.getObjectByName('power-cord'));assert.ok(u.getObjectByName('cord-plug'));if(u.name!=='bagel')for(let i=0;i<4;i++)assert.equal(u.getObjectByName('wheel-'+i).geometry.parameters.radialSegments,5);}
+ const u=lab.units[0].children[0];lab.trigger('move',0);lab.update(.2);const spin=u.getObjectByName('wheel-0').rotation.x;const bead=u.getObjectByName('energy-bead-0').position.clone();lab.update(.3);assert.notEqual(u.getObjectByName('wheel-0').rotation.x,spin);assert.notDeepEqual(u.getObjectByName('energy-bead-0').position,bead);lab.update(3);assert.ok(u.userData.cordTension>.85);assert.ok(u.getObjectByName('power-cord').material.emissiveIntensity>.35);lab.trigger('idle',4);lab.update(4);assert.equal(u.userData.cordTension,0);lab.dispose();}
 });

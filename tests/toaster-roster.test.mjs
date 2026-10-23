@@ -132,7 +132,7 @@ test('Mill, Well and Toaster turn wheat, water and power into toast', () => {
   const site = (kind, dx, dy) => { s.structures.push({ id: s.nextId++, owner: 0, kind, x: a.x + dx, y: a.y + dy, hp: STATS.structures[kind].hp, progress: 0, complete: true, queue: [] }); };
   site('mill', 3, 0); site('well', 3, 2); site('toaster', 3, 4);
   s.shards[0] = 500;
-  s.bakery.water = null; // this test's Well is not by the river; the dry-Well rule has its own test
+  s.bakery.water = null; s.bakery.springs = []; // this test's Well is not by water; the dry-Well rule has its own test
   const before = stockOf(s, 0);
   tick(s, 24 * 60);
   assert.ok(stockOf(s, 0) > before, 'toast stack grew: ' + before + ' -> ' + stockOf(s, 0));
