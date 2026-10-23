@@ -178,7 +178,7 @@ export function createLiveMatch(options = {}) {
   const setTimer = options.setTimer ?? ((fn, ms) => setTimeout(fn, ms));
   const clearTimer = options.clearTimer ?? ((h) => clearTimeout(h));
 
-  const state = createMatch(seed);
+  const state = typeof options.createState === "function" ? options.createState(seed) : createMatch(seed);   // ?territory=1 (wire-up integrator), unblocked by claude 22:31
   state.maxTicks = options.maxTicks ?? DEFAULTS.maxTicks;
 
   const names = [];
