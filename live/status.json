@@ -1,34 +1,24 @@
 {
- "build": 112,
- "at": "2026-10-23T05:08:52.199Z",
- "seconds": 163.1,
- "state": "red",
- "nextBuildAt": "2026-10-23T05:11:52.199Z",
- "headline": "Red: 1 test file(s) failing.",
+ "build": 115,
+ "at": "2026-10-23T05:25:39.134Z",
+ "seconds": 155.8,
+ "state": "green",
+ "nextBuildAt": "2026-10-23T05:28:39.134Z",
+ "headline": "Green: 1138 tests pass in 73 files, all 59 modules parse, new match recorded.",
  "tests": {
   "files": 73,
-  "pass": 1137,
-  "fail": 1,
-  "seconds": 279.8
+  "pass": 1138,
+  "fail": 0,
+  "seconds": 253.7
  },
- "failures": [
-  {
-   "file": "tests/perf.test.mjs",
-   "owners": [],
-   "imports": [],
-   "tests": [
-    "idle-tick is no more than 2x its baseline"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.06x its baseline (3.651 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
-  }
- ],
+ "failures": [],
  "parse": {
   "checked": 59,
   "errors": []
  },
  "match": {
   "ok": true,
-  "seed": 113,
+  "seed": 116,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
@@ -39,7 +29,7 @@
     3530
    ]
   },
-  "ms": 637
+  "ms": 589
  },
  "changed": {
   "first": false,
@@ -57,11 +47,9 @@
   "live": 19
  },
  "previous": {
-  "build": 111,
-  "state": "red",
-  "at": "2026-10-23T05:05:46.117Z",
-  "failing": [
-   "tests/perf.test.mjs"
-  ]
+  "build": 114,
+  "state": "green",
+  "at": "2026-10-23T05:20:03.313Z",
+  "failing": []
  }
 }
