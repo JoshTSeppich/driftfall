@@ -386,3 +386,62 @@ Snakenators or snake-specific upgrade names, read the Toastinator equivalent bel
 
 Upgrade names follow the theme (e.g. Sidewind becomes **Spring Coils**, Long Strike **Hot Coils**, Swimmers
 **Rubber Feet**, Shed Skin **Unplug & Move**, Venom **Burnt Toast**, Constrict **Cord Wrap**). Numbers unchanged.
+
+## 17. The Toast Economy (Joshua, 20:10)
+
+> "They're just gathering big stacks of toast for my toast... for soldiers who will only work for food, and their
+> tastes become pickier."
+
+**Toast is the money and the food.** Same systems as sections 8 and 9, given one clear, funny meaning:
+- Crumbs gather **Bread** from loaf fields (the old Shard fields) and the Power Strip **toasts** it into **Toast**.
+  Toast piles up as **big visible stacks** next to your base: your bank is a tower of toast you can see from across
+  the map (and the enemy can see yours).
+- **Soldiers only work for food.** Every combat unit eats toast each minute (this IS upkeep). Fed soldiers fight.
+  **Hungry soldiers go on strike**: they stop attacking and sit down with a little picket sign until fed. That
+  replaces abstract "debt" and "weary" with something you can see at a glance.
+- **Tastes get pickier.** As a unit ranks up, it demands better toast:
+  | Rank | Wants | Topping comes from |
+  |---|---|---|
+  | 0 | Plain toast | — |
+  | 1 | Buttered | **Butter** (Vents, the old Flux) |
+  | 2 | Jam | **Jam** (berry bushes that grow after Floods, the old Glowmoss) |
+  | 3 | Gourmet: honey, salt, sugar, nut butter | **Honey** (Centre), **Salt** (Quake cracks), **Sugar** (left by Squalls), **Nut butter** (Mesa groves) |
+  - Fed what it wants: **happy** (+10% attack speed, a little hop of joy).
+  - Fed plain toast when it wants jam: **grumpy** (−15% attack speed, a scowl).
+  - Not fed at all: **strike**.
+  - Each unit shows a tiny thought bubble with the toast it wants.
+- **The Trading House is the toppings market.** Prices follow scarcity (section 12). Corner the jam by holding
+  the flooded lowlands, and every veteran army on the map gets grumpy unless they pay your price.
+- **Alloy** stays the refined resource for top-tier units and level-3 upgrades: the Waffle Iron presses
+  Toast and Butter into **Waffles**.
+- Intuitive at every level: toast stacks are the bank, the flow panel reads "Toast / min in, Toast / min eaten",
+  and the topping each veteran wants is shown on its portrait.
+
+## 18. Toast is MADE, from four resources (Joshua, 20:16: "we need multiple types of resources, say flour, water, butter and energy, for toast to be made through the toasters")
+This refines section 17: you don't gather toast or bread; you gather four ingredients and your toasters **make** it.
+
+| Resource | Where it comes from | Gathered by |
+|---|---|---|
+| **Flour** | Wheat fields (the old crystal fields): Crumbs harvest, a **Mill** grinds | Crumbs → Mill, later Drills/Tracks |
+| **Water** | The **river** and wells: a **Pump** on a water tile | Pumps pipe it home (control the river = control water) |
+| **Butter** | Dairy meadows in certain Reaches: a **Churn** | Crumbs or Tracks |
+| **Energy** | **Generators** in Reaches; a **dam** on the river makes lots (movable rocks!) | Wired along cords to the Power Strip |
+
+- **Recipe:** a **Toaster** (the production building; your Power Strip is the first) turns
+  **Flour + Water + Energy → Toast**. Buttered toast = Toast + Butter (for rank-1 soldiers and up).
+  Jam/honey/salt/sugar/nut butter stay the rarer toppings from the land (section 17).
+- **Everything reads at a glance:** four ingredient counters plus Toast on the top bar; each Toaster shows its
+  missing ingredient as a blinking icon; cords and pipes are visible on the map, so you can see (and cut) the enemy's
+  water and power lines.
+- **Strategy:** each ingredient comes from different land, so territory decides your economy. Take the river and
+  their toasters dry up; dam it and you also make energy. The Trading House prices all four by scarcity.
+
+## 19. A LOT bigger (Joshua, 20:18: "the map also needs to be a lot bigger")
+- **Default map is now Huge, 256 × 256** (about 40× the area of the 40 × 40 we play today), for both play and watch
+  mode. Added: **Giant, 384 × 384**, for long games. Standard 128 and Large 192 stay as options.
+- At this size the river, Pumps, cords and Tracks matter even more; armies need roads: a fast middle lane plus
+  cleared paths (movable rocks) so the first contact still happens around minute 5–6.
+- Camera: zoom out far enough to see a whole region (about 64 × 64 tiles), the minimap shows Reaches, rivers and
+  stacks of toast; jump-to-alert and control-group centring are essential.
+- Performance budget unchanged: 60 fps with 200 units (view culling, coarse Reach graph for paths, fog only near units).
+- **Wiring the bigger map into the live page is now the integrator's FIRST item**: Joshua is still seeing 40 × 40.

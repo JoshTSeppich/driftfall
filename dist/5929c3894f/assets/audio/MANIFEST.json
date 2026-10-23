@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "root": "assets/audio",
+  "format": "ogg (Vorbis)",
+  "license": "CC0 1.0, see LICENSES.md",
+  "note": "Picked by file name from the packs. Nobody has listened to these yet, so audition each one and swap any that do not fit.",
+  "events": {
+    "unit_select": { "file": "kenney-ui/select_001.ogg", "kind": "blip", "loop": false },
+    "unit_move_ack": { "file": "kenney-ui/click_002.ogg", "kind": "blip", "loop": false },
+    "melee_hit": { "file": "kenney-impact/impactPunch_medium_000.ogg", "kind": "impact", "loop": false },
+    "ranged_shot": { "file": "kenney-sci-fi/laserSmall_000.ogg", "kind": "shot", "loop": false },
+    "heavy_impact": { "file": "kenney-impact/impactMetal_heavy_000.ogg", "kind": "impact", "loop": false },
+    "explosion_death": { "file": "kenney-sci-fi/explosionCrunch_000.ogg", "kind": "explosion", "loop": false },
+    "building_placed": { "file": "kenney-sci-fi/forceField_000.ogg", "kind": "build", "loop": false },
+    "building_finished": { "file": "kenney-ui/confirmation_002.ogg", "kind": "build", "loop": false },
+    "resource_collected": { "file": "kenney-impact/impactMining_000.ogg", "kind": "resource", "loop": false },
+    "alert_under_attack": { "file": "kenney-ui/error_006.ogg", "kind": "alert", "loop": false },
+    "victory": { "file": "kenney-jingles/jingles_NES13.ogg", "kind": "stinger", "loop": false },
+    "defeat": { "file": "kenney-jingles/jingles_SAX13.ogg", "kind": "stinger", "loop": false },
+    "drift_warning": { "file": "kenney-ui/error_006.ogg", "kind": "alert", "loop": false },
+    "price_up": { "file": "kenney-ui/select_001.ogg", "kind": "blip", "loop": false },
+    "price_down": { "file": "kenney-ui/click_002.ogg", "kind": "blip", "loop": false },
+    "ambient_loop": { "file": "oga-ambient/MyVeryOwnDeadShip.ogg", "kind": "ambient", "loop": true }
+  }
+}

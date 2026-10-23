@@ -19,12 +19,18 @@ function addInk(root) {
   const meshes = []; root.traverse(o => { if (o.isMesh && !o.material.transparent) meshes.push(o); });
   for (const m of meshes) { const ink = new T.Mesh(m.geometry, inkMaterial()); ink.userData.ink = true; m.add(ink); }
 }
+// A single shared profile keeps even the smallest debris true to the silhouette rule.
+function pentagon() {
+  const shape=new T.Shape();
+  for(let i=0;i<5;i++){const a=Math.PI/2+i*Math.PI*2/5;const x=Math.cos(a),y=Math.sin(a);if(i===0)shape.moveTo(x,y);else shape.lineTo(x,y);}
+  shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
+}
 export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
   const g = new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
-  const oct = () => new T.OctahedronGeometry(1, 0), box = () => new T.BoxGeometry(1,1,1);
-  if (['crumb','popper','four-slice'].includes(kind)) {
+  const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
+  if (['crumb','popper','four-slice','zapper','flak-popper'].includes(kind)) {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
     part(box(),'team',[0,h/2+.18,0],[w,h,.8],'body');
     part(box(),'steel',[0,h+.2,0],[w+.04,.12,.84],'chrome');
@@ -41,6 +47,55 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
     part(box(),'dark',[0,h*.65,.415],[w*.68,.15,.035],'visor');
     const dent=part(oct(),'dark',[-w/2,h*.8,.4],[.1,.09,.035],'dent');dent.rotation.z=.5;
     part(box(),'steel',[0,.3,-.49],[.1,.1,.25],'cord');
+    if(kind==='flak-popper') {
+      part(box(),'steel',[0,h+.49,-.3],[.7,.28,.12],'sight');
+      for(let i=0;i<2;i++) {
+        const flak=part(box(),'tooth',[(i-.5)*w/2,h+.4,0],[.18,.32,.3],`flak${i}`);
+        flak.visible=false;
+      }
+    }
+    if(kind==='zapper') {
+      // Four angular runs per exposed heating element: cheap, readable coil silhouettes.
+      for(let i=0;i<2;i++) {
+        const x=(i-.5)*w/2;
+        g.remove(g.getObjectByName(`toast${i}`));
+        const coil=part(new T.CylinderGeometry(.5,.5,1,5).rotateX(Math.PI/2),'steel',[x,h+.4,0],[.07,.07,.48],`coil${i}`);
+        coil.material=material(0xff8833,look,false,true);
+        for(let j=0;j<3;j++) {
+          const run=new T.Mesh(new T.CylinderGeometry(.5,.5,1,5,1,true).rotateZ(Math.PI/2),coil.material);run.position.set((j%2?.06:-.06)/.07,0,(j-1)*.13/.48);run.scale.set(2.7,1,.07/.48);coil.add(run);
+        }
+        const bolt=part(oct(),'steel',[x,h+.42,0],[.09,.22,.09],`bolt${i}`);
+        bolt.material=material(0xffbb55,look);bolt.material.emissive.setHex(0xff7722);bolt.visible=false;
+      }
+    }
+  } else if (kind === 'generator') {
+    // Five chunky rigid parts: the wheel spins around its own front-facing axle.
+    part(box(),'dark',[0,.12,0],[1.8,.24,1.35],'base');
+    part(box(),'team',[0,.65,-.2],[1.5,1,.85],'body');
+    part(new T.CylinderGeometry(.67,.67,.32,5).rotateX(Math.PI/2),'steel',[0,.87,.46],[1,1,1],'wheel');
+    part(new T.CylinderGeometry(.18,.18,.38,5).rotateX(Math.PI/2),'team',[0,.87,.7],[1,1,1],'hub');
+    part(box(),'team',[.95,.5,-.2],[.45,.3,.35],'terminal');
+  } else if (kind === 'churn') {
+    // Five rigid pieces: a candy-plastic dairy machine with an oversized dasher.
+    part(new T.CylinderGeometry(.55,.72,1.15,5),'team',[0,.64,0],[1,1,1],'body');
+    part(new T.CylinderGeometry(.61,.61,.14,5),'steel',[0,1.27,0],[1,1,1],'lid');
+    part(new T.CylinderGeometry(.09,.09,.95,5),'steel',[0,1.57,0],[1,1,1],'plunger');
+    part(box(),'team',[0,2.08,0],[.95,.18,.24],'handle');
+    part(box(),'tooth',[.85,.2,.15],[.45,.3,.42],'butter');
+  } else if (kind === 'pump') {
+    // Five independently pivoted rigid pieces: a very earnest kitchen waterworks.
+    part(box(),'team',[0,.45,0],[1.2,.9,.85],'body');
+    part(new T.CylinderGeometry(.3,.3,.5,5),'steel',[0,.02,0],[1,1,1],'intake');
+    part(new T.CylinderGeometry(.28,.28,.65,5),'steel',[0,1.12,0],[1,1,1],'piston');
+    part(new T.CylinderGeometry(.22,.22,1.25,5,1,true).rotateZ(Math.PI/2),'team',[.95,.55,0],[1,1,1],'pipe');
+    part(new T.CylinderGeometry(.16,.16,.32,5).rotateZ(Math.PI/2),'glass',[1.65,.55,0],[1,1,1],'outflow');
+  } else if (kind === 'mill') {
+    // Five rigid meshes; mesh origins are their independent animation pivots.
+    part(box(),'team',[0,.3,0],[1.5,.6,1.35],'body');
+    part(new T.CylinderGeometry(.85,.85,.34,5),'steel',[0,.8,0],[1,1,1],'millstone');
+    part(new T.CylinderGeometry(.42,.19,.45,5,1,true),'team',[0,1.3,0],[1,1,1],'hopper');
+    part(new T.ConeGeometry(.24,.6,5),'sand',[0,1.6,0],[1,1,1],'wheat');
+    part(new T.ConeGeometry(.42,.4,5),'tooth',[0,.22,.92],[1,1,1],'flour');
   } else if (kind === 'power-strip') {
     part(box(),'team',[0,.3,0],[2.8,.6,1.15],'body');
     part(box(),'steel',[0,.63,0],[2.85,.1,1.2],'chrome');
@@ -51,9 +106,9 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
     part(box(),'team',[1.6,.35,0],[.35,.22,.35],'switch');
     part(box(),'dark',[-1.8,.15,0],[.8,.15,.15],'cord');
   } else if (kind === 'crystal') {
-    for(let i=0;i<5;i++){ const m=part(new T.ConeGeometry(.35,.95+i*.18,4),'team',[Math.sin(i*2.4)*.55,.6,Math.cos(i*2.4)*.5],[1,1,1],`crystal${i}`); m.rotation.z=Math.sin(i)*.3; }
+    for(let i=0;i<5;i++){ const m=part(new T.ConeGeometry(.35,.95+i*.18,5),'team',[Math.sin(i*2.4)*.55,.6,Math.cos(i*2.4)*.5],[1,1,1],`crystal${i}`); m.rotation.z=Math.sin(i)*.3; }
   } else if (kind === 'ground') {
-    part(new T.CylinderGeometry(6.5,6.1,.45,11),'sand',[0,-.3,0]);
+    part(new T.CylinderGeometry(6.5,6.1,.45,5),'sand',[0,-.3,0]);
     for(let i=0;i<14;i++) part(oct(),i%2?'steel':'sand',[Math.sin(i*2.4)*5.4,.05,Math.cos(i*2.4)*5.4],[.25+i%3*.13,.2+i%2*.22,.35]);
   } else throw new Error(`Unknown model ${kind}`);
   g.updateMatrixWorld(true); g.traverse(o=>{ if(o.isMesh){o.userData.home=o.position.clone();o.userData.scale=o.scale.clone();} });
@@ -63,22 +118,30 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
 export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}) {
   const scene=new T.Scene(), camera=new T.PerspectiveCamera(38,width/height,.1,150);
   // Geometry sky survives the bloom composer, unlike an HTML-only backdrop.
-  const sky=new T.Mesh(new T.SphereGeometry(60,12,8),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,vertexShader:'varying float height; void main(){height=position.y/60.;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying float height; void main(){vec3 dusk=vec3(.169,.106,.290);vec3 peach=vec3(1.,.604,.420);gl_FragColor=vec4(mix(peach,dusk,smoothstep(-.15,.65,height)),1.);}'}));sky.renderOrder=-100;scene.add(sky);
+  const sky=new T.Mesh(new T.SphereGeometry(60,5,2),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,vertexShader:'varying float height; void main(){height=position.y/60.;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying float height; void main(){vec3 dusk=vec3(.169,.106,.290);vec3 peach=vec3(1.,.604,.420);gl_FragColor=vec4(mix(peach,dusk,smoothstep(-.15,.65,height)),1.);}'}));sky.renderOrder=-100;scene.add(sky);
   camera.position.set(10,9,14); camera.lookAt(0,.5,0);
   scene.add(new T.HemisphereLight(0xc5eaff,0x6e3640,2.2));
   const key=new T.DirectionalLight(0xffdfb0,4);key.position.set(3,8,4);scene.add(key);
   let shards;
+  let shape='all';
+  const roster=['crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator'];
+  let dam=false;
   let team='cyan', objects=[], units=[], stress=[], active='idle', started=0, now=0, stressOn=false, fill=0;
   const dummy=new T.Object3D();
-  const actions=['spawn','idle','move','attack','hit','gather','deliver','death','rank-up','shimmer','construction'];
+  const actions=['spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','death','rank-up','shimmer','construction'];
   function rebuild(){
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
     const ground=buildModel('ground',look,team); objects.push(ground);
-    units=[buildModel('crumb',look,team),buildModel('popper',look,team),buildModel('four-slice',look,team)];
-    units[0].position.set(-1.8,0,1.1);units[1].position.set(0,0,1.3);objects.push(...units);
+    units=roster.filter(k=>shape==='all'||shape===k).map(k=>buildModel(k,look,team));
+    objects.push(...units);
+    const river=new T.Mesh(new T.BoxGeometry(2.3,.08,1.65),material(0x287baf,look));
+    river.name='river-tile';river.position.y=-.06;objects.push(river);
     const crystal=buildModel('crystal',look,team);crystal.position.set(-3,0,-1.7);objects.push(crystal);
     const strip=buildModel('power-strip',look,team);strip.position.set(2,0,-2);objects.push(strip);
     objects.forEach(o=>scene.add(o));
+    const rings=new T.Group();rings.name='selection-rings';
+    units.forEach((u,i)=>{const ring=new T.Mesh(new T.RingGeometry(.65,.7,5),material(teamColor(team),look));ring.rotation.x=-Math.PI/2;ring.position.set(units.length===1?0:(i-(units.length-1)/2)*1.8,.012,1.2);ring.material.side=T.DoubleSide;rings.add(ring);});
+    objects.push(rings);scene.add(rings);
     const source=buildModel('crumb',LOOKS[0],team);source.updateMatrixWorld(true);
     const geos=[];source.traverse(o=>{if(o.isMesh){let geo=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();geo.applyMatrix4(o.matrixWorld);const c=o.material.color, count=geo.attributes.position.count;const colors=new Float32Array(count*3);for(let i=0;i<count;i++) c.toArray(colors,i*3);geo.setAttribute('color',new T.BufferAttribute(colors,3));geos.push(geo);}});
     const geo=mergeGeometries(geos);geos.forEach(g=>g.dispose());disposeObject(source);
@@ -87,7 +150,7 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
     if(look===LOOKS[1]){const outline=new T.InstancedMesh(geo,inkMaterial(),200);outline.userData.ink=true;outline.frustumCulled=false;outline.visible=stressOn;scene.add(outline);objects.push(outline);stress.push(outline);
 
     }
-    const shardGeo=new T.BufferGeometry();shardGeo.setAttribute('position',new T.Float32BufferAttribute([-.25,0,0,.25,0,0,0,.55,0],3));shardGeo.computeVertexNormals();
+    const shardGeo=pentagon();shardGeo.scale(.28,.4,1);
     const shardMat=material(teamColor(team),look);shardMat.side=T.DoubleSide;shardMat.transparent=true;
     shards=new T.InstancedMesh(shardGeo,shardMat,16);shards.name='death-facets';shards.frustumCulled=false;shards.visible=false;objects.push(shards);scene.add(shards);
   }
@@ -103,21 +166,33 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
-      const heavy=index===2, homeX=[-2.3,0,2.1][index], state=u.userData.motion??={};
+      const generator=u.name==='generator', generating=generator&&['generate','attack','gather'].includes(active), churn=u.name==='churn', churning=churn&&['churn','attack','gather'].includes(active), pump=u.name==='pump', pumping=pump&&['pump','attack','gather'].includes(active), mill=u.name==='mill', grinding=mill&&['grind','attack','gather'].includes(active), heavy=u.name==='four-slice'||mill||pump||churn||generator, zapper=u.name==='zapper', flakker=u.name==='flak-popper', homeX=units.length===1?0:(index-(units.length-1)/2)*1.8, state=u.userData.motion??={};
+      const shot=age%1.1, firing=zapper&&active==='attack', heat=firing?clamp(shot/.2)*(shot<.2?1:Math.max(0,1-(shot-.2)/.09)):0;
       const moving=active==='move'||(active==='gather'&&age>.8&&age<2.6);
       const speed=heavy?1.5:2.5, cycle=age*speed, phase=cycle%1;
       const flight=clamp(phase/.8);
       const hop=moving?(heavy?.2:.34)*4*flight*(1-flight):0;
-      const snap=active==='attack'&&age>.09&&age<.22;
-      let height,toast,lever,lean;
+      const snap=zapper?firing&&shot>=.2&&shot<.29:active==='attack'&&age>.09&&age<.22;
+      let height,toast,lever,lean,aim;
+      const flakAttack=flakker&&active==='attack';
       const steps=Math.max(1,Math.ceil(elapsed/.008)),dt=elapsed/steps;
       for(let j=0;j<steps;j++) {
-        height=spring(state,'height',hop,dt,heavy?220:300,heavy?21:18);
+        height=spring(state,'height',hop+((zapper||flakker||mill||pump||churn||generator)&&!moving?.015*(1+Math.sin(age*4)):0),dt,heavy?220:300,heavy?21:18);
         toast=spring(state,'toast',snap?.95:fill*.4,dt,450,19);
-        lever=spring(state,'lever',snap?-.25:fill?-.18:0,dt,230,12);
-        lean=spring(state,'lean',moving?Math.sin(cycle*1.5)*.18:0,dt);
+        lever=spring(state,'lever',snap?-.25:fill?-.18:(zapper||flakker)?Math.sin(age*4)*.025:0,dt,230,12);
+        spring(state,'stoneSpeed',mill?(grinding?7:.45):0,dt,90,14);
+        state.stoneAngle=(state.stoneAngle||0)+(state.stoneSpeed||0)*dt;
+        spring(state,'wheelSpeed',generator?(generating?10:1.2):0,dt,100,15);
+        state.wheelAngle=(state.wheelAngle||0)+(state.wheelSpeed||0)*dt;
+        spring(state,'dynamoKick',generating?Math.sin(age*18)*.06:0,dt,260,13);
+        spring(state,'piston',pump?Math.sin(age*(pumping?15:4))*(pumping?.24:.04):0,dt,300,14);
+        spring(state,'dasher',churn?Math.sin(age*(churning?16:4))*(churning?.32:.035):0,dt,330,15);
+        spring(state,'pipeKick',pumping?-Math.max(0,Math.sin(age*15))*.09:0,dt,230,12);
+        spring(state,'hopper',grinding?Math.sin(age*18)*.07:0,dt,260,12);
+        aim=spring(state,'aim',flakAttack&&shot<.5?-.48:0,dt,180,16);
+        lean=spring(state,'lean',snap&&zapper?-.3:moving?Math.sin(cycle*1.5)*.18:0,dt);
       }
-      u.position.set(homeX,Math.max(0,height||0),1.2);u.rotation.set(0,lean||0,0);
+      u.position.set(homeX,Math.max(0,height||0),1.2);u.rotation.set(aim||0,lean||0,0);
       u.scale.set(1,Math.max(.76,Math.min(1.2,1+(state.heightVelocity||0)*.09)),1);
       if(moving){const travel=(Math.floor(cycle)+ease(flight))*.45;u.position.x+=Math.sin(travel)*.8;u.position.z+=Math.cos(travel)*.5;u.rotation.z=-(lean||0);}
       if(active==='gather'&&index===0){u.position.x=age<.8?-3:-3+4.5*ease((age-.8)/1.8);u.position.z=-1.6;}
@@ -133,14 +208,60 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
           if(active==='deliver'||(active==='gather'&&age>=2.6)){const p=active==='deliver'?age:age-2.6;m.position.y+=Math.max(0,1.7*p-2*p*p);m.scale.multiplyScalar(1-clamp(p/.65));}
           m.rotation.x=snap?-.7:0;
         }
+        if(churn) {
+          if(m.name==='plunger'||m.name==='handle')m.position.y+=state.dasher||0;
+          if(m.name==='lid')m.rotation.z=(state.dasherVelocity||0)*.012;
+          if(m.name==='butter')m.visible=churning;
+        }
+        if(pump) {
+          if(m.name==='piston')m.position.y+=state.piston||0;
+          if(m.name==='pipe')m.position.x+=state.pipeKick||0;
+          if(m.name==='outflow'){m.visible=pumping;m.position.x+=(age*3%1)*.65;m.scale.multiplyScalar(pumping?1-(age*3%1)*.7:1);}
+        }
+        if(mill) {
+          const progress=grinding?(age%1.2)/1.2:0;
+          if(m.name==='millstone')m.rotation.y=state.stoneAngle||0;
+          if(m.name==='hopper')m.position.y+=state.hopper||0;
+          if(m.name==='wheat'){m.scale.multiplyScalar(grinding?1-progress:1);m.position.y-=progress*.3;}
+          if(m.name==='flour'){m.visible=grinding;m.scale.multiplyScalar(grinding?.2+progress*.8:1);}
+        }
         if(m.name==='lever')m.position.y+=lever||0;
         if(m.name==='cord')m.rotation.x=(lean||0)*2;
         const flash=active==='hit'&&age<.08;
         m.material.emissive?.setHex(flash?0xffffff:0xff7722);m.material.emissiveIntensity=flash?2:fill*.7;
+        if(generator) {
+          if(m.name==='wheel'||m.name==='hub')m.rotation.z=state.wheelAngle||0;
+          if(m.name==='body')m.rotation.z=state.dynamoKick||0;
+          if(m.name==='terminal')m.position.y+=(state.dynamoKick||0)*.8;
+          if(m.name==='wheel'||m.name==='hub'||m.name==='terminal'){
+            m.material.emissive.setHex(teamColor(team));
+            m.material.emissiveIntensity=dam?1.2+.35*Math.sin(age*6):generating?.25:0;
+          }
+        }
+        if(m.name.startsWith('coil')||m.parent.name.startsWith('coil')){if(m.name.startsWith('coil'))m.position.y+=(toast||0)*.18;m.material.emissiveIntensity=heat*3;}
+        if(m.name.startsWith('bolt')){m.visible=firing&&shot>=.2&&shot<.48;m.position.y+=(shot-.2)*7;m.position.z+=(shot-.2)*10;m.material.emissiveIntensity=4;}
         if(active==='death'){const p=clamp((age-.09)/.12);m.scale.multiplyScalar(1-p);}
       });
+      // Capture the muzzle in world space once per volley; body recoil cannot bend the flight.
+      u.updateMatrixWorld(true);
+      const volley=Math.floor(age/1.1);
+      for(let i=0;flakker&&i<2;i++) {
+        const flak=u.getObjectByName(`flak${i}`);
+        flak.visible=flakAttack&&shot>=.22&&shot<.6;
+        if(flak.visible) {
+          if(state.volley!==volley||!state.launches) {
+            state.launches=[0,1].map(n=>u.localToWorld(u.getObjectByName(`flak${n}`).userData.home.clone()));
+            state.volley=volley;
+          }
+          const world=state.launches[i].clone();world.y+=(shot-.22)*8;
+          flak.position.copy(u.worldToLocal(world));
+        }
+      }
       u.visible=!(active==='death'&&age>=.3)&&!stressOn;
     });
+    const river=scene.getObjectByName('river-tile'), pumpUnit=units.find(u=>u.name==='pump')||units.find(u=>u.name==='generator'&&dam);
+    river.visible=!!pumpUnit&&!stressOn;
+    if(pumpUnit){river.position.x=pumpUnit.position.x;river.position.z=pumpUnit.position.z;}
     const crystal=objects.find(o=>o.name==='crystal');crystal.traverse(m=>{if(m.isMesh&&!m.userData.ink){m.material.emissive.setHex(teamColor(team));m.material.emissiveIntensity=.2+.5*Math.max(0,Math.sin(t*2.6+m.id*.7));}});
     const strip=objects.find(o=>o.name==='power-strip');strip.traverse(m=>{if(m.isMesh&&!m.userData.ink){m.position.copy(m.userData.home);m.scale.copy(m.userData.scale);if(active==='construction'){const p=ease((age-(m.id%4)*.1)/.14);m.position.y+=(1-p)*3;m.scale.multiplyScalar(p);}}});
     for(let i=0;i<200;i++){
@@ -155,11 +276,16 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
     if(shards.visible){const p=clamp((age-.09)/.36), spread=age<.09?age*5:p;shards.material.opacity=1-clamp(age/.45);shards.material.color.setHex(age<.09?0xffdc66:teamColor(team));
       for(let i=0;i<16;i++){const a=i*2.399;dummy.position.set([-2.3,0,2.1][i%3]+Math.sin(a)*spread*1.8,.55+Math.sin(spread*Math.PI)*1.2-spread*.5,1.2+Math.cos(a)*spread*1.8);dummy.rotation.set(p*6+a,p*4,Math.sin(a));dummy.scale.setScalar(age<.09?.18:1-p*.65);dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);}shards.instanceMatrix.needsUpdate=true;
     }
+    const rings=scene.getObjectByName('selection-rings');
+    rings.visible=!stressOn;
+    rings.children.forEach((r,i)=>{r.visible=units[i].visible;r.position.x=units[i].position.x;r.position.z=units[i].position.z;});
     renderer?.render(scene,camera);
   }
   rebuild();
   return { scene,camera,actions,get units(){return units;},get fill(){return fill;},get stressCount(){return stressOn?200:0;},trigger,update,
+    setShape(value){if(value!=='all'&&!roster.includes(value))throw new Error('Unknown shape');shape=value;rebuild();},
     setLook(value){if(!LOOKS.includes(value))throw new Error('Unknown look');look=value;rebuild();},setTeam(value){team=value;rebuild();},
+    setDam(value){dam=!!value;},
     setStress(value){stressOn=value;stress.forEach(b=>b.visible=value);},
     resize(w,h){camera.aspect=w/h;camera.updateProjectionMatrix();scene.traverse(o=>{if(o.material?.uniforms?.viewport)o.material.uniforms.viewport.value.set(w,h);});},
     dispose(){disposeObject(sky);objects.forEach(disposeObject);renderer?.dispose?.();}

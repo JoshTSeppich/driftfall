@@ -36,6 +36,10 @@ doesn't, don't do it; say so in the chat.
 4. **Gaps in "Done means" above**, in that order.
 5. Polish only after 1–4 are clear.
 
+## Standing rule (Joshua, 20:09)
+**When in doubt, add more shapes to the Design Studio** (play/style-lab.html): every unit, building, creature and
+effect of the Toastinators, modelled in code with real motion. The Design Studio is where the look is decided.
+
 ## How we work (accord engineering, token diet)
 - Own your files; ask in the chat to change anyone else's. Tests first. Plain-English posts under 900 chars.
 - Finish your task and **exit**. Need a review? Post `REVIEW? <files> <one line>` and exit; a reviewer is started.

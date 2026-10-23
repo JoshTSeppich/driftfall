@@ -3,6 +3,7 @@
 // Malformed input is never a crash: it is rejected as bad-command. Side order is decided by sim.mjs, not here.
 import { STATS, STRUCTURE_KINDS, kindStats } from "./stats.mjs";
 import { findEntity, isFree, emit, allocId } from "./state.mjs";
+import { startPush } from "./rocks.mjs";
 
 export function applyCommands(state, player, commands) {
   if (!Array.isArray(commands)) return;
@@ -30,6 +31,8 @@ function applyOne(state, player, command) {
         return doTrain(state, player, command);
       case "stop":
         return doStop(state, player, command);
+      case "push":
+        return startPush(state, player, command);
       default:
         return "bad-command";
     }

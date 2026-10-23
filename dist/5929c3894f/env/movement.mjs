@@ -1,0 +1,198 @@
+// Movement phase (ENV-SPEC §6, §8).
+//
+// Each tick, every unit with an order that has somewhere to go takes one step along a fresh breadth-first path.
+// Units are visited one at a time in id order: lowest id first on even ticks, highest id first on odd ticks.
+// Planning ignores units; the actual step is only taken if the next tile is free right now (rocks, crystals,
+// structures and other units all block, and a unit that already moved this tick counts at its new tile).
+// A unit whose next tile is taken simply waits this tick. If it is still blocked by a unit on its next moving
+// tick, it looks for a detour that treats standing units as obstacles and takes that instead; when no detour
+// exists (two units head-on in a one-tile gap) it keeps waiting, as §6 says. Once on a detour the unit keeps
+// planning around other units until it arrives, so it never walks straight back into the unit that blocked it
+// (an idle unit parked on the shortest path would otherwise trap it in a two-tile shuffle forever). Brutes
+// (speed 2) only move on even ticks.
+//
+// A move order ends when the unit stands on its target tile. Any order whose destination cannot be reached
+// at all (walled off by rocks, crystals or structures) is cleared and a `blocked` event is logged.
+
+import { findPath } from './path.mjs';
+import { STATS } from './stats.mjs';
+import { findEntity, isPassable, isFree, distance, emit } from './state.mjs';
+
+/** Look up the stats row for a unit kind. Tolerates the common table layouts. */
+function unitStats(kind) {
+  if (!STATS || typeof STATS !== 'object') return null;
+  return STATS.units?.[kind] ?? STATS.unit?.[kind] ?? STATS[kind] ?? null;
+}
+
+function unitSpeed(unit) {
+  const speed = unitStats(unit.kind)?.speed;
+  return Number.isInteger(speed) && speed > 0 ? speed : 1;
+}
+
+function unitRange(unit) {
+  const range = unitStats(unit.kind)?.range;
+  return Number.isInteger(range) && range >= 0 ? range : 1;
+}
+
+/** The side's Core, or null if it has been destroyed. */
+function coreOf(state, player) {
+  let best = null;
+  for (const s of state.structures) {
+    if (s.owner === player && s.kind === 'core' && (best === null || s.id < best.id)) best = s;
+  }
+  return best;
+}
+
+/**
+ * Where a unit wants to be for its current order.
+ *
+ * Returns `{ x, y, within }` meaning "any tile within distance `within` of (x, y)" (`within` 0 means the tile
+ * itself), or `null` when the unit has nowhere to go (no order, a mining Worker, a target that no longer exists).
+ *
+ * - move:   the ordered tile, within 0.
+ * - attack: the target's tile, within the unit's range.
+ * - gather: next to the crystal tile while heading out or mining; next to the own Core while carrying back.
+ * - build:  next to the construction site.
+ */
+export function destinationOf(state, unit) {
+  const order = unit?.order;
+  if (!order || typeof order !== 'object') return null;
+
+  switch (order.type) {
+    case 'move':
+      if (!Number.isInteger(order.x) || !Number.isInteger(order.y)) return null;
+      return { x: order.x, y: order.y, within: 0 };
+
+    case 'attack': {
+      const target = findEntity(state, order.target);
+      if (!target) return null;
+      return { x: target.x, y: target.y, within: unitRange(unit) };
+    }
+
+    case 'gather': {
+      if (order.phase === 'toCore') {
+        const core = coreOf(state, unit.owner);
+        if (!core) return null;
+        return { x: core.x, y: core.y, within: 1 };
+      }
+      if (!Number.isInteger(order.x) || !Number.isInteger(order.y)) return null;
+      return { x: order.x, y: order.y, within: 1 };
+    }
+
+    case 'build': {
+      const site = findEntity(state, order.site);
+      if (!site) return null;
+      return { x: site.x, y: site.y, within: 1 };
+    }
+
+    default:
+      return null;
+  }
+}
+
+function arrived(unit, dest) {
+  return distance(unit, dest) <= dest.within;
+}
+
+function clearOrder(state, unit) {
+  unit.order = null;
+  emit(state, { e: 'order', id: unit.id, order: null });
+}
+
+// Units that were held up by another unit on their last moving tick, and units currently on a detour. Both are
+// kept outside the unit records so that observations, logs and record comparisons never see them; they only
+// decide whether this unit plans around other units this tick.
+const waiting = new WeakSet();
+const detouring = new WeakSet();
+
+function forget(unit) {
+  waiting.delete(unit);
+  detouring.delete(unit);
+}
+
+/** Units sorted for this tick: lowest id first on even ticks, highest id first on odd ticks (§8). */
+function unitsInTickOrder(state) {
+  const units = state.units.slice().sort((a, b) => a.id - b.id);
+  if (state.tick % 2 !== 0) units.reverse();
+  return units;
+}
+
+/**
+ * Run the movement phase on `state` in place. Emits `move`, `blocked` and `order` events.
+ */
+export function stepMovement(state) {
+  const grid = {
+    width: state.width,
+    height: state.height,
+    blocked: (x, y) => !isPassable(state, x, y),
+  };
+
+  for (const unit of unitsInTickOrder(state)) {
+    // The unit may have been removed by an earlier phase; never move a ghost.
+    if (!unit || unit.hp <= 0) continue;
+
+    const dest = destinationOf(state, unit);
+    if (!dest) {
+      forget(unit);
+      continue;
+    }
+
+    if (arrived(unit, dest)) {
+      forget(unit);
+      if (unit.order.type === 'move') clearOrder(state, unit);
+      continue;
+    }
+
+    // Brutes (speed 2) only step on even ticks; everyone else every tick.
+    if (state.tick % unitSpeed(unit) !== 0) continue;
+
+    const from = { x: unit.x, y: unit.y };
+    const goal = { x: dest.x, y: dest.y };
+    const path = findPath(grid, from, goal, { within: dest.within });
+    if (!path || path.length === 0) {
+      // Walled off: nowhere to go, ever. Drop the order and say so.
+      forget(unit);
+      emit(state, { e: 'blocked', id: unit.id });
+      clearOrder(state, unit);
+      continue;
+    }
+
+    let next = path[0];
+    if (detouring.has(unit)) {
+      // Already on a detour: keep planning around other units so the plain path cannot lead straight back into
+      // the unit that blocked it. If no detour exists any more, the plain path below is used as usual.
+      const detour = findPath(avoidingUnits(state, unit), from, goal, { within: dest.within });
+      if (detour && detour.length > 0) next = detour[0];
+    }
+    if (!isFree(state, next.x, next.y)) {
+      // Someone is standing there. First time: just wait. Still blocked next moving tick: try a detour that
+      // treats every other unit as an obstacle. No detour (head-on in a gap): keep waiting.
+      const detour = waiting.has(unit) ? findPath(avoidingUnits(state, unit), from, goal, { within: dest.within }) : null;
+      if (!detour || detour.length === 0) {
+        waiting.add(unit);
+        continue;
+      }
+      next = detour[0];
+      detouring.add(unit);
+    }
+
+    waiting.delete(unit);
+    unit.x = next.x;
+    unit.y = next.y;
+    emit(state, { e: 'move', id: unit.id, x: unit.x, y: unit.y });
+
+    if (arrived(unit, dest)) {
+      forget(unit);
+      if (unit.order.type === 'move') clearOrder(state, unit);
+    }
+  }
+}
+
+/** A planning grid where other units' tiles count as blocked too (used only for detours). */
+function avoidingUnits(state, self) {
+  return {
+    width: state.width,
+    height: state.height,
+    blocked: (x, y) => !isPassable(state, x, y) || state.units.some((u) => u !== self && u.x === x && u.y === y),
+  };
+}
