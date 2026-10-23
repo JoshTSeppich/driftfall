@@ -89,11 +89,30 @@ function wrapTrial(state, unit, view, x, y) {
   const anchor = view.points.find((p) => p.id === st.anchor);
   if (!anchor) return null;
   const cord = st.cord && st.cord.anchorId === anchor.id ? st.cord : { ...newCord(anchor), anchorId: anchor.id };
-  const blocked = (bx, by) => state.rockSet.has(`${bx},${by}`);
+  const walls = enemyWallTiles(state, unit.owner);
+  const blocked = (bx, by) => state.rockSet.has(`${bx},${by}`) || walls.has(`${bx},${by}`);
   const move = cordMove(cord, { x, y }, blocked, cordOf(unit.kind));
   if (move.ok) move.cord.anchorId = anchor.id;
   return move;
 }
+
+// Tiles an enemy's live fences wall off from this owner's cords (same walls fence.mjs stops ground units at).
+// Cached on state.power and rebuilt when the stations, the fence orders or the rocks change.
+function enemyWallTiles(state, owner) {
+  const P = state.power;
+  if (!P.fences) return EMPTY_TILES;
+  const sig = stationsOf(state).map((q) => `${q.id}:${q.x},${q.y}`).join(';') + '|' + [...P.fenceLinks].join(';') + '|' + state.rockSet.size;
+  if (!P.wallCache || P.wallCache.sig !== sig) {
+    const graph = buildLines(state);
+    const tiles = [new Set(), new Set()];
+    for (const l of liveGroundLines(graph, state)) {
+      for (const [x, y] of supercover(l.a, l.b)) tiles[l.owner].add(`${x},${y}`);
+    }
+    P.wallCache = { sig, tiles };
+  }
+  return P.wallCache.tiles[1 - owner];
+}
+const EMPTY_TILES = new Set();
 
 // The nearest point of this owner within `cord` tiles of (x, y), or null. Ties go to the earlier point in list order.
 function nearestPoint(points, owner, x, y, cord) {

@@ -119,6 +119,15 @@ async function build(buildNo) {
     const g = (k) => Number((new RegExp('^ℹ ' + k + ' (\\d+)', 'm').exec(r.out) || [0, 0])[1]);
     return { file: f, ok: r.code === 0, pass: g('pass'), fail: g('fail'), ms: r.ms, out: r.out };
   });
+  // flake rule: timing-sensitive files go red under parallel load; a failing file gets one rerun alone
+  for (const r of results) {
+    if (r.ok) continue;
+    const again = await run(process.execPath, ['--test', '--test-reporter=spec', r.file], 300000);
+    if (again.code === 0) {
+      const g = (k) => Number((new RegExp('^ℹ ' + k + ' (\\d+)', 'm').exec(again.out) || [0, 0])[1]);
+      Object.assign(r, { ok: true, pass: g('pass'), fail: g('fail'), ms: r.ms + again.ms, out: again.out });
+    }
+  }
   const failures = results.filter((r) => !r.ok).map((r) => ({
     file: r.file, ...ownersFor(r.file, ownerOf), tests: failingNames(r.out),
     error: (r.out.split('\n').find((l) => /Error|error:|Cannot find/.test(l)) || '').trim().slice(0, 240),

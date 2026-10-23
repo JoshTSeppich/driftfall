@@ -1,15 +1,15 @@
 {
- "build": 236,
- "at": "2026-10-23T17:27:34.187Z",
- "seconds": 328,
+ "build": 239,
+ "at": "2026-10-23T17:50:20.630Z",
+ "seconds": 261.7,
  "state": "red",
- "nextBuildAt": "2026-10-23T17:30:34.187Z",
- "headline": "Red: 2 test file(s) failing, match did not record.",
+ "nextBuildAt": "2026-10-23T17:53:20.630Z",
+ "headline": "Red: 1 test file(s) failing, match did not record.",
  "tests": {
-  "files": 86,
-  "pass": 1296,
-  "fail": 3,
-  "seconds": 572.1
+  "files": 87,
+  "pass": 1306,
+  "fail": 1,
+  "seconds": 380.4
  },
  "failures": [
   {
@@ -17,23 +17,9 @@
    "owners": [],
    "imports": [],
    "tests": [
-    "idle-tick is no more than 2x its baseline",
-    "findpath-open-32 is no more than 2x its baseline"
+    "idle-tick is no more than 2x its baseline"
    ],
-   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 4.48x its baseline (9.173 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
-  },
-  {
-   "file": "tests/sim-determinism.test.mjs",
-   "owners": [
-    "fable"
-   ],
-   "imports": [
-    "env/sim.mjs"
-   ],
-   "tests": [
-    "same seed, same players: logs are byte-identical without timing"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.02x its baseline (3.490 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
   }
  ],
  "parse": {
@@ -42,7 +28,7 @@
  },
  "match": {
   "ok": false,
-  "seed": 237,
+  "seed": 240,
   "error": "[timed out]",
   "keptPrevious": true
  },
@@ -57,17 +43,16 @@
   "env": 33,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 88,
+  "tests": 89,
   "players": 19,
   "live": 19
  },
  "previous": {
-  "build": 235,
+  "build": 238,
   "state": "red",
-  "at": "2026-10-23T17:19:06.179Z",
+  "at": "2026-10-23T17:42:58.916Z",
   "failing": [
-   "tests/perf.test.mjs",
-   "tests/sim-determinism.test.mjs"
+   "tests/perf.test.mjs"
   ]
  }
 }
