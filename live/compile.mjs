@@ -132,7 +132,7 @@ async function build(buildNo) {
   const seed = (buildNo % 9000) + 1;
   const tmp = path.join(ROOT, 'matches', '.latest.tmp.json');
   let match;
-  const mr = await run(process.execPath, ['env/run-match.mjs', '--seed', String(seed), '--p0', 'players/sample-player.mjs', '--p1', 'players/sample-player.mjs', '--out', rel(tmp), '--quiet'], 90000);
+  const mr = await run(process.execPath, ['env/run-match.mjs', '--seed', String(seed), '--p0', 'players/sample-player.mjs', '--p1', 'players/sample-player.mjs', '--out', rel(tmp), '--quiet', '--classic'], 90000);
   if (mr.code === 0 && fs.existsSync(tmp)) {
     fs.renameSync(tmp, path.join(ROOT, 'matches', 'latest.json'));
     match = { ok: true, seed, file: 'matches/latest.json', result: parseLine(mr.out.trim().split('\n').pop()), ms: mr.ms };

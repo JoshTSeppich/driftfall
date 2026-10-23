@@ -26,7 +26,7 @@ function runSample(seed) {
   const out = path.join(dir, `match-${seed}.json`);
   const run = spawnSync(
     process.execPath,
-    [RUN_MATCH, "--seed", String(seed), "--p0", SAMPLE_PLAYER, "--p1", SAMPLE_PLAYER, "--out", out, "--quiet"],
+    [RUN_MATCH, "--seed", String(seed), "--p0", SAMPLE_PLAYER, "--p1", SAMPLE_PLAYER, "--out", out, "--quiet", "--classic"],
     { encoding: "utf8", timeout: 60000 },
   );
   assert.equal(run.status, 0, `run-match failed for seed ${seed}: ${run.stdout}${run.stderr}`);

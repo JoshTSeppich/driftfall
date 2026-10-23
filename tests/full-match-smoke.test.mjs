@@ -53,6 +53,7 @@ before(() => {
     "--p0", SAMPLE_PLAYER,
     "--p1", SAMPLE_PLAYER,
     "--out", outFile,
+    "--classic", // CLI and log plumbing test; the default territory match cannot finish inside the 5 s limit
   ];
   const t0 = process.hrtime.bigint();
   const r = spawnSync(process.execPath, args, {

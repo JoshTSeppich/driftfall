@@ -1,45 +1,17 @@
 {
- "build": 230,
- "at": "2026-10-23T16:31:25.977Z",
- "seconds": 424.2,
+ "build": 232,
+ "at": "2026-10-23T16:51:21.290Z",
+ "seconds": 411.3,
  "state": "red",
- "nextBuildAt": "2026-10-23T16:34:25.977Z",
- "headline": "Red: 3 test file(s) failing, match did not record.",
+ "nextBuildAt": "2026-10-23T16:54:21.290Z",
+ "headline": "Red: 2 test file(s) failing, match did not record.",
  "tests": {
   "files": 86,
-  "pass": 1260,
-  "fail": 26,
-  "seconds": 862.7
+  "pass": 1295,
+  "fail": 2,
+  "seconds": 755.5
  },
  "failures": [
-  {
-   "file": "tests/full-match-smoke.test.mjs",
-   "owners": [],
-   "imports": [],
-   "tests": [
-    "run-match.mjs exits 0 for a sample-player versus sample-player match",
-    "run-match.mjs prints the result",
-    "the written log file validates with env/log.mjs",
-    "the result has a winner or a draw with a known reason",
-    "the sample player never forfeits or throws",
-    "no two units ever share a tile in the replayed states"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: could not start the child process"
-  },
-  {
-   "file": "tests/live-viewer.test.mjs",
-   "owners": [],
-   "imports": [],
-   "tests": [
-    "problemWith rejects things that are not a playable match log",
-    "createMatch throws a plain message for a bad log and never for a good one",
-    "a sample match gives both players' names and colors and its real length and result",
-    "sideOf gives a fallback name when the log has none",
-    "the page address is read into sources and settings",
-    "a match list can be an array or an object, with paths relative to the list file"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: run-match failed for seed 7:"
-  },
   {
    "file": "tests/opening-clock.test.mjs",
    "owners": [
@@ -52,6 +24,16 @@
    ],
    "tests": [],
    "error": ""
+  },
+  {
+   "file": "tests/perf.test.mjs",
+   "owners": [],
+   "imports": [],
+   "tests": [
+    "idle-tick is no more than 2x its baseline",
+    "army-40v40-march is no more than 2x its baseline"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.77x its baseline (4.669 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
   }
  ],
  "parse": {
@@ -60,16 +42,29 @@
  },
  "match": {
   "ok": false,
-  "seed": 231,
+  "seed": 233,
   "error": "[timed out]",
   "keptPrevious": true
  },
  "changed": {
   "first": false,
   "added": [],
-  "changed": [],
+  "changed": [
+   {
+    "file": "tests/full-match-smoke.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/live-viewer.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "live/compile.mjs",
+    "owner": null
+   }
+  ],
   "removed": [],
-  "total": 0
+  "total": 3
  },
  "files": {
   "env": 33,
@@ -80,13 +75,14 @@
   "live": 19
  },
  "previous": {
-  "build": 229,
+  "build": 231,
   "state": "red",
-  "at": "2026-10-23T16:21:21.748Z",
+  "at": "2026-10-23T16:41:29.964Z",
   "failing": [
    "tests/full-match-smoke.test.mjs",
    "tests/live-viewer.test.mjs",
-   "tests/opening-clock.test.mjs"
+   "tests/opening-clock.test.mjs",
+   "tests/perf.test.mjs"
   ]
  }
 }
