@@ -481,3 +481,16 @@ The defining rule of **Toaster Wars**.
 - **Readability without spaghetti (GPT's note):** cords are a hard rule but drawn faintly; they light up on move
   orders, when cut, or when you inspect power. The live network is a soft pentagon glow on the ground; a cut cord
   sparks and blinks red.
+
+## 21. Power Stations and fences: cords that reshape the map (Joshua, 23 Oct 09:29)
+Full research and design: research/POWER-NETWORK.md. In short:
+- **Stations** (Strip, Outlet, Extension Box, Relay Pylon, Windmill/Dam) each have a link reach and a plug radius.
+  They auto-connect Factorio-style. Ground lines need line of sight; Relay Pylons throw long high lines (pylon to
+  pylon only) that hop rivers but don't block.
+- **Live ground lines are fences.** Enemy ground units and enemy cords can't cross them; brown-out drops them;
+  damage or a shorting rock breaks them; enemy lines can't cross yours.
+- **Close a loop** (cliffs, water and map edge count) and the land inside is **fenced**: your territory, no enemy
+  stations, +25% wheat.
+- **Unit cords wrap around corners** (wrap-point list); every bend uses cord length, so the terrain shapes your reach.
+  Pegs re-anchor. Unit cords stay tripwires, not walls.
+- **No softlocks:** no fence may enclose an enemy power point or cut a player off from every open Reach.

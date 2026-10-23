@@ -59,6 +59,95 @@ export function injectEdgeHighlight(shader, { halfExtents = [0.5, 0.5, 0.5], ban
   return shader;
 }
 
+// GPT's per-instance edge shader (research/TOY-EDGES-GPT.md). Needs centred unit BoxGeometry + an instanced aHalf
+// attribute (half-size per instance, see createToyBoxInstances). A mesh WITHOUT aHalf gets no edges (toyHas = 0)
+// instead of the whole surface lighting up. Albedo tint in linear space before PBR, params are uniforms.
+export function applyToyEdges(material, { band = 0.025, intensity = 0.18, tint = 0xfff0d5, inset = 0.07, THREE = THREE_NS } = {}) {
+  if (!material.isMeshStandardMaterial) throw new TypeError('applyToyEdges requires THREE.MeshStandardMaterial');
+  if (material.userData.toyEdges) throw new Error('Toy edges already applied to this material');
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const uniforms = {
+    uToyBand: { value: Math.max(0.0001, band) }, uToyIntensity: { value: clamp01(intensity) },
+    uToyTint: { value: new THREE.Color(tint) }, uToyInset: { value: clamp01(inset) },
+  };
+  const prevCompile = material.onBeforeCompile, prevKey = material.customProgramCacheKey.bind(material);
+  material.onBeforeCompile = (shader, renderer) => {
+    prevCompile.call(material, shader, renderer);
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute vec3 aHalf;\nvarying vec3 vToyPos;\nvarying vec3 vToyHalf;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n  vToyHalf = aHalf;\n  vToyPos = position * (2.0 * aHalf);');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', /* glsl */`#include <common>
+      varying vec3 vToyPos; varying vec3 vToyHalf;
+      uniform float uToyBand; uniform float uToyIntensity; uniform vec3 uToyTint; uniform float uToyInset;
+      vec2 toyEdgeMasks(vec3 p, vec3 h) {
+        vec3 d = max(h - abs(p), vec3(0.0));
+        vec3 aa = max(fwidth(d), vec3(0.00001));
+        vec3 nearEdge = 1.0 - smoothstep(vec3(uToyBand) - aa, vec3(uToyBand) + aa, d);
+        float hi = max(nearEdge.x * nearEdge.y, max(nearEdge.x * nearEdge.z, nearEdge.y * nearEdge.z));
+        float inner = uToyBand * 2.5;
+        vec3 ip = 1.0 - smoothstep(vec3(inner) - aa, vec3(inner) + aa, d);
+        float ie = max(ip.x * ip.y, max(ip.x * ip.z, ip.y * ip.z));
+        return vec2(hi, max(0.0, ie - hi));
+      }`);
+    const marker = '#include <color_fragment>';
+    if (!shader.fragmentShader.includes(marker)) throw new Error('applyToyEdges: color_fragment chunk not found');
+    shader.fragmentShader = shader.fragmentShader.replace(marker, /* glsl */`${marker}
+      float toyHas = step(0.001, vToyHalf.x);
+      vec2 toyMasks = toyEdgeMasks(vToyPos, max(vToyHalf, vec3(0.0001))) * toyHas;
+      diffuseColor.rgb *= 1.0 - toyMasks.y * uToyInset;
+      diffuseColor.rgb = mix(diffuseColor.rgb, uToyTint, toyMasks.x * uToyIntensity);`);
+  };
+  material.customProgramCacheKey = () => prevKey() + '|toy-edges-r169-v1';
+  material.userData.toyEdges = uniforms;
+  material.needsUpdate = true;
+  return {
+    material,
+    setBand(v) { uniforms.uToyBand.value = Math.max(0.0001, v); },
+    setIntensity(v) { uniforms.uToyIntensity.value = clamp01(v); },
+    setTint(v) { uniforms.uToyTint.value.set(v); },
+    setInset(v) { uniforms.uToyInset.value = clamp01(v); },
+  };
+}
+
+// dimensions: [{ x, y, z, width, height, depth, quaternion? }] -> one InstancedMesh of unit boxes with aHalf set.
+export function createToyBoxInstances(dimensions, material, THREE = THREE_NS) {
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const halves = new Float32Array(dimensions.length * 3);
+  const mesh = new THREE.InstancedMesh(geometry, material, dimensions.length);
+  const m = new THREE.Matrix4(), pos = new THREE.Vector3(), scale = new THREE.Vector3(), rot = new THREE.Quaternion();
+  dimensions.forEach((it, i) => {
+    const { width, height, depth } = it;
+    if (!(width > 0 && height > 0 && depth > 0)) throw new Error('Box dimensions must be positive');
+    halves.set([width / 2, height / 2, depth / 2], i * 3);
+    pos.set(it.x ?? 0, it.y ?? 0, it.z ?? 0); scale.set(width, height, depth);
+    if (it.quaternion) rot.copy(it.quaternion); else rot.identity();
+    mesh.setMatrixAt(i, m.compose(pos, rot, scale));
+  });
+  geometry.setAttribute('aHalf', new THREE.InstancedBufferAttribute(halves, 3));
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.computeBoundingSphere();
+  return mesh;
+}
+
+// The live game's units (play/units-instanced.mjs) bake vertex-coloured shapes into one geometry per kind, so the
+// aHalf edge shader cannot apply to them. They get the satin-enamel feel (RENDERING.md chassis row) and receive the key
+// shadow instead. Returns how many materials were changed; a second pass over the same root changes none.
+export function applyToyToUnits(root) {
+  let n = 0;
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const mat = o.material;
+    if (mat?.isMeshStandardMaterial && mat.vertexColors && !mat.userData.toyUnit) {
+      mat.roughness = TOY_MATERIALS.chassis.roughness; mat.metalness = 0.06;
+      mat.userData.toyUnit = true; mat.needsUpdate = true; n++;
+    }
+    if (mat?.userData?.toyUnit) o.receiveShadow = true;
+  });
+  return n;
+}
+
 export function makeToyMaterials(THREE = THREE_NS, { halfExtents = [0.5, 0.5, 0.5] } = {}) {
   const out = {};
   for (const [name, m] of Object.entries(TOY_MATERIALS)) {
@@ -90,29 +179,51 @@ export function planBatches(parts, chunk = 16) {
 // ----- shadow frustum (item 2) -----
 export function fitShadowFrustum(bounds, { margin = 3, min = 12, max = 28 } = {}) {
   const cx = (bounds.x0 + bounds.x1) / 2, cy = (bounds.y0 + bounds.y1) / 2;
-  const half = Math.max(min, Math.min(max, Math.max(bounds.x1 - bounds.x0, bounds.y1 - bounds.y0) / 2 + margin));
+  const want = Math.max(bounds.x1 - bounds.x0, bounds.y1 - bounds.y0) / 2 + margin;
+  const half = Math.max(min, Math.min(max, Math.ceil(want / 2) * 2));   // steps of 2: the texel size changes rarely
   return { cx, cy, half };
 }
 
+// Snap the shadow-box centre to whole shadow-map texels along the light's right/up axes, so the shadow edges stay put
+// while the camera pans (no shimmer). dir is the sun offset direction; texel is world units per shadow texel.
+export function snapShadowCentre(centre, dir, texel, THREE = THREE_NS) {
+  const f = dir.clone().normalize();
+  const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), f).normalize();
+  const up = new THREE.Vector3().crossVectors(f, right).normalize();
+  const a = Math.round(centre.dot(right) / texel) * texel, b = Math.round(centre.dot(up) / texel) * texel;
+  return new THREE.Vector3().addScaledVector(right, a).addScaledVector(up, b).addScaledVector(f, centre.dot(f));
+}
+
 // ----- contact shadows (item 2) -----
-function radialAlphaTexture(THREE, n = 32) {
+// 64 px gaussian, 0 at the edge; DataTexture so it also builds in node. ONE texture shared by every decal.
+function radialAlphaTexture(THREE, n = 64) {
   const data = new Uint8Array(n * n * 4);
+  const c = (n - 1) / 2, r = n / 2;
   for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-    const r = Math.hypot((i + 0.5) / n - 0.5, (j + 0.5) / n - 0.5) * 2;
-    const a = Math.max(0, 1 - r); data[(j * n + i) * 4 + 3] = Math.round(255 * a * a * (3 - 2 * a));
+    const d = Math.hypot((i - c) / r, (j - c) / r);
+    const edge = Math.min(1, Math.max(0, (d - 0.7) / 0.3));
+    const a = Math.exp(-5 * d * d) * (1 - edge * edge * (3 - 2 * edge));
+    data[(j * n + i) * 4 + 3] = Math.round(255 * a);
   }
   const tex = new THREE.DataTexture(data, n, n, THREE.RGBAFormat);
   tex.minFilter = tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
   tex.needsUpdate = true;
   return tex;
 }
-export function createContactShadows(ctx, { capacity = 512, opacity = 0.26, widen = 1.1 } = {}) {
+// list items: { x, y (ground height), z, radius } or { x, y, z, width, depth }. The plane is rotated flat once, so
+// footprint depth lives in scale.z (the note in TOY-EDGES-GPT.md was right).
+export function createContactShadows(ctx, { capacity = 512, opacity = 0.26, widen = 1.12 } = {}) {
   const { THREE = THREE_NS } = ctx;
   const geo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const map = radialAlphaTexture(THREE);
-  const mat = new THREE.MeshBasicMaterial({ color: 0x000000, map, transparent: true, opacity, depthWrite: false, fog: false });
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x18242b, map, transparent: true, opacity, depthWrite: false, depthTest: true, side: THREE.DoubleSide,
+    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1, toneMapped: false, fog: false,
+  });
   const mesh = new THREE.InstancedMesh(geo, mat, capacity);
   mesh.name = 'toy-contact-shadows'; mesh.count = 0; mesh.frustumCulled = false; mesh.renderOrder = 2;
+  mesh.castShadow = mesh.receiveShadow = false;
   ctx.scene.add(mesh);
   const m = new THREE.Matrix4(), pos = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
   return {
@@ -120,8 +231,9 @@ export function createContactShadows(ctx, { capacity = 512, opacity = 0.26, wide
     set(list) {
       const n = Math.min(list.length, capacity);
       for (let i = 0; i < n; i++) {
-        const u = list[i], d = u.radius * 2 * widen;
-        m.compose(pos.set(u.x, u.y + 0.02, u.z), q, s.set(d, 1, d));
+        const u = list[i];
+        const w = (u.width ?? u.radius * 2) * widen, d = (u.depth ?? u.radius * 2) * widen;
+        m.compose(pos.set(u.x, u.y + 0.012, u.z), q, s.set(w, 1, d));
         mesh.setMatrixAt(i, m);
       }
       mesh.count = n;
@@ -183,7 +295,9 @@ export function applyToyLook(ctx, { engine = null } = {}) {
 
   // 4x MSAA on the composer targets and a pixel ratio capped at 1.5
   const comp = ctx.composer;
-  for (const t of [comp?.renderTarget1, comp?.renderTarget2]) if (t) t.samples = 4;
+  // samples is read when three allocates the target's GL storage (first use, and again after every setSize), so setting
+  // it here, before the first frame, takes effect; dispose() drops any storage that was already allocated at 1x.
+  for (const t of [comp?.renderTarget1, comp?.renderTarget2]) if (t) { t.samples = 4; t.dispose?.(); }
   if (ctx.quality) ctx.quality.dprCap = 1.5;
   engine?.resize?.();
 
@@ -195,8 +309,9 @@ export function applyToyLook(ctx, { engine = null } = {}) {
       if (!bounds || !Number.isFinite(bounds.x0)) return;
       const f = fitShadowFrustum(bounds);
       ctx.gridToWorld(f.cx, f.cy, 0, centre);
-      sun.target.position.copy(centre);
-      sun.position.copy(centre).add(offset);
+      const snapped = snapShadowCentre(centre, offset, (2 * f.half) / sun.shadow.mapSize.x, THREE);   // no shimmer on pans
+      sun.target.position.copy(snapped);
+      sun.position.copy(snapped).add(offset);
       const c = sun.shadow.camera;
       c.left = -f.half; c.right = f.half; c.top = f.half; c.bottom = -f.half;
       c.updateProjectionMatrix?.();
@@ -232,16 +347,27 @@ export function viewBoundsOf(ctx) {
 
 // One call from the page or play/render.mjs: look + an engine system that keeps the shadow box on the view and
 // feeds frame times to the governor. Returns null when ?toy=0.
+// Idempotent: createPlayRenderer and startGame may both call it, the second call returns ctx.toy. With no query it reads
+// the page URL, so ?toy=0 works whoever installs. result.missing lists engine pieces the ctx lacked (warned once).
 export function installToy(ctx, engine, { query, governor = true } = {}) {
+  if (ctx.toy) return ctx.toy;
+  query ??= globalThis.location ? new URLSearchParams(globalThis.location.search) : undefined;
   if (!toyEnabled(query)) return null;
+  const missing = ['quality', 'composer', 'gridToWorld', 'worldToGrid'].filter((k) => !ctx[k]);
+  if (missing.length) console.warn('[toy] ctx lacks', missing.join(', '), '- those parts of the toy look are skipped');
   const look = applyToyLook(ctx, { engine });
+  let unitsDone = false;
   const system = {
     name: 'toy',
     update(_frame, dt) {
-      look.follow(viewBoundsOf(ctx));
+      if (ctx.gridToWorld && ctx.worldToGrid && ctx.camera) look.follow(viewBoundsOf(ctx));
       if (governor && dt > 0 && dt < 1) look.governor.push(dt * 1000);
+      if (!unitsDone) {   // the units system is added after us; satin-finish its materials once its group exists
+        const g = ctx.scene.getObjectByName('units-instanced');
+        if (g) { applyToyToUnits(g); unitsDone = true; }
+      }
     },
   };
   engine.add(system);
-  return { look, system, tier: () => look.governor.tier };
+  return (ctx.toy = { look, system, missing, tier: () => look.governor.tier });
 }

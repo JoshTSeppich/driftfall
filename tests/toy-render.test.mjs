@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import {
   TOY_MATERIALS, makeToyMaterials, injectEdgeHighlight, planBatches, BATCH_TYPES, fitShadowFrustum,
   QUALITY_TIERS, createGovernor, toyEnabled, applyToyLook, createContactShadows,
+  applyToyEdges, createToyBoxInstances, snapShadowCentre, installToy, applyToyToUnits,
 } from '../play/toy-render.mjs';
 
 test('material table matches RENDERING.md and builds one shared material per part', () => {
@@ -112,4 +113,85 @@ test('contact shadows: one instanced quad, one matrix per unit, no depth write',
   assert.equal(new THREE.Vector3().setFromMatrixPosition(m).x, 3);
   cs.set(Array.from({ length: 20 }, () => ({ x: 0, y: 0, z: 0, radius: 1 })));
   assert.equal(cs.mesh.count, 8, 'capacity caps the draw');
+});
+
+test('contact shadows are a 64px gaussian and depth goes in scale.z', () => {
+  const scene = new THREE.Scene();
+  const cs = createContactShadows({ THREE, scene }, { capacity: 4 });
+  assert.equal(cs.mesh.material.map.image.width, 64);
+  assert.equal(cs.mesh.material.toneMapped, false);
+  cs.set([{ x: 0, y: 0, z: 0, width: 1, depth: 2 }]);
+  const m = new THREE.Matrix4(), p = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
+  cs.mesh.getMatrixAt(0, m); m.decompose(p, q, s);
+  assert.ok(s.z > s.x * 1.5, `depth ${s.z} vs width ${s.x}`);
+  assert.ok(Math.abs(s.y - 1) < 1e-6);
+});
+
+test('applyToyEdges: aHalf attribute, fwidth AA, guarded against reuse and missing aHalf', () => {
+  const mat = new THREE.MeshStandardMaterial();
+  const h = applyToyEdges(mat, { band: 0.03, intensity: 0.2 });
+  assert.throws(() => applyToyEdges(mat), /already/);
+  assert.throws(() => applyToyEdges(new THREE.MeshBasicMaterial()), TypeError);
+  const shader = { uniforms: {}, vertexShader: '#include <common>\n#include <begin_vertex>', fragmentShader: '#include <common>\n#include <color_fragment>' };
+  mat.onBeforeCompile(shader);
+  assert.match(shader.vertexShader, /attribute vec3 aHalf/);
+  assert.match(shader.fragmentShader, /fwidth/);
+  assert.match(shader.fragmentShader, /toyHas/, 'no aHalf means no edge');
+  assert.equal(shader.uniforms.uToyBand.value, 0.03);
+  h.setBand(0.05); assert.equal(shader.uniforms.uToyBand.value, 0.05);
+  assert.ok(mat.customProgramCacheKey().includes('toy-edges'));
+  const mesh = createToyBoxInstances([{ x: 0, y: 0, z: 0, width: 2, height: 1, depth: 4 }], mat);
+  assert.deepEqual(Array.from(mesh.geometry.getAttribute('aHalf').array), [1, 0.5, 2]);
+  assert.throws(() => createToyBoxInstances([{ width: 0, height: 1, depth: 1 }], mat));
+});
+
+test('shadow centre snaps to light-space texels so panning never shimmers', () => {
+  const dir = new THREE.Vector3(-8, 14, 9).normalize();
+  const a = snapShadowCentre(new THREE.Vector3(10.01, 0, 5.02), dir, 0.1);
+  const b = snapShadowCentre(new THREE.Vector3(10.03, 0, 5.03), dir, 0.1);
+  const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), dir).normalize();
+  const up = new THREE.Vector3().crossVectors(dir, right).normalize();
+  for (const axis of [right, up]) {
+    const k = a.dot(axis) / 0.1;
+    assert.ok(Math.abs(k - Math.round(k)) < 1e-6, 'centre sits on a texel boundary');
+    assert.ok(Math.abs(b.dot(axis) - a.dot(axis)) < 1e-9 || Math.abs(b.dot(axis) - a.dot(axis)) > 0.09);
+  }
+  assert.ok(snapShadowCentre(a.clone(), dir, 0.1).distanceTo(a) < 1e-9, 'idempotent');
+});
+
+function fakeCtx(extra = {}) {
+  const sun = new THREE.DirectionalLight(), rim = new THREE.DirectionalLight(), hemi = new THREE.HemisphereLight();
+  const scene = new THREE.Scene(); scene.add(sun, rim, hemi);
+  return { THREE, scene, renderer: { shadowMap: { enabled: true } }, lights: { sun, rim, hemi }, ...extra };
+}
+
+test('installToy is idempotent per ctx and honours ?toy=0', () => {
+  const added = [];
+  const engine = { add: (s) => added.push(s), resize() {} };
+  const ctx = fakeCtx({ quality: {}, composer: {} });
+  const a = installToy(ctx, engine, { query: new URLSearchParams('') });
+  const b = installToy(ctx, engine, { query: new URLSearchParams('') });
+  assert.equal(a, b); assert.equal(ctx.toy, a);
+  assert.equal(added.length, 1);
+  assert.equal(ctx.scene.children.filter((c) => c.isDirectionalLight).length, 3, 'sun, rim and ONE fill');
+  assert.ok(a.missing.includes('gridToWorld'), 'reports what the ctx lacks');
+  assert.equal(installToy(fakeCtx(), engine, { query: new URLSearchParams('toy=0') }), null);
+});
+
+test('MSAA: samples stay set on both composer targets after a resize', () => {
+  const t1 = new THREE.WebGLRenderTarget(8, 8), t2 = new THREE.WebGLRenderTarget(8, 8);
+  applyToyLook(fakeCtx({ composer: { renderTarget1: t1, renderTarget2: t2 } }));
+  t1.setSize(16, 16);
+  assert.equal(t1.samples, 4); assert.equal(t2.samples, 4);
+});
+
+test('applyToyToUnits makes baked unit materials satin and receive shadows, once', () => {
+  const root = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.3 });
+  const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(), mat, 2);
+  root.add(mesh);
+  assert.equal(applyToyToUnits(root), 1);
+  assert.equal(mat.roughness, 0.48); assert.ok(mat.metalness <= 0.08);
+  assert.equal(mesh.receiveShadow, true);
+  assert.equal(applyToyToUnits(root), 0, 'second pass is a no-op');
 });

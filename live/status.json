@@ -1,55 +1,82 @@
 {
- "build": 219,
- "at": "2026-10-23T15:10:53.619Z",
- "seconds": 171.7,
- "state": "green",
- "nextBuildAt": "2026-10-23T15:13:53.619Z",
- "headline": "Green: 1216 tests pass in 78 files, all 61 modules parse, new match recorded.",
+ "build": 222,
+ "at": "2026-10-23T15:28:39.648Z",
+ "seconds": 170.6,
+ "state": "red",
+ "nextBuildAt": "2026-10-23T15:31:39.648Z",
+ "headline": "Red: 1 test file(s) failing.",
  "tests": {
-  "files": 78,
+  "files": 79,
   "pass": 1216,
-  "fail": 0,
-  "seconds": 303.8
+  "fail": 3,
+  "seconds": 301.9
  },
- "failures": [],
+ "failures": [
+  {
+   "file": "tests/opening-clock.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/referee.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [
+    "the Core floor and clock numbers are in the stats table",
+    "each rush bot loses to a Turret plus worker-pull defender and no match ends before 3:00",
+    "a built-in mirror does not end before 3:00"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Core hp must be at least 3000, got 1000"
+  }
+ ],
  "parse": {
-  "checked": 61,
+  "checked": 62,
   "errors": []
  },
  "match": {
   "ok": true,
-  "seed": 220,
+  "seed": 223,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3460,
-    3540
+    3470,
+    3530
    ]
   },
-  "ms": 640
+  "ms": 696
  },
  "changed": {
   "first": false,
-  "added": [],
+  "added": [
+   {
+    "file": "players/defender-sonnet/bot.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/opening-clock.test.mjs",
+    "owner": null
+   }
+  ],
   "changed": [],
   "removed": [],
-  "total": 0
+  "total": 2
  },
  "files": {
   "env": 30,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 80,
-  "players": 18,
+  "tests": 81,
+  "players": 19,
   "live": 19
  },
  "previous": {
-  "build": 218,
+  "build": 221,
   "state": "green",
-  "at": "2026-10-23T15:05:01.918Z",
+  "at": "2026-10-23T15:22:49.078Z",
   "failing": []
  }
 }
