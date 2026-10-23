@@ -247,6 +247,9 @@ export function createBuildings(ctx) {
 
   // Build the meshes for one kind. Returns the parts the per-frame animation needs.
   function buildBody(kind, owner) {
+    // Toaster Wars: ctx.buildingLook(THREE, kind, owner) (play/toaster-buildings.mjs) may supply the body for a kind; null = use ours.
+    const custom = ctx.buildingLook ? ctx.buildingLook(T, kind, owner) : null;
+    if (custom) return custom;
     const body = new T.Group();
     const g = glow(owner);
     const shadowed = (m) => {
@@ -584,6 +587,7 @@ export function createBuildings(ctx) {
     // Per-kind animation.
     const parts = rec.parts;
     for (const sp of parts.spin) sp.obj.rotation.y += sp.speed * dt;
+    if (parts.tick) parts.tick(clock + rec.id, dt);
     for (const pu of parts.pulse) {
       const k = pu.base + pu.amp * Math.sin(clock * pu.speed + rec.id);
       pu.obj.scale.set(k, 1, k);

@@ -22,7 +22,12 @@ import { cardWithRecall } from './items-ui.mjs';
 import { createFeedback } from './feel.mjs';
 import { createSoundPlayer } from './sound-player.mjs';
 import { stingerFor } from '../viewer3d/audio.mjs';
-import { toasterOptions, toasterTopBar, toasterPanel, PAGE_TITLE } from './toaster-play.mjs';
+import { setArtProvider } from './icons.mjs';
+import { toasterArt } from './toaster-art.mjs';
+import { kindName } from './hud.mjs';
+import { buildMinimapImage } from './wheatfield-terrain.mjs';
+import { toasterBuildingLook } from './toaster-buildings.mjs';
+import { wheatfieldMap, toasterOptions, toasterInputOptions, toasterTopBar, toasterPanel, observeToaster, PAGE_TITLE } from './toaster-play.mjs';
 import { territoryOptions, territoryPanel, drawReachBorders, drawPowerOverlay } from './territory-wire.mjs';
 import { reachViews, drawReachMinimap } from './reach-view.mjs';
 
@@ -211,14 +216,16 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   const caster = watch ? createCaster() : null, topbar = watch ? createTopbar({ tps }) : null;
   const state = driver.state;
   const interval = 1000 / tps;
-  const input = createInput({ side, stats: STATS });
-  const world = createLiveWorld(observe(state, side), STATS);
-  let paused = false;
+  const input = createInput({ side, stats: STATS, ...(toaster.on ? toasterInputOptions() : {}) });
+  if (toaster.on) setArtProvider(toasterArt); // toaster portraits and card icons instead of the old snake art
+  const look = toaster.on ? observeToaster : observe; // the toasters need each unit's power + cord corners to draw their cords
+  const world = createLiveWorld(look(state, side), STATS);
+  let paused = false, inspectPower = false, mmBase = null; // mmBase: the Wheatfield land as a canvas, drawn under the minimap dots
   const game ={ state, driver, input, world, over: false, lastTickAt: performance.now() };
 
   let feedback = null; // made once the camera exists (below), so the tick handler can run before that
   driver.on('tick', ({ events }) => {
-    const snap = observe(state, side);
+    const snap = look(state, side);
     world.push(snap, events.filter((e) => e.e !== 'late'));
     input.noteEvents(snap, events);
     game.lastTickAt = performance.now();
@@ -257,6 +264,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   if (assetsMod?.loadAssets) { try { ctx.assets = (await assetsMod.loadAssets(ctx)) ?? ctx.assets; } catch (err) { console.warn('[play] assets', err); } }
   ctx.log = { stats: STATS };
   ctx.hudRoot = els.hud;
+  if (toaster.on) ctx.buildingLook = toasterBuildingLook; // Power Strip, Mill, Well and Toaster as blocky toys (play/toaster-buildings.mjs)
   ctx.tv = false;
   ctx.heightAt = () => 0;
   ctx.time.playing = false; // the engine clock is not used; the live world is driven by wall time below
@@ -270,8 +278,12 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   ctx.world.map = world.map;
 
   const made = {};
+  // Toaster Wars on Wheatfield Valley: the grid terrain and a land-coloured minimap (play/wheatfield-terrain.mjs).
+  const wheat = toaster.on ? wheatfieldMap(seed, q) : null;
+  if (wheat && state.width === wheat.width) mmBase = minimapCanvas(buildMinimapImage(wheat));
   const wanted = [
-    ['terrain', '../viewer3d/terrain.mjs', 'createTerrain', () => ({})],
+    wheat ? ['terrain', './wheatfield-terrain.mjs', 'createWheatfieldTerrain', () => ({ map: wheat })]
+      : ['terrain', '../viewer3d/terrain.mjs', 'createTerrain', () => ({})],
     ['buildings', '../viewer3d/buildings.mjs', 'createBuildings', () => ({})],
     ['units', './units-instanced.mjs', 'createInstancedUnits', () => ({ stats: STATS, side })],
     ['vfx', '../viewer3d/vfx.mjs', 'createVfx', () => ({ stats: STATS, quality: q.get('quality') === 'low' ? 0.5 : 1 })],
@@ -417,6 +429,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
       toast(els, paused ? 'Paused (P)' : 'Resumed');
       return;
     }
+    if (e.key === 'Tab' && toaster.on) { e.preventDefault(); inspectPower = !inspectPower; toast(els, inspectPower ? 'Inspect power: on (Tab)' : 'Inspect power: off'); return; }
     if (e.key === '+' || e.key === '=') { rig.zoomBy(0.85); return; }
     if (e.key === '-') { rig.zoomBy(1 / 0.85); return; }
     if (e.altKey) return;
@@ -549,7 +562,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
       ov.fillStyle = chk.ok ? 'rgba(60,255,110,.35)' : 'rgba(255,60,60,.4)';
       ov.strokeStyle = chk.ok ? '#3cff6e' : '#ff3c3c'; ov.lineWidth = 2; ov.fill(); ov.stroke();
       ov.fillStyle = '#fff'; ov.font = '12px system-ui';
-      ov.fillText(chk.ok ? `${mode.kind} (${STATS.structures[mode.kind].cost})` : chk.reason, corners[2].sx + 8, corners[2].sy + 4);
+      ov.fillText(chk.ok ? `${kindName(mode.kind)} (${STATS.structures[mode.kind].cost})` : chk.reason, corners[2].sx + 8, corners[2].sy + 4);
     }
     // Click ping
     if (mouse.ping) {
@@ -573,11 +586,12 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     drawCampsOverlay(ov, campMarks(neutralSnap.neutrals), project, tp);
     drawPickups(ov, neutralSnap.groundItems, project, tp, performance.now());
     drawReachBorders(ov, state.territory, side, state.tick, project);
-    drawPowerOverlay(ov, state, side, input.ui.selection, project, state.tick);
+    // Toaster Wars: the thick 3D cords are the cords; the thin lines only show as a faint 'inspect power' overlay (Tab).
+    drawPowerOverlay(ov, state, side, input.ui.selection, project, state.tick, toaster.on ? { cords: inspectPower, faint: true } : {});
     if (mode) {
       ov.fillStyle = 'rgba(0,0,0,.55)'; ov.fillRect(w2() / 2 - 150, 54, 300, 24);
       ov.fillStyle = '#ffe14a'; ov.font = '13px system-ui'; ov.textAlign = 'center';
-      ov.fillText({ amove: 'Attack-move: click a target (Esc cancels)', move: 'Move: click a spot', rally: 'Rally: click a spot or a Shard', place: `Place ${mode.kind}: click (Esc cancels)` }[mode.type], w2() / 2, 71);
+      ov.fillText({ amove: 'Attack-move: click a target (Esc cancels)', move: 'Move: click a spot', rally: 'Rally: click a spot or a Shard', place: `Place ${kindName(mode.kind)}: click (Esc cancels)` }[mode.type], w2() / 2, 71);
       ov.textAlign = 'left';
     }
   }
@@ -586,9 +600,15 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   function drawMinimap() {
     const snap = snapNow();
     const W = mm.width, H = mm.height, sx = W / state.width, sy = H / state.height;
-    mmc.fillStyle = '#10131d'; mmc.fillRect(0, 0, W, H);
-    mmc.fillStyle = '#3a3f55'; for (const [x, y] of snap.rocks) mmc.fillRect(x * sx, y * sy, Math.ceil(sx), Math.ceil(sy));
-    mmc.fillStyle = '#35e0ff'; for (const c of snap.crystals) if (c.amount > 0) mmc.fillRect(c.x * sx, c.y * sy, Math.ceil(sx), Math.ceil(sy));
+    if (mmBase) {
+      // Wheatfield: the land (water, wheat, pads) is the base; only wheat that is gone is painted back as bare ground.
+      mmc.imageSmoothingEnabled = false; mmc.drawImage(mmBase, 0, 0, W, H);
+      mmc.fillStyle = '#52696b'; for (const c of snap.crystals) if (!(c.amount > 0)) mmc.fillRect(c.x * sx, c.y * sy, Math.ceil(sx), Math.ceil(sy));
+    } else {
+      mmc.fillStyle = '#10131d'; mmc.fillRect(0, 0, W, H);
+      mmc.fillStyle = '#3a3f55'; for (const [x, y] of snap.rocks) mmc.fillRect(x * sx, y * sy, Math.ceil(sx), Math.ceil(sy));
+      mmc.fillStyle = '#35e0ff'; for (const c of snap.crystals) if (c.amount > 0) mmc.fillRect(c.x * sx, c.y * sy, Math.ceil(sx), Math.ceil(sy));
+    }
     const colour = (o) => (o === side ? '#4aa8ff' : '#ff8a3d');
     for (const s of snap.structures) { mmc.fillStyle = colour(s.owner); mmc.fillRect(s.x * sx - 1, s.y * sy - 1, sx * 1.6 + 2, sy * 1.6 + 2); }
     for (const u of snap.units) { mmc.fillStyle = colour(u.owner); mmc.fillRect(u.x * sx, u.y * sy, Math.max(2, sx), Math.max(2, sy)); }
@@ -638,6 +658,13 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   if (watch) { root.classList.add('watch'); toast(els, `Watching the AIs, seed ${seed}`); }
   else toast(els, toaster.on ? 'Select your Crumbs and right-click wheat to haul it. Build a Mill, a Well and a Toaster: toast is your ammo.' : 'Select your Workers and right-click a Shard to mine. F builds a Forge.');
   return game;
+}
+
+// The minimap base: a one-pixel-per-tile RGBA image (play/wheatfield-terrain.mjs) on an offscreen canvas.
+function minimapCanvas(img) {
+  const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+  c.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(img.data), img.width, img.height), 0, 0);
+  return c;
 }
 
 // ---------------------------------------------------------------------------------------------------------------

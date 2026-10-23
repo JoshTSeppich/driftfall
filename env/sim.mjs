@@ -13,7 +13,7 @@ import { applyCommands } from './commands.mjs';
 import { stepProduction, stepGathering } from './economy.mjs';
 import { stepMovement } from './movement.mjs';
 import { stepCombat } from './combat.mjs';
-import { STATS, sideValue, canonKind } from './stats.mjs';
+import { STATS, PACING, sideValue, canonKind } from './stats.mjs';
 import { applyRuleCommands, stepRulesPre, stepRulesPost, runProduction } from './sim-territory.mjs';
 
 const DEFAULT_MAX_TICKS = 2000;
@@ -39,10 +39,15 @@ function withCanonKind(command) {
 }
 
 /** Create a new match from a seed: the initial state at tick 0. */
-export function createMatch(seed) {
+// options.pacing (env/stats.mjs PACING): a tougher Core and the 3:00 shield, with slower timings. Off by default.
+export function createMatch(seed, options = {}) {
   const state = createInitialState(seed);
   if (!Array.isArray(state.events)) state.events = [];
   if (state.result === undefined) state.result = null;
+  if (options.pacing) {
+    state.pacing = true;
+    for (const s of state.structures) if (s.kind === 'core') s.hp = PACING.coreHp;
+  }
   return state;
 }
 

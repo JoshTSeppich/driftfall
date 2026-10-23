@@ -38,7 +38,7 @@ export function hpBar(hp, max, { small = false } = {}) {
  * Nothing here is copied from any other game; it is our own silhouettes.
  */
 export function portraitSvg(kind, owner, { size = 56, label } = {}) {
-  const url = portraitFor(kind);
+  const url = portraitFor(kind, owner);
   if (url) return `<svg class="portrait" viewBox="0 0 256 256" width="${size}" height="${size}" role="img" aria-label="${esc(label ?? kindName(kind))}"><image href="${esc(url)}" width="256" height="256"/></svg>`;
   const team = TEAM[owner] ?? NEUTRAL;
   const c = { main: team.main, dark: team.dark, light: team.light, deep: team.deep };

@@ -9,6 +9,8 @@ import { reachViews } from './reach-view.mjs';
 import { driftBanner, activeCountdowns } from './drift-banner.mjs';
 import { tierStatus, renderTier } from './tier-readout.mjs';
 import { STATS } from '../env/stats.mjs';
+import { observe } from '../env/state.mjs';
+import { generateMap } from '../env/map.mjs';
 
 export const PAGE_TITLE = 'TOASTER WARS';
 
@@ -27,6 +29,24 @@ export function createToasterState(seed) {
 export function toasterOptions(q) {
   const on = toasterMode(q);
   return { on, createState: on ? createToasterState : undefined };
+}
+
+/**
+ * Hotkeys by toaster name, none on A S H M R P Q (Attack, Stop, Hold, Move, Rally, Pause). Buildings: F = Assembly Line
+ * (the toaster production building), L = Heat Lamp, I = Mill, W = Well, T = Toaster. Trainees: C Crumb, O Popper, Z Zapper,
+ * F Four-Slice, B Broiler, K Flak Popper, E Bagel.
+ */
+export const TOASTER_HOTKEYS = Object.freeze({
+  forge: 'f', turret: 'l', mill: 'i', well: 'w', toaster: 't',
+  worker: 'c', grunt: 'o', lancer: 'z', brute: 'f', howler: 'b', spiker: 'k', dart: 'e',
+});
+/** Extra createInput options for Toaster Wars. */
+export const toasterInputOptions = () => ({ hotkeys: TOASTER_HOTKEYS });
+
+/** The Wheatfield Valley map data for the terrain and the minimap, or null when the page runs another map (?map=). */
+export function wheatfieldMap(seed, q) {
+  const name = q.get('map') ?? 'wheatfield';
+  return name === 'wheatfield' ? generateMap(seed, { map: 'wheatfield' }) : null;
 }
 
 const INGREDIENTS = Object.freeze([['flour', 'Flour'], ['water', 'Water']]);
@@ -90,4 +110,22 @@ export function toasterPanel(state, side) {
   const builtKinds = state.structures.filter((s) => s.owner === side && s.complete).map((s) => s.kind);
   parts.push(renderTier(tierStatus({ holds: state.territory.hold[side], builtKinds })));
   return parts.join('');
+}
+
+/**
+ * observe() plus what the 3D toasters need to draw: each unit's power state and cord corners, the power points and the
+ * ammo handle (hunger). observe() leaves these out, so without this the thick cords never reach the cord batch.
+ */
+export function observeToaster(state, side) {
+  const snap = observe(state, side);
+  if (!state.power) return snap;
+  const byId = new Map(state.units.map((u) => [u.id, u]));
+  for (const u of snap.units) {
+    const p = byId.get(u.id)?.power;
+    if (p) u.power = { state: p.state, anchor: p.anchor, cord: p.cord ? { pts: p.cord.pts.map((q) => ({ x: q.x, y: q.y })) } : undefined };
+  }
+  const view = state.power.view;
+  snap.power = { view: view ? { points: view.points } : null, points: view?.points ?? state.power.points };
+  snap.ammo = state.ammo;
+  return snap;
 }

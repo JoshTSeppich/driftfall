@@ -43,7 +43,7 @@ export function drawReachBorders(ov, territory, side, tick, project) {
  * selected or taking a move order), the cord-limit pentagon on selection, cut sparks, and dark or blinking units.
  * project(x, y) -> { sx, sy }. Returns the number of cords drawn.
  */
-export function drawPowerOverlay(ov, state, side, selection, project, tick) {
+export function drawPowerOverlay(ov, state, side, selection, project, tick, { cords = true, faint = false } = {}) {
   if (!state.power) return 0;
   const v = powerView(state, side, selection);
   const poly = (verts) => {
@@ -57,10 +57,10 @@ export function drawPowerOverlay(ov, state, side, selection, project, tick) {
     ov.fillStyle = 'rgba(255,214,102,0.07)';
     ov.fill();
   }
-  for (const c of v.cords) {
+  for (const c of cords ? v.cords : []) {
     const a = project(c.x0, c.y0), b = project(c.x1, c.y1);
-    ov.strokeStyle = c.bright ? 'rgba(30,30,36,0.9)' : 'rgba(30,30,36,0.25)';
-    ov.lineWidth = c.bright ? 2 : 1;
+    ov.strokeStyle = faint ? 'rgba(30,30,36,0.22)' : c.bright ? 'rgba(30,30,36,0.9)' : 'rgba(30,30,36,0.25)';
+    ov.lineWidth = faint ? 1 : c.bright ? 2 : 1;
     ov.beginPath(); ov.moveTo(a.sx, a.sy); ov.lineTo(b.sx, b.sy); ov.stroke();
   }
   ov.setLineDash([4, 4]);

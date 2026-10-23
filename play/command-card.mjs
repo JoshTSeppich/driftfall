@@ -47,10 +47,12 @@ export function renderCard(card, { shards = 0, mode = null } = {}) {
     const key = entry.key ?? cellKey; // show the key that really works, even when the button sits on another cell
     const poor = entry.cost !== undefined && shards < entry.cost;
     const active = !!mode && (mode.type === entry.action || (mode.type === 'place' && mode.kind === entry.kind));
-    const icon = iconHtml(entry.kind ?? entry.action, entry.label);
+    const name = entry.kind ? kindName(entry.kind) : entry.label; // once, in the proper name (the sim keeps 'forge' as an id)
+    const pic = iconHtml(entry.kind ?? entry.action, name);
+    const icon = pic.startsWith('<img') ? pic : ''; // no art: the label below is the button; never print it twice
     const cost = entry.cost !== undefined ? `<small>${entry.cost}</small>` : '';
     return `<button class="cc${poor ? ' poor' : ''}${active ? ' on' : ''}" data-action="${entry.action}" data-kind="${entry.kind ?? ''}" data-key="${key}" style="position:relative" title="${tooltip({ ...entry, key })}">`
-      + `<kbd style="position:absolute;top:2px;right:2px">${key.toUpperCase()}</kbd>${icon}<span class="lbl">${entry.label}</span>${cost}</button>`;
+      + `<kbd style="position:absolute;top:2px;right:2px">${key.toUpperCase()}</kbd>${icon}<span class="lbl">${name}</span>${cost}</button>`;
   }).join('');
 }
 

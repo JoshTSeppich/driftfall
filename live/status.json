@@ -1,34 +1,24 @@
 {
- "build": 239,
- "at": "2026-10-23T17:50:20.630Z",
- "seconds": 261.7,
+ "build": 241,
+ "at": "2026-10-23T18:05:24.001Z",
+ "seconds": 270.8,
  "state": "red",
- "nextBuildAt": "2026-10-23T17:53:20.630Z",
- "headline": "Red: 1 test file(s) failing, match did not record.",
+ "nextBuildAt": "2026-10-23T18:08:24.001Z",
+ "headline": "Red: match did not record.",
  "tests": {
   "files": 87,
-  "pass": 1306,
-  "fail": 1,
-  "seconds": 380.4
+  "pass": 1307,
+  "fail": 0,
+  "seconds": 412.4
  },
- "failures": [
-  {
-   "file": "tests/perf.test.mjs",
-   "owners": [],
-   "imports": [],
-   "tests": [
-    "idle-tick is no more than 2x its baseline"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.02x its baseline (3.490 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
-  }
- ],
+ "failures": [],
  "parse": {
   "checked": 65,
   "errors": []
  },
  "match": {
   "ok": false,
-  "seed": 240,
+  "seed": 242,
   "error": "[timed out]",
   "keptPrevious": true
  },
@@ -48,9 +38,9 @@
   "live": 19
  },
  "previous": {
-  "build": 238,
+  "build": 240,
   "state": "red",
-  "at": "2026-10-23T17:42:58.916Z",
+  "at": "2026-10-23T17:57:53.220Z",
   "failing": [
    "tests/perf.test.mjs"
   ]

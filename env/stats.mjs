@@ -489,9 +489,30 @@ for (const group of ["units", "structures"]) {
     TOASTER_ROWS.set(kind, Object.freeze({ ...kindStats(kind), ...over }));
   }
 }
+// Opening pace (Council #1; Match Room seed 996 ended by a Core kill at 19 s). Only a match created with { pacing: true }
+// plays it, so the classic numbers above stay the default. The Core is tougher and takes no damage until the shield
+// runs out at 3:00; every move speed, train time and build time is multiplied by `slow` (ticks per step and ticks).
+export const PACING = deepFreeze({
+  coreHp: 2500,
+  coreShieldTicks: secondsToTicks(180),
+  slow: 2,
+});
+const PACED_ROWS = new WeakMap();
+function pacedRow(base) {
+  if (!PACED_ROWS.has(base)) {
+    const row = { ...base };
+    if (row.speed !== undefined) row.speed *= PACING.slow;
+    if (row.trainTicks !== undefined) row.trainTicks *= PACING.slow;
+    if (row.buildTicks !== undefined) row.buildTicks *= PACING.slow;
+    PACED_ROWS.set(base, Object.freeze(row));
+  }
+  return PACED_ROWS.get(base);
+}
+
 export function rowOf(state, kind) {
-  if (state && state.ammo && TOASTER_ROWS.has(kind)) return TOASTER_ROWS.get(kind);
-  return kindStats(kind);
+  const base = state && state.ammo && TOASTER_ROWS.has(kind) ? TOASTER_ROWS.get(kind) : kindStats(kind);
+  if (state && state.pacing && base && typeof base === "object") return pacedRow(base);
+  return base;
 }
 
 // Value of one entity, in Shards (spec sections 5 and 9). Units and complete buildable structures count their cost.

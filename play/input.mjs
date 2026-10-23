@@ -127,11 +127,13 @@ export function placeCheck(state, stats, side, kind, x, y) {
 // The input controller
 // ---------------------------------------------------------------------------------------------------------------
 
-export function createInput({ side = 0, stats }) {
+export function createInput({ side = 0, stats, hotkeys = null }) {
   const trainable = (s) => stats.structures[s.kind]?.trains ?? (s.kind === 'core' ? stats.core?.trains : null) ?? [];
   const buildKinds = Object.keys(stats.structures).filter((k) => stats.structures[k].cost !== undefined && k !== 'core');
-  const buildKeys = assignHotkeys(buildKinds);
-  const keyForKind = (kinds) => assignHotkeys(kinds);
+  // hotkeys: an explicit { kind: key } table (Toaster Wars names the buttons by toaster names), else the first free letter.
+  const withTable = (keys) => { for (const k of Object.keys(keys)) if (hotkeys?.[k]) keys[k] = hotkeys[k]; return keys; };
+  const buildKeys = withTable(assignHotkeys(buildKinds));
+  const keyForKind = (kinds) => withTable(assignHotkeys(kinds));
 
   const ui = {
     side,

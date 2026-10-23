@@ -1,7 +1,7 @@
 // Combat phase (spec section 7). Step 5 of a tick, after movement.
 // Every attack in a tick is decided from positions and hp at the start of the phase, damage is summed per target,
 // then applied together. Only after that are hits reported and dead entities removed.
-import { UNIT_KINDS, STRUCTURE_KINDS, rowOf } from "./stats.mjs";
+import { UNIT_KINDS, STRUCTURE_KINDS, PACING, rowOf } from "./stats.mjs";
 import { distance, emit } from "./state.mjs";
 import { canFire, spendShot } from "./ammo.mjs";
 
@@ -72,6 +72,8 @@ export function stepCombat(state) {
   for (const attacker of all.filter((e) => canAttack(e, state))) {
     const target = chooseTarget(state, attacker);
     if (!target) continue;
+    // Opening pace: a paced Core takes no damage until its 3:00 shield is down (env/stats.mjs PACING).
+    if (state.pacing && target.kind === "core" && state.tick < PACING.coreShieldTicks) continue;
     const row = statsOf(attacker, state);
     let dmg = state.ammo && row.shot ? row.shot.damage : row.damage;
     if (isStructure(target)) dmg *= row.structureMultiplier;
