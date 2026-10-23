@@ -1,4 +1,10 @@
-Match: fanatic-haiku (side 0) vs fanatic-fable (side 1), seed 499. Result: {"winner":1,"reason":"core","tick":500,"value":[180,1485]} (24 ticks = 1 s).
-0-10s: progress×80, mine@1×63, deliver@1×62, mine@0×61, deliver@0×60, queue×42, mine×32, deliver×28
-10-20s: order×264, hit×143, mine@1×71, deliver@1×69, queue×40, deliver×33, mine×33, deliver@0×29
-20-30s: hit×109, order×11, deliver@1×6, mine@1×4, mine×3, deliver×2, queue×2, spawn×1
+Match: builtin (side 0) vs fanatic-sonnet (side 1), seed 831. Result: {"winner":0,"reason":"timeout","tick":2000,"value":[4470,150]} (24 ticks = 1 s).
+0-10s: progress×80, mine@1×59, deliver@1×58, mine×55, mine@0×54, deliver×53, deliver@0×52, queue×49
+10-20s: order×977, order@0×367, hit×161, mine×73, deliver×73, queue×55, deliver@1×45, mine@1×44
+20-30s: order×805, order@0×130, hit×63, mine×38, deliver×37, hit@1×24, queue×20, mine@1×12
+30-40s: deliver×29, mine×27, progress×26, deliver@0×15, mine@0×13, queue×5, spend×3, order@0×2
+40-50s: mine×29, deliver×26, mine@0×14, deliver@0×12, queue×7, spawn×4, order×4, spend×3
+50-60s: progress×40, deliver×31, mine×31, mine@0×16, deliver@0×16, order@0×3, spend×1, spawn×1
+60-70s: deliver×29, mine×29, deliver@0×16, mine@0×15
+70-80s: mine×30, deliver×28, mine@0×16, deliver@0×15, order@0×2, order×2
+80-90s: deliver×10, mine×9, mine@0×5, deliver@0×4, order×4, order@0×1
