@@ -15,6 +15,7 @@
 // at all (walled off by rocks, crystals or structures) is cleared and a `blocked` event is logged.
 
 import { findPath } from './path.mjs';
+import { createFieldCache, findPathCached } from './path-field.mjs';
 import { STATS, rowOf } from './stats.mjs';
 import { findEntity, isPassable, isFree, distance, emit } from './state.mjs';
 import { fenceBlocker, stepFences } from './fence.mjs';
@@ -103,6 +104,17 @@ function clearOrder(state, unit) {
 // Units that were held up by another unit on their last moving tick, and units currently on a detour. Both are
 // kept outside the unit records so that observations, logs and record comparisons never see them; they only
 // decide whether this unit plans around other units this tick.
+const fieldCaches = new WeakMap(); // per match: goal distance fields (env/path-field.mjs)
+const wallIds = new WeakMap(); // fence tile Set -> small id
+let nextWallId = 1;
+function wallsIdOf(walls) {
+  if (!walls) return 0;
+  if (!walls.tiles) return -1; // unknown walls: never cached
+  let id = wallIds.get(walls.tiles);
+  if (!id) wallIds.set(walls.tiles, (id = nextWallId++));
+  return id;
+}
+
 const waiting = new WeakSet();
 const detouring = new WeakSet();
 
@@ -160,7 +172,15 @@ export function stepMovement(state) {
 
     const from = { x: unit.x, y: unit.y };
     const goal = { x: dest.x, y: dest.y };
-    const path = findPath(grid, from, goal, { within: dest.within });
+    const wallsId = wallsIdOf(walls);
+    let path;
+    if (wallsId >= 0) {
+      let cache = fieldCaches.get(state);
+      if (!cache) fieldCaches.set(state, (cache = createFieldCache()));
+      path = findPathCached(cache, getSolid(), wallsId, grid, from, goal, dest.within ?? 0);
+    } else {
+      path = findPath(grid, from, goal, { within: dest.within });
+    }
     if (!path || path.length === 0) {
       // Walled off: nowhere to go, ever. Drop the order and say so.
       forget(unit);

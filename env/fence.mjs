@@ -75,7 +75,9 @@ export function fenceBlocker(state) {
     if (FLYERS.has(unit.kind)) return null;
     const enemy = tiles[1 - unit.owner];
     if (!enemy || enemy.size === 0) return null;
-    return (x, y) => enemy.has(key(x, y));
+    const walls = (x, y) => enemy.has(key(x, y));
+    walls.tiles = enemy; // lets the path cache name these walls (env/movement.mjs)
+    return walls;
   };
 }
 
