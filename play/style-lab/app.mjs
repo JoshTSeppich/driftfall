@@ -24,6 +24,8 @@ export function boot() {
   document.querySelectorAll('[data-look]').forEach((b,i)=>b.onclick=()=>pickLook(i));
   document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='terrain-kit'){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
   document.querySelector('#terrain-inspection').onchange=e=>{const stage=document.querySelector('#stage');stage.classList.toggle('terrain720',e.target.value==='720');stage.classList.toggle('terrainthumb',e.target.value==='thumb');resize();};
+  document.querySelector('#toast-bank').oninput=e=>{lab.setToast(Number(e.target.value));document.querySelector('#toast-value').textContent=e.target.value;};
+  document.querySelector('#toast-wish').onchange=e=>lab.setWish(e.target.value);
   document.querySelector('#expression').onchange=e=>lab.setExpression(e.target.value);
   document.querySelector('#production').onchange=e=>{document.querySelector('#stage').classList.toggle('production',e.target.checked);resize();};
   document.querySelector('#dam').onchange=e=>lab.setDam(e.target.checked);
@@ -34,7 +36,7 @@ export function boot() {
   addEventListener('keydown',e=>{if(['1','2','3'].includes(e.key))pickLook(Number(e.key)-1);});
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(document.querySelector('#production').checked){const u=lab.units[0];const box=new T.Box3().setFromObject(u),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());controls.target.copy(center);lab.camera.position.copy(center).add(new T.Vector3(0,1,1.5).normalize().multiplyScalar(Math.max(size.x,size.y,size.z)*2.2));}renderer.setPixelRatio(document.querySelector('#production').checked||document.querySelector('#terrain-inspection').value!=='normal'?1:Math.min(devicePixelRatio,1.5));renderer.setSize(w,h,false);composer.setSize(w,h);lab.resize(w,h);}
   addEventListener('resize',resize);pickLook(1);
-  const sequence=['trade','press','convey','drill','produce','claim','detect','drop','push-rock','cut-cord','replug','hide','repair','spawn','idle','move','stop','siege','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','rank-up','shimmer','construction','death'];
+  const sequence=['happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','push-rock','cut-cord','replug','hide','repair','spawn','idle','move','stop','siege','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','rank-up','shimmer','construction','death'];
   function frame(ms){requestAnimationFrame(frame);const t=ms/1000;
     if(auto&&t-lastDemo>(sequence[(step-1+sequence.length)%sequence.length]==='cut-cord'?12:sequence[(step-1+sequence.length)%sequence.length]==='gather'?4:1.5)){action(sequence[step++%sequence.length]);lastDemo=t;}
     controls.update();lab.update(t);frames++;

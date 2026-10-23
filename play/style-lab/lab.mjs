@@ -1,3 +1,7 @@
+import {buildToppings,poseToppings} from './toppings.mjs';
+import {buildMoods,poseMoods} from './thought-moods.mjs';
+import {buildToastStacks,poseToastStacks} from './toast-stacks.mjs';
+import {buildKettle,poseKettle} from './grudge-kettle.mjs';
 import {buildTurret,poseTurret} from './turret.mjs';
 import {buildTradingHouse,poseTradingHouse} from './trading-house.mjs';
 import {buildPress,posePress} from './press.mjs';
@@ -16,7 +20,7 @@ import {buildDefroster,poseDefroster} from './defroster.mjs';
 import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-export const SHAPES=Object.freeze(['turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit']);
+export const SHAPES=Object.freeze(['toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit']);
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
 const teamColor = team => team === 'orange' ? 0xff8a2a : 0x38e0ff;
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -43,11 +47,11 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
-  const g = kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
+  const g = kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+  if (kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
     // Rigid Bible rigs are built in bible.mjs.
   } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
@@ -177,10 +181,11 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   let shards;
   let shape='all';
   const roster=SHAPES;
+  let bankToast=300, wish='plain';
   let dam=false, expression='determined';
   let team='cyan', objects=[], units=[], stress=[], active='idle', started=0, now=0, stressOn=false, fill=0;
   const dummy=new T.Object3D();
-  const actions=['trade','press','convey','drill','produce','claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
+  const actions=['happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
   function rebuild(){
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
     const ground=buildModel('ground',look,team); objects.push(ground);
@@ -222,6 +227,10 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
+      if(u.name==='toppings'){poseToppings(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='thought-moods'){poseMoods(u,{active,age,elapsed,spring,wish,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='toast-stacks'){poseToastStacks(u,{active,age,elapsed,spring,toast:bankToast,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='grudge-kettle'){poseKettle(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='turret'){poseTurret(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='trading-house'){poseTradingHouse(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='press'){posePress(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
@@ -401,6 +410,8 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
     setShape(value){if(value!=='all'&&!roster.includes(value))throw new Error('Unknown shape');shape=value;rebuild();},
     setLook(value){if(!LOOKS.includes(value))throw new Error('Unknown look');look=value;rebuild();},setTeam(value){team=value;rebuild();},
     setExpression(value){if(!['determined','proud','alarmed','angry'].includes(value))throw new Error('Unknown expression');expression=value;},
+    setWish(value){if(!['plain','buttered','jam','gourmet'].includes(value))throw new Error('Unknown wish');wish=value;},
+    setToast(value){if(!Number.isFinite(value))throw new Error('Invalid Toast');bankToast=Math.max(0,Math.min(500,value));},
     setDam(value){dam=!!value;},
     setStress(value){stressOn=value;stress.forEach(b=>b.visible=value);},
     resize(w,h){camera.aspect=w/h;camera.updateProjectionMatrix();scene.traverse(o=>{if(o.material?.uniforms?.viewport)o.material.uniforms.viewport.value.set(w,h);});},

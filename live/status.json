@@ -1,15 +1,15 @@
 {
- "build": 93,
- "at": "2026-10-23T03:27:48.821Z",
- "seconds": 121.6,
+ "build": 97,
+ "at": "2026-10-23T03:47:54.806Z",
+ "seconds": 121.4,
  "state": "red",
- "nextBuildAt": "2026-10-23T03:30:48.821Z",
- "headline": "Red: 3 test file(s) failing.",
+ "nextBuildAt": "2026-10-23T03:50:54.806Z",
+ "headline": "Red: 1 test file(s) failing.",
  "tests": {
   "files": 73,
-  "pass": 1119,
-  "fail": 6,
-  "seconds": 213
+  "pass": 1129,
+  "fail": 0,
+  "seconds": 219.2
  },
  "failures": [
   {
@@ -27,32 +27,6 @@
    ],
    "tests": [],
    "error": ""
-  },
-  {
-   "file": "tests/live-spotlight.test.mjs",
-   "owners": [],
-   "imports": [
-    "live/spotlight.mjs"
-   ],
-   "tests": [
-    "mountSpotlight renders cards from the live Control Room when it is reachable (skips otherwise)"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
-  },
-  {
-   "file": "tests/style-lab.test.mjs",
-   "owners": [],
-   "imports": [
-    "play/style-lab/lab.mjs"
-   ],
-   "tests": [
-    "FACETED: real geometry builds with a stub renderer",
-    "FACETED INK: real geometry builds with a stub renderer",
-    "Y2K GLOSS: real geometry builds with a stub renderer",
-    "Five-Facet rule covers models, selection rings, sky and death effects within budgets",
-    "Turret opens its hatch, springs out of the ground before firing and retracts"
-   ],
-   "error": "Error: Unknown model turret"
   }
  ],
  "parse": {
@@ -61,7 +35,7 @@
  },
  "match": {
   "ok": true,
-  "seed": 94,
+  "seed": 98,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
@@ -72,7 +46,7 @@
     3530
    ]
   },
-  "ms": 767
+  "ms": 617
  },
  "changed": {
   "first": false,
@@ -95,11 +69,12 @@
   "live": 19
  },
  "previous": {
-  "build": 92,
+  "build": 96,
   "state": "red",
-  "at": "2026-10-23T03:22:47.192Z",
+  "at": "2026-10-23T03:42:53.373Z",
   "failing": [
-   "tests/builtin-ai.test.mjs"
+   "tests/builtin-ai.test.mjs",
+   "tests/live-spotlight.test.mjs"
   ]
  }
 }

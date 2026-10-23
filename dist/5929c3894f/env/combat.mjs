@@ -52,18 +52,6 @@ export function chooseTarget(state, attacker) {
   return best;
 }
 
-// Attack cadence (opening pacing): an entity whose stats set attackTicks hits once, then waits that many ticks. An
-// entity with no cooldown yet (or a row without attackTicks) is ready at once, so the first hit never waits.
-function attackReady(state, entity) {
-  const every = statsOf(entity).attackTicks;
-  return !(every > 1) || !(entity.nextAttack > state.tick);
-}
-
-function startCooldown(state, entity) {
-  const every = statsOf(entity).attackTicks;
-  if (every > 1) entity.nextAttack = state.tick + every;
-}
-
 function removeFrom(list, entity) {
   const i = list.indexOf(entity);
   if (i >= 0) list.splice(i, 1);
@@ -74,16 +62,10 @@ export function stepCombat(state) {
   // 1. Decide every attack from the start-of-phase positions.
   const attacks = [];
   for (const attacker of everything(state).filter(canAttack)) {
-    if (!attackReady(state, attacker)) continue;
     const target = chooseTarget(state, attacker);
     if (!target) continue;
-    startCooldown(state, attacker);
     let dmg = statsOf(attacker).damage;
     if (isStructure(target)) dmg *= statsOf(attacker).structureMultiplier;
-    // Opening pacing: a Core takes only a fraction of the damage until its hardened window ends.
-    if (target.kind === "core" && state.tick < STATS.core.hardenedTicks) {
-      dmg = Math.max(1, Math.round(dmg * STATS.core.hardenedMultiplier));
-    }
     attacks.push({ attacker, target, dmg });
   }
 

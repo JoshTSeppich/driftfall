@@ -127,14 +127,9 @@ export const STATS = deepFreeze({
   },
 
   // The Core (spec section 4). Can't be built, so it has no cost.
-  // Opening pacing (FANATICS.md Council #1): until the hardened window ends the Core takes a quarter of the damage, so
-  // no rush can end a match before three minutes. hp is 10000 for the same reason (a rush needs minutes, not seconds).
   core: {
-    hp: 12000,
+    hp: 1000,
     trains: ["worker"],
-    hardenedSeconds: 180,
-    hardenedTicks: ticks(180),
-    hardenedMultiplier: 0.25,
   },
 
   // Buildable structures (spec section 4). Cost is paid when the build command is accepted.
@@ -144,13 +139,11 @@ export const STATS = deepFreeze({
   },
 
   // Units (spec section 5). speed is ticks per step: 1 moves every tick, 2 moves on even ticks only.
-  // attackTicks (opening pacing): one attack every this many ticks, the first at once. Absent means every tick.
-  // Training is slower too (trainTicks at 24 tps: Worker 2.5 s, Grunt 1.9 s, Lancer 2.5 s, Brute 5 s).
   units: {
-    worker: { cost: 50, hp: 40, damage: 2, range: 1, speed: 1, trainTicks: 60, attackTicks: 24, structureMultiplier: 1 },
-    grunt: { cost: 50, hp: 60, damage: 8, range: 1, speed: 1, trainTicks: 45, attackTicks: 24, structureMultiplier: 1 },
-    lancer: { cost: 75, hp: 40, damage: 10, range: 4, speed: 1, trainTicks: 60, attackTicks: 24, structureMultiplier: 1 },
-    brute: { cost: 150, hp: 240, damage: 25, range: 1, speed: 2, trainTicks: 120, attackTicks: 24, structureMultiplier: 2 },
+    worker: { cost: 50, hp: 40, damage: 2, range: 1, speed: 1, trainTicks: 20, structureMultiplier: 1 },
+    grunt: { cost: 50, hp: 60, damage: 8, range: 1, speed: 1, trainTicks: 15, structureMultiplier: 1 },
+    lancer: { cost: 75, hp: 40, damage: 10, range: 4, speed: 1, trainTicks: 20, structureMultiplier: 1 },
+    brute: { cost: 150, hp: 240, damage: 25, range: 1, speed: 2, trainTicks: 40, structureMultiplier: 2 },
   },
 
   // ---- TERRITORY.md tables (additive; see the header). ----

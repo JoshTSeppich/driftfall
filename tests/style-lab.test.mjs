@@ -5,12 +5,12 @@ import { buildModel, triangles, LOOKS, SHAPES, createLab } from '../play/style-l
 for (const look of LOOKS) test(`${look}: real geometry builds with a stub renderer`, () => {
   const renderer = { render() {}, setSize() {}, dispose() {} };
   const lab = createLab({ renderer, width: 900, height: 600, look });
-  for (const kind of ['crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
+  for (const kind of ['toppings', 'thought-moods', 'toast-stacks', 'grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler', 'mill', 'pump', 'churn', 'generator', 'ground-patches', 'power-strip', 'cords-power', 'crystal', 'ground']) {
     const model = buildModel(kind, look, 'cyan');
     assert.ok(model instanceof THREE.Group);
     assert.ok(triangles(model) > 0);
-    if (['crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) < 300, `${kind}: ${triangles(model)}`);
-    if (['turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
+    if (['grudge-kettle', 'crumb', 'popper', 'four-slice', 'zapper', 'flak-popper','smoke-alarm','breadbox', 'breadbox','flying-toast','timer', 'timer','cold-toast','defroster','bagel','broiler'].includes(kind)) assert.ok(triangles(model) < 300, `${kind}: ${triangles(model)}`);
+    if (['toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)) assert.ok(triangles(model) < 800);
   }
   for (const action of lab.actions) { lab.trigger(action, 0); for (let t = 0; t <= 4; t += 0.016) lab.update(t); }
   lab.setTeam('orange'); lab.setLook(look); lab.setStress(true); lab.update(5);
@@ -82,7 +82,7 @@ test('Flak Popper aims its whole body back and launches vertical toast with spri
 });
 
  test('Five-Facet rule covers models, selection rings, sky and death effects within budgets', () => {
-  for(const kind of ['crumb','popper','four-slice','zapper','flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler','mill','pump','churn','generator','ground-patches','power-strip','crystal','ground']) {
+  for(const kind of ['toppings', 'thought-moods', 'toast-stacks', 'grudge-kettle','crumb','popper','four-slice','zapper','flak-popper', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet', 'smoke-alarm', 'breadbox', 'flying-toast', 'timer', 'cold-toast', 'defroster', 'bagel', 'broiler','mill','pump','churn','generator','ground-patches','power-strip','crystal','ground']) {
     const m=buildModel(kind);
     m.traverse(o=>{
       if(!o.isMesh)return;
@@ -91,7 +91,7 @@ test('Flak Popper aims its whole body back and launches vertical toast with spri
       assert.notEqual(geo.type,'OctahedronGeometry',kind);
       if(geo.type==='ShapeGeometry'&&!geo.userData.flatPanel)assert.equal(geo.userData.facets,5,kind);
     });
-    assert.ok(triangles(m)<(['turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)?800:kind==='ground'?800:300));
+    assert.ok(triangles(m)<(['toast-stacks', 'turret', 'trading-house', 'press', 'track', 'drill', 'toaster-oven', 'outlet','mill','pump','churn','generator','ground-patches','power-strip','cords-power'].includes(kind)?800:kind==='ground'?800:300));
   }
   const lab=createLab();
   const rings=lab.scene.getObjectByName('selection-rings');assert.ok(rings);
@@ -610,4 +610,92 @@ test('Turret opens its hatch, springs out of the ground before firing and retrac
     lab.trigger('move',3);const poses=[];for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());}
     assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
   }lab.dispose();
+});
+
+
+test('neutral Grudge Kettle guards with six rigid spring parts and planted scald hops',()=>{
+  const lab=createLab();lab.setShape('grudge-kettle');
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    lab.setLook(look);lab.setTeam(team);const u=lab.units[0];
+    assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    assert.equal(u.getObjectByName('neutral-band').material.color.getHex(),0xd99448);
+    const lid=u.getObjectByName('kettle-lid'),spout=u.getObjectByName('kettle-spout');
+    lab.trigger('idle',0);lab.update(.1);const y=lid.position.y;lab.update(.3);assert.notEqual(lid.position.y,y);
+    lab.trigger('attack',1);const lifts=[],tilts=[];
+    for(let i=0;i<120;i++){lab.update(1+i/120);lifts.push(lid.position.y);tilts.push(spout.rotation.x);}
+    assert.ok(Math.max(...lifts)-Math.min(...lifts)>.12);assert.ok(Math.max(...tilts)-Math.min(...tilts)>.2);
+    lab.trigger('move',3);const poses=[];
+    for(let i=0;i<60;i++){lab.update(3+i/60);poses.push(u.position.clone());}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+    const foot=u.getObjectByName('kettle-left-foot');
+    assert.ok(Math.abs(foot.getWorldPosition(new THREE.Vector3()).y)<.01,'feet plant at rest');
+    lab.trigger('idle',4);for(let i=0;i<120;i++)lab.update(4+i/120);
+    assert.ok(Math.abs(spout.rotation.x)<.04,'scald recoil recovers');
+  }lab.dispose();
+});
+
+ test('Toast bank grows and shrinks beside its strip, with spring slices and planted hops',()=>{
+  const lab=createLab();lab.setShape('toast-stacks');
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    lab.setLook(look);lab.setTeam(team);lab.setToast(500);lab.trigger('idle',0);
+    for(let i=0;i<120;i++)lab.update(i/120);
+    const u=lab.units[0],slices=u.children.filter(p=>p.name.startsWith('bank-slice'));
+    assert.equal(u.children.length,6);assert.equal(slices.length,5);assert.ok(triangles(u)<800);
+    assert.ok(u.getObjectByName('bank-strip'));assert.ok(slices.every(p=>p.visible));
+    assert.equal(u.getObjectByName('bank-rim').material.color.getHex(),team==='cyan'?0x32d9e8:0xff8540);
+    assert.ok(slices[0].position.x>u.getObjectByName('bank-strip').position.x+1);
+    const y=slices[4].position.y;lab.update(1.2);assert.notEqual(slices[4].position.y,y);
+    lab.setToast(100);for(let i=0;i<120;i++)lab.update(2+i/120);
+    assert.equal(slices.filter(p=>p.visible).length,1);
+    lab.setToast(0);lab.update(3.1);assert.equal(slices.filter(p=>p.visible).length,0);
+    lab.setToast(300);lab.update(3.2);assert.equal(slices.filter(p=>p.visible).length,3);
+    lab.trigger('move',4);const poses=[];for(let i=0;i<60;i++){lab.update(4+i/60);poses.push(u.position.clone());}
+    assert.ok(poses.some(p=>p.y>.1));assert.equal(poses[25].x,poses[28].x);
+  }lab.dispose();
+});
+
+test('Thought bubbles: six pivots, four distinct wishes, moods and planted spring hops',()=>{
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    const lab=createLab({look});lab.setTeam(team);lab.setShape('thought-moods');
+    const u=lab.units[0];assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
+    for(const wish of ['plain','buttered','jam','gourmet']){
+      lab.setWish(wish);lab.update(0);
+      assert.equal(u.userData.wish,wish);
+      assert.equal(u.getObjectByName('wish-butter').visible,['buttered','gourmet'].includes(wish));
+      assert.equal(u.getObjectByName('wish-jam').visible,['jam','gourmet'].includes(wish));
+      assert.equal(u.getObjectByName('wish-garnish').visible,wish==='gourmet');
+    }
+    assert.throws(()=>lab.setWish('burnt'));
+    const sample=(action,start)=>{lab.trigger(action,start);for(let i=1;i<=30;i++)lab.update(start+i/60);};
+    sample('idle',0);const idle=u.getObjectByName('mood-bubble').position.y;
+    lab.update(.7);assert.notEqual(u.getObjectByName('mood-bubble').position.y,idle);
+    sample('grumpy',1);assert.ok(u.getObjectByName('mood-brow').rotation.z>.15);
+    sample('strike',2);assert.equal(u.getObjectByName('mood-sign').visible,true);
+    assert.ok(u.getObjectByName('mood-sign').position.y>.5);
+    sample('happy',3);assert.equal(u.getObjectByName('mood-sign').visible,false);
+    lab.trigger('happy',4);lab.update(4.12);assert.ok(u.position.y>.1);
+    lab.trigger('move',5);lab.update(5.42);const planted=u.position.x;lab.update(5.47);assert.equal(u.position.x,planted);
+    lab.update(5.6);assert.ok(u.position.x>planted);assert.ok(u.position.y>.05);assert.notEqual(u.scale.y,1);
+    lab.dispose();
+  }
+});
+
+
+test('Toppings provides six readable pickup and market icons with spring collection and planted hops',()=>{
+  for(const look of LOOKS)for(const team of ['cyan','orange']){
+    const lab=createLab({look});lab.setTeam(team);lab.setShape('toppings');
+    const u=lab.units[0];assert.equal(u.children.length,6);assert.ok(triangles(u)<300);
+    const names=['butter','jam','honey','salt','sugar','nut-butter'];
+    for(const name of names)assert.ok(u.getObjectByName('topping-'+name));
+    u.traverse(o=>{if(o.geometry?.parameters?.radialSegments)assert.equal(o.geometry.parameters.radialSegments,5);});
+    lab.trigger('idle',0);lab.update(.1);const y=u.children[0].position.y;lab.update(.3);assert.notEqual(u.children[0].position.y,y);
+    lab.trigger('gather',1);const heights=[];for(let i=0;i<120;i++){lab.update(1+i/120);heights.push(u.children[0].position.y);}
+    assert.ok(Math.max(...heights)-Math.min(...heights)>.3);
+    lab.trigger('trade',3);for(let i=0;i<120;i++)lab.update(3+i/120);
+    assert.equal(u.userData.presentation,'market');assert.ok(u.children.every(p=>Math.abs(p.position.z)<.01));
+    lab.trigger('move',5);lab.update(5.42);const x=u.position.x;lab.update(5.47);assert.equal(u.position.x,x);
+    lab.update(5.6);assert.ok(u.position.x>x);assert.ok(u.position.y>.05);assert.notEqual(u.scale.y,1);
+    lab.dispose();
+  }
 });
