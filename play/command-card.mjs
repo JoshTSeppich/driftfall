@@ -49,10 +49,11 @@ export function renderCard(card, { shards = 0, mode = null } = {}) {
     const active = !!mode && (mode.type === entry.action || (mode.type === 'place' && mode.kind === entry.kind));
     const name = entry.kind ? kindName(entry.kind) : entry.label; // once, in the proper name (the sim keeps 'forge' as an id)
     const pic = iconHtml(entry.kind ?? entry.action, name);
-    const icon = pic.startsWith('<img') ? pic : ''; // no art: the label below is the button; never print it twice
+    const hasArt = pic.startsWith('<img'); // no art: the readable fallback IS the label; never print the name twice
+    const icon = pic;
     const cost = entry.cost !== undefined ? `<small>${entry.cost}</small>` : '';
     return `<button class="cc${poor ? ' poor' : ''}${active ? ' on' : ''}" data-action="${entry.action}" data-kind="${entry.kind ?? ''}" data-key="${key}" style="position:relative" title="${tooltip({ ...entry, key })}">`
-      + `<kbd style="position:absolute;top:2px;right:2px">${key.toUpperCase()}</kbd>${icon}<span class="lbl">${name}</span>${cost}</button>`;
+      + `<kbd style="position:absolute;top:2px;right:2px">${key.toUpperCase()}</kbd>${icon}${hasArt ? `<span class="lbl">${name}</span>` : ''}${cost}</button>`;
   }).join('');
 }
 
