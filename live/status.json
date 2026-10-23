@@ -1,33 +1,106 @@
 {
- "build": 247,
- "at": "2026-10-23T18:50:55.629Z",
- "seconds": 263.5,
+ "build": 249,
+ "at": "2026-10-23T19:09:43.909Z",
+ "seconds": 504.8,
  "state": "red",
- "nextBuildAt": "2026-10-23T18:53:55.629Z",
- "headline": "Red: match did not record.",
+ "nextBuildAt": "2026-10-23T19:12:43.909Z",
+ "headline": "Red: 4 test file(s) failing, match did not record.",
  "tests": {
   "files": 92,
-  "pass": 1334,
-  "fail": 0,
-  "seconds": 413.5
+  "pass": 1329,
+  "fail": 5,
+  "seconds": 1099.2
  },
- "failures": [],
+ "failures": [
+  {
+   "file": "tests/builtin-ai.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/sim.mjs",
+    "env/state.mjs",
+    "env/stats.mjs",
+    "players/builtin/ai.mjs",
+    "players/sample-player.mjs"
+   ],
+   "tests": [
+    "it does not give itself away to a real opponent: holds its own against the sample bots and thinks fast"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: slowest think 121.25 ms"
+  },
+  {
+   "file": "tests/fanatic-fable.test.mjs",
+   "owners": [
+    "fable"
+   ],
+   "imports": [
+    "env/referee.mjs"
+   ],
+   "tests": [
+    "fanatic-fable beats the built-in AI by Core inside 40 seconds from either side"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+  },
+  {
+   "file": "tests/opening-clock.test.mjs",
+   "owners": [
+    "fable",
+    "haiku"
+   ],
+   "imports": [
+    "env/referee.mjs",
+    "env/stats.mjs"
+   ],
+   "tests": [],
+   "error": ""
+  },
+  {
+   "file": "tests/sim-determinism.test.mjs",
+   "owners": [
+    "fable"
+   ],
+   "imports": [
+    "env/sim.mjs"
+   ],
+   "tests": [
+    "same seed, same players: logs are byte-identical without timing",
+    "same seed: comparable(log) is identical too",
+    "timing is the only top-level field that may differ"
+   ],
+   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+  }
+ ],
  "parse": {
   "checked": 65,
   "errors": []
  },
  "match": {
   "ok": false,
-  "seed": 248,
+  "seed": 250,
   "error": "[timed out]",
   "keptPrevious": true
  },
  "changed": {
   "first": false,
   "added": [],
-  "changed": [],
+  "changed": [
+   {
+    "file": "viewer3d/buildings.mjs",
+    "owner": "haiku"
+   },
+   {
+    "file": "tests/perf.test.mjs",
+    "owner": null
+   },
+   {
+    "file": "tests/toaster-buildings.test.mjs",
+    "owner": null
+   }
+  ],
   "removed": [],
-  "total": 0
+  "total": 3
  },
  "files": {
   "env": 33,
@@ -38,9 +111,9 @@
   "live": 19
  },
  "previous": {
-  "build": 246,
+  "build": 248,
   "state": "red",
-  "at": "2026-10-23T18:43:32.166Z",
+  "at": "2026-10-23T18:58:19.089Z",
   "failing": [
    "tests/perf.test.mjs"
   ]

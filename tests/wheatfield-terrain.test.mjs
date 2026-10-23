@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { generateMap } from '../env/map.mjs';
 import { TERRAIN_PALETTE } from '../play/style-lab/terrain-kit.mjs';
 import {
-  QUIET, tileColour, buildTileImage, buildMinimapImage, createWheatfieldTerrain, SEAM,
+  QUIET, tileColour, buildTileImage, buildMinimapImage, createWheatfieldTerrain, SEAM, NAVY, BAND,
 } from '../play/wheatfield-terrain.mjs';
 
 const map = generateMap(7, { map: 'wheatfield' });
@@ -22,8 +22,8 @@ test('the palette is the Quiet Battlefield table: ground, wheat, water, cliff, r
 });
 
 test('tile letters map to surfaces: creek is water, bridge and ford are walkable looks, wheat is warm', () => {
-  assert.equal(tileColour('~', {}), QUIET.shallow);
-  assert.equal(tileColour('~', { deep: true }), QUIET.deep);
+  assert.equal(tileColour('~', {}), BAND);
+  assert.equal(tileColour('~', { deep: true }), NAVY);
   assert.equal(tileColour('.', {}), QUIET.ground);
   assert.equal(tileColour('.', { high: true }), QUIET.high);
   assert.equal(tileColour('B', {}), QUIET.ramp);
@@ -103,4 +103,16 @@ test('wheat shrinks as a field is mined and vanishes at zero', () => {
   t.update(frameOf(mined), 1 / 60);
   assert.ok(t.stats.wheatShown < visibleFull, 'twenty emptied fields lose their bundles');
   t.dispose();
+});
+
+test('Quiet Battlefield contrast: wheat is the brightest warm tile, navy is darker than the shallow band, the seam is subtle', () => {
+  const lum = (h) => ((h >> 16) & 255) * 0.3 + ((h >> 8) & 255) * 0.59 + (h & 255) * 0.11;
+  assert.ok(lum(NAVY) < lum(BAND) - 15, 'shallow band is lighter than navy');
+  assert.ok(lum(NAVY) < lum(QUIET.ground) - 20, 'water is darker than the ground');
+  for (const ch of ['S', 'R']) {
+    const w = tileColour(ch, {});
+    assert.ok(((w >> 16) & 255) > (w & 255) + 40, 'wheat is warm');
+    assert.ok(lum(w) > lum(QUIET.ground) + 25 && lum(w) > lum(QUIET.high), 'wheat is the brightest ground feature');
+  }
+  assert.ok(SEAM <= 0.2, 'seam is a faint pull toward the cliff colour');
 });

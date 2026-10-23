@@ -14,7 +14,9 @@ import * as THREE from 'three';
 import { TERRAIN_PALETTE } from './style-lab/terrain-kit.mjs';
 
 export const QUIET = TERRAIN_PALETTE;
-export const SEAM = 0.32; // how far a seam pixel is pulled toward the cliff colour: thin lines, not a glowing board
+export const SEAM = 0.14; // how far a seam pixel is pulled toward the cliff colour: a quiet 1 px line, not a board
+export const NAVY = 0x1b3b57; // deep water: darker than the style-bible deep, so the creek reads as a cut in the ground
+export const BAND = 0x4d97a6; // shallow band: clearly lighter than the navy, still cool
 const FOG = 0x26353f;
 
 const rgb = (n) => [(n >> 16) & 255, (n >> 8) & 255, n & 255];
@@ -25,14 +27,14 @@ const isWater = (ch) => ch === '~';
 /** Hex colour of one tile letter. deep: a water tile with water on all four sides; high: raised ground. */
 export function tileColour(ch, { deep = false, high = false } = {}) {
   switch (ch) {
-    case '~': return deep ? QUIET.deep : QUIET.shallow;
-    case 'U': return QUIET.deep;                                 // a spring: the Well goes here
+    case '~': return deep ? NAVY : BAND;
+    case 'U': return NAVY;                                // a spring: the Well goes here
     case 'B': case '=': case '|': return QUIET.ramp;              // bridges and ramps share the pale stone value
     case 'f': return rgbToHex(mix(rgb(QUIET.shallow), rgb(QUIET.ramp), 0.5));   // a ford: shallows over stone
     case 'G': return QUIET.socket;                                // a windmill pad
     case 'L': return QUIET.meadow;
-    case 'S': return rgbToHex(mix(rgb(QUIET.ground), rgb(QUIET.wheat), 0.22));  // a wheat field: warm, but dimmer than toast
-    case 'R': return rgbToHex(mix(rgb(QUIET.ground), rgb(QUIET.wheat), 0.38));  // golden wheat
+    case 'S': return rgbToHex(mix(rgb(QUIET.ground), rgb(QUIET.wheat), 0.8));   // a wheat field: the brightest warm thing on the map
+    case 'R': return rgbToHex(mix(rgb(QUIET.ground), rgb(QUIET.wheat), 0.95));  // golden wheat
     case '#': return QUIET.cliff;
     default: return high ? QUIET.high : QUIET.ground;
   }
@@ -45,6 +47,15 @@ function tileInfo(map, x, y) {
   return { ch, deep: isWater(ch) && w(x - 1, y) && w(x + 1, y) && w(x, y - 1) && w(x, y + 1), high: (map.heights?.[y]?.[x] ?? 0) > 0 };
 }
 
+const isWheat = (ch) => ch === 'S' || ch === 'R';
+function nearWheat(map, x, y) {
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    const row = map.tiles[y + dy];
+    if (row && isWheat(row[x + dx])) return true;
+  }
+  return false;
+}
+
 /** RGBA pixels for the ground texture: `scale` x `scale` pixels per tile, a faint grain, a seam on each tile's top and left. */
 export function buildTileImage(map, scale = 4) {
   const width = map.width * scale, height = map.height * scale;
@@ -52,12 +63,13 @@ export function buildTileImage(map, scale = 4) {
   const cliff = rgb(QUIET.cliff);
   for (let ty = 0; ty < map.height; ty++) for (let tx = 0; tx < map.width; tx++) {
     const { ch, deep, high } = tileInfo(map, tx, ty);
-    const base = rgb(tileColour(ch, { deep, high }));
-    const grain = (hash(tx, ty) - 0.5) * 0.05;                   // ±2.5 %: tiles read as tiles without noise
+    let base = rgb(tileColour(ch, { deep, high }));
+    if (ch === '.' && nearWheat(map, tx, ty)) base = mix(base, rgb(QUIET.wheat), 0.3); // a golden verge: fields read as big patches
+    const grain = (hash(tx, ty) - 0.5) * 0.04;                   // ±2 %: tiles read as tiles without noise
     const body = base.map((v) => Math.max(0, Math.min(255, Math.round(v * (1 + grain)))));
     const seam = mix(body, cliff, SEAM);
     for (let py = 0; py < scale; py++) for (let pxl = 0; pxl < scale; pxl++) {
-      const c = (py === 0 || pxl === 0) ? seam : body;
+      const c = scale >= 3 && (py === 0 || pxl === 0) ? seam : body; // no seams on the 1 px minimap
       const i = ((ty * scale + py) * width + tx * scale + pxl) * 4;
       data[i] = c[0]; data[i + 1] = c[1]; data[i + 2] = c[2]; data[i + 3] = 255;
     }

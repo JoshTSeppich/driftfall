@@ -119,13 +119,23 @@ function armyTickMs(orderFor) {
 }
 
 // Median time per tick of a full 2000-tick match with no commands on the seed-7 map.
+// A whole run is only a few ms, so the first runs mostly time the JIT warming up (4 us/tick cold, 1.5 warm).
+// Discard warm-up runs first; otherwise the median of 5 lands on a cold run and reads 2x slow.
 function idleTickMs() {
-  return measure(() => {
+  for (let i = 0; i < 8; i++) {
+    const s = sim.createMatch(SEED);
+    for (let t = 0; t < IDLE_TICKS; t++) sim.step(s, [[], []]);
+  }
+  // A few ms per run is easily hit by a busy machine (other agents, parallel tests), which only ever adds time,
+  // so take the fastest of many warm runs instead of the median.
+  let best = Infinity;
+  for (let r = 0; r < 25; r++) {
     const s = sim.createMatch(SEED);
     const t0 = nowMs();
     for (let i = 0; i < IDLE_TICKS; i++) sim.step(s, [[], []]);
-    return (nowMs() - t0) / IDLE_TICKS;
-  });
+    best = Math.min(best, (nowMs() - t0) / IDLE_TICKS);
+  }
+  return best;
 }
 
 // An open 32x32 grid, corner to corner: the usual long search.

@@ -249,7 +249,7 @@ export function createBuildings(ctx) {
   function buildBody(kind, owner) {
     // Toaster Wars: ctx.buildingLook(THREE, kind, owner) (play/toaster-buildings.mjs) may supply the body for a kind; null = use ours.
     const custom = ctx.buildingLook ? ctx.buildingLook(T, kind, owner) : null;
-    if (custom) return custom;
+    if (custom) { custom.custom = true; return custom; }
     const body = new T.Group();
     const g = glow(owner);
     const shadowed = (m) => {
@@ -500,7 +500,13 @@ export function createBuildings(ctx) {
 
   function disposeRecord(rec) {
     root.remove(rec.root);
-    if (rec.parts.muzzle) rec.parts.muzzle.material.dispose();
+    if (rec.parts.custom) {
+      // Bodies from ctx.buildingLook own their geometry and materials (not the shared caches), so free them with the record.
+      rec.root.traverse((o) => {
+        o.geometry?.dispose();
+        for (const m of [].concat(o.material ?? [])) m.dispose();
+      });
+    } else if (rec.parts.muzzle) rec.parts.muzzle.material.dispose();
   }
 
   // Events are handled once per tick, not once per render frame.

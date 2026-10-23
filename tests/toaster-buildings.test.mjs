@@ -64,3 +64,21 @@ test('createBuildings uses ctx.buildingLook for these kinds and still builds for
   assert.ok(root.children[4].getObjectByProperty('type', 'Mesh'), 'the forge is still drawn');
   b.dispose();
 });
+
+test('dispose frees the custom body geometries and materials (haiku #727)', () => {
+  const ctx = { THREE, scene: new THREE.Scene(), tileSize: 1, palette: null, gridToWorld: (x, y, h = 0, o = new THREE.Vector3()) => o.set(x - 128, h, y - 128) };
+  const made = [];
+  ctx.buildingLook = (T, kind, owner) => {
+    const p = toasterBuildingLook(T, kind, owner);
+    p?.body.traverse((o) => { if (o.geometry) made.push(o.geometry); if (o.material) made.push(o.material); });
+    return p;
+  };
+  const b = createBuildings(ctx);
+  const s1 = { tick: 1, units: [], structures: ['mill', 'well'].map((k, i) => ({ id: i + 1, owner: 0, kind: k, x: 3 + i * 3, y: 5, hp: 100, progress: 0, complete: true, queue: [] })) };
+  b.update({ tick: 1, alpha: 1, prev: s1, next: s1, events: [] }, 1 / 60);
+  assert.ok(made.length > 10);
+  const counts = new Map(made.map((o) => [o, 0]));
+  for (const o of made) o.addEventListener('dispose', () => counts.set(o, counts.get(o) + 1));
+  b.dispose();
+  assert.ok(made.every((o) => counts.get(o) >= 1), 'every custom geometry and material was disposed');
+});
