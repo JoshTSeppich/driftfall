@@ -1,3 +1,7 @@
+import {buildHitDefeat,poseHitDefeat} from './hit-defeat.mjs';
+import {buildToyShowcase,poseToyShowcase,createToyStage,applyToyMaterials,buildToyStress} from './toy-render.mjs';
+import {buildWindmillDam,poseWindmillDam} from './windmill-dam.mjs';
+import {buildGridTerrain,poseGridTerrain} from './grid-terrain-kit.mjs';
 import {rebuildBlocky} from './blocky.mjs';
 import {SPECIAL_ATTACKS,buildSpecialAttack,poseSpecialAttack} from './special-attacks.mjs';
 import {buildQuadVolley,poseQuadVolley} from './quad-volley.mjs';
@@ -25,7 +29,7 @@ import {buildDefroster,poseDefroster} from './defroster.mjs';
 import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-export const SHAPES=Object.freeze(['attack-specialists','attack-four-slice','attack-zapper','attack-popper','toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit']);
+export const SHAPES=Object.freeze(['toy-render','attack-specialists','attack-four-slice','attack-zapper','attack-popper','toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit','grid-terrain-kit','windmill-dam','hit-defeat']);
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
 const teamColor = team => team === 'orange' ? 0xff8a2a : 0x38e0ff;
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -39,7 +43,7 @@ function inkMaterial() {
 #ifdef USE_INSTANCING
 p=instanceMatrix*p; n=mat3(instanceMatrix)*n;
 #endif
-vec4 clip=projectionMatrix*modelViewMatrix*p; vec3 vn=normalMatrix*n; vec2 dir=(projectionMatrix*vec4(vn,0.)).xy; clip.xy+=normalize(dir+vec2(.00001))*3.0/viewport*clip.w; gl_Position=clip; }`, fragmentShader: 'void main(){gl_FragColor=vec4(.035,.045,.09,1.);}' });
+vec4 clip=projectionMatrix*modelViewMatrix*p; vec3 vn=normalMatrix*n; vec2 dir=(projectionMatrix*vec4(vn,0.)).xy; clip.xy+=normalize(dir+vec2(.00001))*1.0/viewport*clip.w; gl_Position=clip; }`, fragmentShader: 'void main(){gl_FragColor=vec4(.035,.045,.09,1.);}' });
 }
 function addInk(root) {
   const meshes = []; root.traverse(o => { if (o.isMesh && !o.material.transparent) meshes.push(o); });
@@ -52,11 +56,11 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan', specialAttack='broiler') {
-  const g = kind==='attack-specialists'?buildSpecialAttack(buildModel(specialAttack,look===LOOKS[1]?LOOKS[0]:look,team),specialAttack):kind==='attack-four-slice'?buildQuadVolley(look,team):kind==='attack-zapper'?buildHotCoil(look,team):kind==='attack-popper'?buildPopShot(look,team):kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
+  const g = kind==='hit-defeat'?buildHitDefeat(look,team):kind==='toy-render'?buildToyShowcase(buildModel,look,team):kind==='windmill-dam'?buildWindmillDam(look,team):kind==='grid-terrain-kit'?buildGridTerrain(look,team):kind==='attack-specialists'?buildSpecialAttack(buildModel(specialAttack,look===LOOKS[1]?LOOKS[0]:look,team),specialAttack):kind==='attack-four-slice'?buildQuadVolley(look,team):kind==='attack-zapper'?buildHotCoil(look,team):kind==='attack-popper'?buildPopShot(look,team):kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (kind==='attack-specialists'||kind==='attack-four-slice'||kind==='attack-zapper'||kind==='attack-popper'||kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+  if (kind==='hit-defeat'||kind==='toy-render'||kind==='windmill-dam'||kind==='grid-terrain-kit'||kind==='attack-specialists'||kind==='attack-four-slice'||kind==='attack-zapper'||kind==='attack-popper'||kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
     // Rigid Bible rigs are built in bible.mjs.
   } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
@@ -172,18 +176,19 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan', specialAttack='
     part(new T.CylinderGeometry(6.5,6.1,.45,5),'sand',[0,-.3,0]);
     for(let i=0;i<14;i++) part(oct(),i%2?'steel':'sand',[Math.sin(i*2.4)*5.4,.05,Math.cos(i*2.4)*5.4],[.25+i%3*.13,.2+i%2*.22,.35]);
   } else throw new Error(`Unknown model ${kind}`);
-  rebuildBlocky(g,kind);
+  if(!['hit-defeat','toy-render','windmill-dam','grid-terrain-kit'].includes(kind))rebuildBlocky(g,kind,team);
   g.updateMatrixWorld(true); g.traverse(o=>{ if(o.isMesh){o.userData.home=o.position.clone();o.userData.scale=o.scale.clone();} });
-  if(look===LOOKS[1]) addInk(g);
+  if(look===LOOKS[1]&&kind!=='toy-render') addInk(g);
   return g;
 }
-export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}, onAttackRelease=()=>{}, look=LOOKS[0] }={}) {
-  const scene=new T.Scene(), camera=new T.PerspectiveCamera(38,width/height,.1,150);
+export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}, onAttackRelease=()=>{}, look=LOOKS[0], onReactionSound=()=>{} }={}) {
+  const scene=new T.Scene(), camera=new T.PerspectiveCamera(35,width/height,.1,150);
   // Geometry sky survives the bloom composer, unlike an HTML-only backdrop.
   const sky=new T.Mesh(new T.SphereGeometry(60,5,2),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,vertexShader:'varying float height; void main(){height=position.y/60.;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying float height; void main(){vec3 dusk=vec3(.169,.106,.290);vec3 peach=vec3(1.,.604,.420);gl_FragColor=vec4(mix(peach,dusk,smoothstep(-.15,.65,height)),1.);}'}));sky.renderOrder=-100;scene.add(sky);
-  camera.position.set(10,9,14); camera.lookAt(0,.5,0);
+  camera.position.set(9,11,10); camera.lookAt(0,.5,0);
   scene.add(new T.HemisphereLight(0xc5eaff,0x6e3640,2.2));
   const key=new T.DirectionalLight(0xffdfb0,4);key.position.set(3,8,4);scene.add(key);
+  const toyStage=createToyStage(scene);let toy=true;
   let shards;
   let shape='all',specialAttack='broiler';
   const roster=SHAPES;
@@ -193,6 +198,7 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
   const dummy=new T.Object3D();
   const actions=['happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
   function rebuild(){
+    toyStage.clear();
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
     const ground=buildModel('ground',look,team); objects.push(ground);
     units=roster.filter(k=>shape==='all'||shape===k).map(k=>buildModel(k,look,team,specialAttack));
@@ -204,12 +210,13 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
     river.name='river-tile';river.position.y=-.06;objects.push(river);
     const crystal=buildModel('crystal',look,team);crystal.position.set(-3,0,-1.7);objects.push(crystal);
     
-    if(shape==='terrain-kit'){for(const o of [ground,river,crystal])o.visible=false;}
+    if(['toy-render','windmill-dam','terrain-kit','grid-terrain-kit'].includes(shape)){for(const o of [ground,river,crystal])o.visible=false;}
     objects.forEach(o=>scene.add(o));
     const rings=new T.Group();rings.name='selection-rings';
     units.forEach((u,i)=>{const ring=new T.Mesh(new T.RingGeometry(.65,.7,5),material(teamColor(team),look));ring.rotation.x=-Math.PI/2;ring.position.set(units.length===1?0:(i-(units.length-1)/2)*1.8,.012,1.2);ring.material.side=T.DoubleSide;rings.add(ring);});
     objects.push(rings);scene.add(rings);
     const source=buildModel('crumb',LOOKS[0],team);source.updateMatrixWorld(true);
+    if(toy){stress=buildToyStress(source);stress.forEach(b=>{b.visible=stressOn;scene.add(b);objects.push(b);});disposeObject(source);}else{
     const geos=[];source.traverse(o=>{if(o.isMesh){let geo=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();geo.applyMatrix4(o.matrixWorld);const c=o.material.color, count=geo.attributes.position.count;const colors=new Float32Array(count*3);for(let i=0;i<count;i++) c.toArray(colors,i*3);geo.setAttribute('color',new T.BufferAttribute(colors,3));geos.push(geo);}});
     const geo=mergeGeometries(geos);geos.forEach(g=>g.dispose());disposeObject(source);
     const mat=material(0xffffff,look);mat.vertexColors=true;
@@ -217,9 +224,14 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
     if(look===LOOKS[1]){const outline=new T.InstancedMesh(geo,inkMaterial(),200);outline.userData.ink=true;outline.frustumCulled=false;outline.visible=stressOn;scene.add(outline);objects.push(outline);stress.push(outline);
 
     }
+    }
     const shardGeo=pentagon();shardGeo.scale(.28,.4,1);
     const shardMat=material(teamColor(team),look);shardMat.side=T.DoubleSide;shardMat.transparent=true;
     shards=new T.InstancedMesh(shardGeo,shardMat,16);shards.name='death-facets';shards.frustumCulled=false;shards.visible=false;objects.push(shards);scene.add(shards);
+    sky.visible=!toy;key.visible=!toy;scene.children.filter(o=>o.isHemisphereLight).forEach(o=>o.visible=!toy);
+    toyStage.rig.visible=toy;toyStage.plane.visible=toy;
+    if(toy){ground.visible=false;for(const o of objects)applyToyMaterials(o);toyStage.batch(objects);}
+    toyStage.sync(units,toy,stressOn);
   }
   // Fixed small integration steps keep the damped springs stable after tab suspension.
   function spring(state,key,target,dt,k=150,d=18) {
@@ -232,10 +244,13 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
   function stopAttack(){trigger('idle',now);units.filter(u=>u.name==='attack-specialists').forEach(u=>poseSpecialAttack(u,{active:'attack',age:0,ms:520}));units.filter(u=>['attack-four-slice','attack-popper','attack-zapper'].includes(u.name)).forEach(u=>(u.name==='attack-four-slice'?poseQuadVolley:u.name==='attack-zapper'?poseHotCoil:posePopShot)(u,{active:'attack',age:0,ms:520}));}
   function setAnimationTime(ms){if(!Number.isFinite(ms))throw new Error('Invalid animation time');active='attack';attackSeek=Math.max(0,Math.min(520,ms));update(now);}
   function trigger(action,t=now){if(!actions.includes(action))throw new Error('Unknown action');active=action;started=t;fill=0;attackSeek=null;units.forEach(u=>{u.userData.attackHitCycle=-1;u.userData.releaseCycle=-1;});
+    if(shape==='hit-defeat'&&['hit','death'].includes(action))onReactionSound(action==='hit'?'squeak':'boing');
     units.forEach(u=>{u.visible=true;u.userData.bagelAngle=u.userData.motion?.rollAngle||u.userData.bagelAngle||0;if(u.name!=='bagel'||!u.userData.motion)u.userData.motion={height:0,toast:0,lever:0,lean:0};if(action==='hit')u.userData.motion.leanVelocity=9;});}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
+      if(u.name==='hit-defeat'){poseHitDefeat(u,{active,age,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='toy-render'){poseToyShowcase(u,{active,age});u.visible=!stressOn&&!(active==='death'&&age>=.3);return;}
       if(u.name==='attack-specialists'){
         u.visible=!(active==='death'&&age>=.3)&&!stressOn;
         const cycle=attackLoop?Math.floor(age/.52):0,ms=attackSeek??(attackLoop?(age*1000)%520:age*1000);
@@ -264,6 +279,8 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
       if(u.name==='outlet'){poseOutlet(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='smoke-alarm'){poseSmokeAlarm(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='breadbox'){poseBreadbox(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='windmill-dam'){poseWindmillDam(u,{active,age,elapsed,spring});return;}
+      if(u.name==='grid-terrain-kit'){poseGridTerrain(u,{active,age,elapsed,spring});return;}
       if(u.name==='terrain-kit'){u.userData.motion??={};poseTerrain(u,{active,age,elapsed,spring,expression});return;}
       const bagel=u.name==='bagel';
       const broiler=u.name==='broiler', sieging=broiler&&['siege','attack'].includes(active), patch=u.name==='ground-patches', harvesting=patch&&['harvest','gather','attack'].includes(active), generator=u.name==='generator', generating=generator&&['generate','attack','gather'].includes(active), churn=u.name==='churn', churning=churn&&['churn','attack','gather'].includes(active), pump=u.name==='pump', pumping=pump&&['pump','attack','gather'].includes(active), mill=u.name==='mill', grinding=mill&&['grind','attack','gather'].includes(active), heavy=broiler||u.name==='four-slice'||mill||pump||churn||generator||patch, zapper=u.name==='zapper', flakker=u.name==='flak-popper', homeX=units.length===1?0:(index-(units.length-1)/2)*1.8, state=u.userData.motion??={};
@@ -420,19 +437,21 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
     }
     stress.forEach(b=>b.instanceMatrix.needsUpdate=true);
     units.forEach(u=>{if(stressOn)u.visible=false;});
-    shards.visible=active==='death'&&age<.45&&!stressOn;
+    shards.visible=shape!=='hit-defeat'&&active==='death'&&age<.45&&!stressOn;
     if(shards.visible){const p=clamp((age-.09)/.36), spread=age<.09?age*5:p;shards.material.opacity=1-clamp(age/.45);shards.material.color.setHex(age<.09?0xffdc66:teamColor(team));
       for(let i=0;i<16;i++){const a=i*2.399;dummy.position.set([-2.3,0,2.1][i%3]+Math.sin(a)*spread*1.8,.55+Math.sin(spread*Math.PI)*1.2-spread*.5,1.2+Math.cos(a)*spread*1.8);dummy.rotation.set(p*6+a,p*4,Math.sin(a));dummy.scale.setScalar(age<.09?.18:1-p*.65);dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);}shards.instanceMatrix.needsUpdate=true;
     }
     const rings=scene.getObjectByName('selection-rings');
-    rings.visible=!stressOn&&shape!=='terrain-kit';
+    rings.visible=!stressOn&&shape!=='toy-render'&&shape!=='terrain-kit'&&shape!=='grid-terrain-kit'&&shape!=='windmill-dam';
     rings.children.forEach((r,i)=>{r.visible=units[i].visible;r.position.x=units[i].position.x;r.position.z=units[i].position.z;});
     const shake=units.reduce((v,u)=>v+(u.userData.cameraShake??0),0);
     camera.position.x+=shake;
+    toyStage.sync(units,toy,stressOn);
     try{renderer?.render(scene,camera);}finally{camera.position.x-=shake;}
   }
   rebuild();
   return { scene,camera,actions,get units(){return units;},get fill(){return fill;},get stressCount(){return stressOn?200:0;},trigger,update,playAttack,stopAttack,setAnimationTime,setAttackLoop(value){attackLoop=!!value;},
+    setToy(value){toy=!!value;rebuild();},
     setSpecialAttack(value){if(!SPECIAL_ATTACKS.includes(value))throw new Error('Unknown specialist attack');specialAttack=value;rebuild();},
     setShape(value){if(value!=='all'&&!roster.includes(value))throw new Error('Unknown shape');shape=value;rebuild();},
     setLook(value){if(!LOOKS.includes(value))throw new Error('Unknown look');look=value;rebuild();},setTeam(value){team=value;rebuild();},
@@ -442,7 +461,7 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
     setDam(value){dam=!!value;},
     setStress(value){stressOn=value;stress.forEach(b=>b.visible=value);},
     resize(w,h){camera.aspect=w/h;camera.updateProjectionMatrix();scene.traverse(o=>{if(o.material?.uniforms?.viewport)o.material.uniforms.viewport.value.set(w,h);});},
-    dispose(){disposeObject(sky);objects.forEach(disposeObject);renderer?.dispose?.();}
+    dispose(){toyStage.dispose();disposeObject(sky);objects.forEach(disposeObject);renderer?.dispose?.();}
   };
 }
-function disposeObject(o){const geos=new Set(),mats=new Set();o.traverse(m=>{if(m.geometry)geos.add(m.geometry);if(m.material)mats.add(m.material);});geos.forEach(g=>g.dispose());mats.forEach(m=>m.dispose());}
+function disposeObject(o){const geos=new Set(),mats=new Set();o.traverse(m=>{if(m.isInstancedMesh)m.dispose();if(m.geometry)geos.add(m.geometry);if(m.material)mats.add(m.material);});geos.forEach(g=>g.dispose());mats.forEach(m=>m.dispose());}

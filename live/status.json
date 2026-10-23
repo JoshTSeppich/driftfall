@@ -1,32 +1,17 @@
 {
- "build": 212,
- "at": "2026-10-23T14:30:06.063Z",
- "seconds": 171.8,
+ "build": 215,
+ "at": "2026-10-23T14:47:29.831Z",
+ "seconds": 181.4,
  "state": "red",
- "nextBuildAt": "2026-10-23T14:33:06.063Z",
- "headline": "Red: 2 test file(s) failing.",
+ "nextBuildAt": "2026-10-23T14:50:29.831Z",
+ "headline": "Red: 1 test file(s) failing.",
  "tests": {
-  "files": 77,
-  "pass": 1184,
-  "fail": 16,
-  "seconds": 292
+  "files": 78,
+  "pass": 1212,
+  "fail": 1,
+  "seconds": 321
  },
  "failures": [
-  {
-   "file": "tests/sim-territory.test.mjs",
-   "owners": [
-    "fable"
-   ],
-   "imports": [
-    "env/sim.mjs",
-    "env/sim-territory.mjs",
-    "env/territory.mjs"
-   ],
-   "tests": [
-    "claim: a worker walks to the Reach and builds a claim; Hold goes up"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: claim finishes"
-  },
   {
    "file": "tests/style-lab.test.mjs",
    "owners": [],
@@ -34,12 +19,7 @@
     "play/style-lab/lab.mjs"
    ],
    "tests": [
-    "Mill has five pivoted parts, a turning five-facet stone and wheat-to-Flour grinding",
-    "Pump sits on river water with five rigid parts, spring piston and outlet flow",
-    "Churn pumps a rigid plunger and handle, springs at idle and hops with planted pauses",
-    "Generator spins a five-facet wheel, springs, hops and glows as a dam in every look",
-    "Bagel rolls on five grounded facets and spring-tips up to brake in all looks",
-    "Bible signature attacks recoil emitters and synchronise heavy toast"
+    "action curves settle, gathering fills then delivers, death resets on spawn"
    ],
    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
   }
@@ -50,60 +30,48 @@
  },
  "match": {
   "ok": true,
-  "seed": 213,
+  "seed": 216,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3480,
-    3520
+    3470,
+    3530
    ]
   },
-  "ms": 812
+  "ms": 605
  },
  "changed": {
   "first": false,
   "added": [
    {
-    "file": "tests/wheatfield-map.test.mjs",
+    "file": "tests/toy-render.test.mjs",
     "owner": null
    }
   ],
   "changed": [
-   {
-    "file": "env/map.mjs",
-    "owner": "sonnet"
-   },
-   {
-    "file": "env/sim-territory.mjs",
-    "owner": null
-   },
-   {
-    "file": "env/state.mjs",
-    "owner": "haiku"
-   },
    {
     "file": "tests/style-lab.test.mjs",
     "owner": null
    }
   ],
   "removed": [],
-  "total": 5
+  "total": 2
  },
  "files": {
   "env": 30,
   "viewer": 11,
   "viewer3d": 14,
-  "tests": 79,
+  "tests": 80,
   "players": 18,
   "live": 19
  },
  "previous": {
-  "build": 211,
+  "build": 214,
   "state": "red",
-  "at": "2026-10-23T14:24:14.238Z",
+  "at": "2026-10-23T14:41:28.475Z",
   "failing": [
    "tests/style-lab.test.mjs"
   ]

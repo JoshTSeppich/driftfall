@@ -9,7 +9,7 @@ export function buildBible(kind,look,team){
   const prism=(w,h,d)=>{const s=new T.Shape();s.moveTo(-w/2,-h/2);s.lineTo(w/2,-h/2);s.lineTo(w/2,h*.22);s.lineTo(0,h/2);s.lineTo(-w/2,h*.22);s.closePath();const g=new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:false,steps:1});g.translate(0,0,-d/2);g.userData.facets=5;return g;};
   const box=(w,h,d)=>new T.BoxGeometry(w,h,d);
   const heavy=kind==='four-slice',strip=kind==='power-strip',zap=kind==='zapper';
-  const w=strip?3:heavy?1.85:kind==='popper'?1.18:zap?.85:.78,h=strip?.65:heavy?1.55:zap?1.05:kind==='popper'?.95:.72;
+  const w=strip?3:heavy?1.85:kind==='popper'?1.18:zap?.85:.78,h=strip?.65:heavy?1.55:zap?1.05:kind==='popper'?1.15:.72;
   const body=mesh(root,'body',prism(w,h,.8),cream,[0,h/2+.22,0]);
   mesh(body,'shoulder',prism(.36,.32,.06),paint,[w*.36,h*.12,.44]);
   const face=mesh(zap?root:body,'faceplate',box(w*.64,.3,.035),dark,zap?[0,h*.6,.43]:[0,0,.43]);

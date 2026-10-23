@@ -24,6 +24,7 @@
 import * as THREE from 'three';
 import { createEngine } from '../viewer3d/engine.mjs';
 import { createInstancedUnits } from './units-instanced.mjs';
+import { installToy } from './toy-render.mjs';
 
 export const DEFAULTS = { tilt: 55, viewTiles: 16, minViewTiles: 8, maxViewTiles: 40, margin: 1.5 };
 
@@ -115,6 +116,8 @@ export function createPlayRenderer(canvas, opts = {}) {
   });
   const { ctx } = engine;
   ctx.side = side;
+  // Premium toy look (play/toy-render.mjs, RENDERING.md); opts.toy === false or ?toy=0 keeps the old look.
+  if (opts.toy !== false) ctx.toy = installToy(ctx, engine, { query: opts.query });
   const cam = ctx.camera;
   const center = { x: width / 2, y: height / 2 };
   const target = new THREE.Vector3();

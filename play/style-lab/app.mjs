@@ -1,3 +1,4 @@
+import {configureToyRenderer} from './toy-render.mjs';
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -8,22 +9,34 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { createLab, LOOKS } from './lab.mjs';
 export function boot() {
   const canvas=document.querySelector('canvas');
-  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=T.ACESFilmicToneMapping;renderer.info.autoReset=false;
-  let glossy=false, composer;
-  const lab=createLab({onAttackRelease:()=>playThump(),renderer:{render(scene,camera){renderer.info.reset();if(glossy)composer.render();else renderer.render(scene,camera);}}});
+  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));configureToyRenderer(renderer);renderer.info.autoReset=false;
+  let glossy=false, composer, toy=true;
+  const lab=createLab({onReactionSound:playReactionSound,onAttackRelease:()=>playThump(),renderer:{render(scene,camera){renderer.info.reset();composer.render();}}});
   lab.setShape(document.querySelector('#shape').value);
-  const pmrem=new T.PMREMGenerator(renderer), room=new RoomEnvironment(), env=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();
-  composer=new EffectComposer(renderer);composer.addPass(new RenderPass(lab.scene,lab.camera));
+  const pmrem=new T.PMREMGenerator(renderer), room=new RoomEnvironment(), env=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();lab.scene.environmentIntensity=.35;
+  const target=new T.WebGLRenderTarget(1,1,{samples:4,type:T.HalfFloatType});
+  composer=new EffectComposer(renderer,target);composer.addPass(new RenderPass(lab.scene,lab.camera));
   const bloom=new UnrealBloomPass(new T.Vector2(innerWidth,innerHeight),.28,.45,1.1);composer.addPass(bloom);composer.addPass(new OutputPass());
-  // Preserve the CSS dusk sky through the render target in gloss mode.
+  // Four-sample target is used for every look; OutputPass applies tone mapping once.
   const controls=new OrbitControls(lab.camera,canvas);controls.target.set(0,.6,0);controls.enableDamping=true;controls.minDistance=2;controls.maxDistance=28;controls.maxPolarAngle=Math.PI*.48;
+  if(['windmill-dam','grid-terrain-kit'].includes(document.querySelector('#shape').value)){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}
   let team='cyan',stress=false,auto=true,lastDemo=-10,step=0,last=performance.now(),frames=0,fps=0;
   const status=document.querySelector('#action');
-  function pickLook(i){glossy=i===2;lab.setLook(LOOKS[i]);lab.scene.environment=glossy?env.texture:null;resize();document.querySelectorAll('[data-look]').forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));}
+  function pickLook(i){glossy=i===2;bloom.enabled=glossy;lab.setLook(LOOKS[i]);lab.scene.environment=toy||glossy?env.texture:null;resize();document.querySelectorAll('[data-look]').forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));}
+  document.querySelector('#toy-before').onchange=e=>{toy=!e.target.checked;configureToyRenderer(renderer,toy);lab.setToy(toy);lab.scene.environment=toy||glossy?env.texture:null;};
   function action(name){lab.trigger(name);status.textContent=name.toUpperCase();}
   document.querySelectorAll('[data-look]').forEach((b,i)=>b.onclick=()=>pickLook(i));
-  document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='terrain-kit'){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
+  document.querySelector('#shape').onchange=e=>{lab.setShape(e.target.value);if(e.target.value==='toy-render'){controls.target.set(0,.6,0);lab.camera.position.set(9,11,10);}if(['windmill-dam','terrain-kit','grid-terrain-kit'].includes(e.target.value)){controls.target.set(0,0,0);lab.camera.position.set(11,15,17);}resize();};
   document.querySelector('#terrain-inspection').onchange=e=>{const stage=document.querySelector('#stage');stage.classList.toggle('terrain720',e.target.value==='720');stage.classList.toggle('terrainthumb',e.target.value==='thumb');resize();};
+  function playReactionSound(kind){
+    const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+    const audio=new Audio(),osc=audio.createOscillator(),gain=audio.createGain(),t=audio.currentTime;
+    osc.type='triangle';osc.frequency.setValueAtTime(kind==='squeak'?900:170,t);
+    osc.frequency.exponentialRampToValueAtTime(kind==='squeak'?1500:430,t+.055);
+    osc.frequency.exponentialRampToValueAtTime(kind==='squeak'?650:65,t+.22);
+    gain.gain.setValueAtTime(.09,t);gain.gain.exponentialRampToValueAtTime(.001,t+.24);
+    osc.connect(gain);gain.connect(audio.destination);osc.start(t);osc.stop(t+.25);osc.onended=()=>audio.close();
+  }
   function playThump(){
     if(document.querySelector('#shape').value!=='attack-four-slice')return;
     const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
