@@ -1,15 +1,15 @@
 {
- "build": 201,
- "at": "2026-10-23T13:27:32.782Z",
- "seconds": 158.1,
+ "build": 205,
+ "at": "2026-10-23T13:49:59.331Z",
+ "seconds": 156.5,
  "state": "green",
- "nextBuildAt": "2026-10-23T13:30:32.782Z",
+ "nextBuildAt": "2026-10-23T13:52:59.331Z",
  "headline": "Green: 1138 tests pass in 73 files, all 59 modules parse, new match recorded.",
  "tests": {
   "files": 73,
   "pass": 1138,
   "fail": 0,
-  "seconds": 255.2
+  "seconds": 254.1
  },
  "failures": [],
  "parse": {
@@ -18,18 +18,18 @@
  },
  "match": {
   "ok": true,
-  "seed": 202,
+  "seed": 206,
   "file": "matches/latest.json",
   "result": {
-   "winner": null,
+   "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3500,
-    3500
+    3470,
+    3530
    ]
   },
-  "ms": 600
+  "ms": 598
  },
  "changed": {
   "first": false,
@@ -47,9 +47,9 @@
   "live": 19
  },
  "previous": {
-  "build": 200,
+  "build": 204,
   "state": "green",
-  "at": "2026-10-23T13:21:54.713Z",
+  "at": "2026-10-23T13:44:22.812Z",
   "failing": []
  }
 }
