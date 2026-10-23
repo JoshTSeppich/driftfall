@@ -10,6 +10,7 @@ import { enableBudget, stepBudget, canProgress } from './budget.mjs';
 import { buildReaches, createTerritory, updateTerritory, holdCount } from './territory.mjs';
 import { enableChain, layTrack } from './economy.mjs';
 import { createDrift } from './drift.mjs';
+import { enableMarket, stepMarket } from './market.mjs';
 import { STATS, kindStats } from './stats.mjs';
 import { applyDriftEffects, doTunnel, stepTunnels } from './effects.mjs';
 import { kindTier, tierReason, enableResearch, doResearch, stepTiers, stepProductionGated } from './tiers.mjs';
@@ -57,6 +58,7 @@ export function createTerritoryMatch(seed, opts = {}) {
   state.claims = [];
   enableResearch(state);
   enableChain(state, { factions: state.factions, holds: heldBy, isWater: isWaterTile });
+  enableMarket(state); // prices drift with scarcity; trading itself needs a Trading House (env/market.mjs)
   state.factions = opts.factions || ['coil', 'burrow'];
   return state;
 }
@@ -214,5 +216,6 @@ export function runProduction(state, stepProduction) {
 
 /** After combat: territory hold and the territory win. Returns a result or null. */
 export function stepRulesPost(state) {
+  if (state.market) stepMarket(state);
   return state.territory ? updateTerritory(state) : null;
 }

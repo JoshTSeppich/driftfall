@@ -22,6 +22,8 @@ import { cardWithRecall } from './items-ui.mjs';
 import { createFeedback } from './feel.mjs';
 import { createSoundPlayer } from './sound-player.mjs';
 import { stingerFor } from '../viewer3d/audio.mjs';
+import { territoryOptions, territoryPanel, drawReachBorders } from './territory-wire.mjs';
+import { reachViews, drawReachMinimap } from './reach-view.mjs';
 
 export const TICKS_PER_SECOND = 24;
 export const DEFAULT_MATCH_TICKS = 24 * 60 * 15; // about 15 minutes of real time
@@ -191,8 +193,9 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
   let aiModule = null;
   try { aiModule = await imp(aiName === 'sample' ? '../players/sample-player.mjs' : aiName === 'builtin' ? '../players/builtin/ai.mjs' : `../players/${aiName}/bot.mjs`); }
   catch (err) { console.warn('[play] bot not loaded', err); toast(els, `Bot "${aiName}" failed to load`); }
+  const terr = territoryOptions(q); // ?territory=1: Reaches, tiers, the Drift and the flow panel (needs createState in env/live.mjs)
   const driver = createLiveMatch({
-    seed, human: side, tps, ai: aiModule ?? { name: 'idle', act: () => [] },
+    seed, human: side, createState: terr.createState, tps, ai: aiModule ?? { name: 'idle', act: () => [] },
     maxTicks: Number(q.get('ticks') ?? DEFAULT_MATCH_TICKS) || DEFAULT_MATCH_TICKS,
     difficulty: q.get('difficulty') ?? (watch ? 'normal' : 'easy'),
   });
@@ -564,6 +567,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     const neutralSnap = snapNow();
     drawCampsOverlay(ov, campMarks(neutralSnap.neutrals), project, tp);
     drawPickups(ov, neutralSnap.groundItems, project, tp, performance.now());
+    drawReachBorders(ov, state.territory, side, state.tick, project);
     if (mode) {
       ov.fillStyle = 'rgba(0,0,0,.55)'; ov.fillRect(w2() / 2 - 150, 54, 300, 24);
       ov.fillStyle = '#ffe14a'; ov.font = '13px system-ui'; ov.textAlign = 'center';
@@ -583,6 +587,7 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     for (const s of snap.structures) { mmc.fillStyle = colour(s.owner); mmc.fillRect(s.x * sx - 1, s.y * sy - 1, sx * 1.6 + 2, sy * 1.6 + 2); }
     for (const u of snap.units) { mmc.fillStyle = colour(u.owner); mmc.fillRect(u.x * sx, u.y * sy, Math.max(2, sx), Math.max(2, sy)); }
     drawCampsMinimap(mmc, campMarks(snap.neutrals), sx, sy);
+    if (state.territory) drawReachMinimap(mmc, reachViews(state.territory), { side, tick: state.tick, mapW: state.width, mapH: state.height, width: W, height: H });
     // Camera footprint
     const corners = [[0, 0], [1, 0], [1, 1], [0, 1]].map(([u, v]) => groundTile(u * cssSize().width, v * cssSize().height));
     mmc.strokeStyle = '#fff'; mmc.lineWidth = 1; mmc.beginPath();
@@ -604,6 +609,8 @@ export async function startGame({ THREE, createEngine, createPlaceholder, root, 
     const picked = input.mine(snap);
     const selHtml = renderSelectionPanel(snap, picked, { side });
     if (selHtml !== els.selection._html) { els.selection._html = selHtml; els.selection.innerHTML = selHtml; }
+    const tHtml = territoryPanel(state, side);
+    if (tHtml !== els.territory._html) { els.territory._html = tHtml; els.territory.innerHTML = tHtml; els.territory.hidden = !tHtml; }
     const card = cardWithRecall(input.commandCard(snap), snap, side, picked);
     const cardOpts = { shards: snap.shards[side], mode: input.ui.mode };
     const sig = cardSignature(card, cardOpts);
@@ -635,13 +642,14 @@ function buildDom(root) {
       <div id="selection"></div>
       <div id="card"></div>
     </div>
+    <div id="territory" hidden></div>
     <div id="toast"></div>
     <div id="result" hidden></div>
     <div id="hud"></div>
     <div id="boot"><b>DRIFTFALL</b><br>loading…</div>`;
   const $ = (id) => root.querySelector('#' + id);
   return { canvas: $('view'), overlay: $('overlay'), minimap: $('minimap'), shards: $('shards'), supply: $('supply'), clock: $('clock'),
-    top: $('top'), alert: $('alert'), selection: $('selection'), card: $('card'), toast: $('toast'), result: $('result'), hud: $('hud'), boot: $('boot') };
+    top: $('top'), alert: $('alert'), selection: $('selection'), card: $('card'), toast: $('toast'), territory: $('territory'), result: $('result'), hud: $('hud'), boot: $('boot') };
 }
 
 let toastTimer = 0;
