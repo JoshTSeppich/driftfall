@@ -1,15 +1,15 @@
 {
- "build": 228,
- "at": "2026-10-23T16:11:17.618Z",
- "seconds": 418.6,
+ "build": 230,
+ "at": "2026-10-23T16:31:25.977Z",
+ "seconds": 424.2,
  "state": "red",
- "nextBuildAt": "2026-10-23T16:14:17.618Z",
+ "nextBuildAt": "2026-10-23T16:34:25.977Z",
  "headline": "Red: 3 test file(s) failing, match did not record.",
  "tests": {
   "files": 86,
   "pass": 1260,
   "fail": 26,
-  "seconds": 778.2
+  "seconds": 862.7
  },
  "failures": [
   {
@@ -50,9 +50,7 @@
     "env/referee.mjs",
     "env/stats.mjs"
    ],
-   "tests": [
-    "the Core floor and clock numbers are in the stats table"
-   ],
+   "tests": [],
    "error": ""
   }
  ],
@@ -62,25 +60,16 @@
  },
  "match": {
   "ok": false,
-  "seed": 229,
+  "seed": 231,
   "error": "[timed out]",
   "keptPrevious": true
  },
  "changed": {
   "first": false,
   "added": [],
-  "changed": [
-   {
-    "file": "tests/opening-clock.test.mjs",
-    "owner": null
-   },
-   {
-    "file": "tests/style-lab.test.mjs",
-    "owner": null
-   }
-  ],
+  "changed": [],
   "removed": [],
-  "total": 2
+  "total": 0
  },
  "files": {
   "env": 33,
@@ -91,15 +80,13 @@
   "live": 19
  },
  "previous": {
-  "build": 227,
+  "build": 229,
   "state": "red",
-  "at": "2026-10-23T16:01:18.966Z",
+  "at": "2026-10-23T16:21:21.748Z",
   "failing": [
    "tests/full-match-smoke.test.mjs",
    "tests/live-viewer.test.mjs",
-   "tests/opening-clock.test.mjs",
-   "tests/perf.test.mjs",
-   "tests/style-lab.test.mjs"
+   "tests/opening-clock.test.mjs"
   ]
  }
 }

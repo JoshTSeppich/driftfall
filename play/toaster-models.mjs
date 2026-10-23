@@ -1,23 +1,28 @@
-// The cute blocky toasters as DATA (owner: sonnet). Mirrors the Design Studio's blocky look (STYLE-BIBLE.md section 0,
-// play/style-lab/blocky.mjs): every toaster is 2-4 plain parts: a cream box, a charcoal face with two square eyes, a
-// team-colour block, one wide foot box and golden toast. Under 60 triangles each. Pure data and pure maths, no Three.js,
-// so tests/toaster-units.test.mjs checks every number in node. Model units: feet at y = 0, front faces +Z.
+// The cute toasters as DATA (owner: sonnet), built from GPT's Cute Geometry Spec v1.0 (play/toaster-spec.mjs): big high
+// face, big separated glowing eyes, oversized toast, team block on top, and (Joshua, 09:47) four little five-sided WHEELS
+// instead of feet. Pure data and pure maths, no Three.js, so tests/toaster-units.test.mjs checks every number in node.
+// Spec numbers that break the spec's own six CUTENESS rules (a few table rows do) are clamped into range by fit().
+// Model units: CRUMB body width = 1, ground at y = 0, front faces +Z. The renderer's unit scale turns them into tiles.
 //
-//   TOASTERS[id] = { id, height, radius, parts: [{ id, part, pivot, geo, size, pos, rotZ?, hinge? }] }
-//   part   = the batch it is drawn in: chassis | faceplate | eyes | team | feet | toast | wheel
-//   pivot  = which rigid piece moves it: body | toast | feet | panel | coil | wheel
-//   geo    = box (12 tris) | plane (2 tris, faces +Z) | wheel (five-sided prism, 20 tris)
+//   TOASTERS[id] = { id, top, height, radius, body: {w,h,d,lift}, wheels: [{x,y,z,r,w}] | null, parts: [part] }
+//   part = { id, part, pivot, geo, size, pos, rotZ?, eye?, hinge?, spin? }
+//   part  = the batch: chassis | faceplate | eyes | team | feet | toast | glow | tyre | hub | prism
+//   pivot = which rigid piece moves it: body | toast | coil | panel | roll (bagel) | axle (a wheel: spins about its own x)
+//   geo   = box | plane | tyre (five-sided prism, axis x) | prism (bagel, axis z)
 
+import { TOASTERS as SPEC, CUTENESS as RULE, EXPRESSIONS, PALETTE, WHEELS, CORD, toasterOf } from './toaster-spec.mjs';
+
+export { EXPRESSIONS, WHEELS, CORD };
+// Eyes are saturated cyan: pale #75F4FF washes out under the tone mapping, so the live eyes are drawn unlit in #12E4FF.
 export const COLORS = Object.freeze({
-  chassis: '#F2D7A6', faceplate: '#303844', toast: '#D99448', feet: '#434A52',
-  cyan: '#32D9E8', orange: '#FF8540', eye: '#F7F4EB', eyeOff: '#14181e', flash: '#FFFFFF',
+  chassis: PALETTE.cream, faceplate: PALETTE.charcoal, toast: PALETTE.toast, feet: PALETTE.feet, heat: PALETTE.heat,
+  cyan: '#12D8F0', orange: '#FF7A2E', eye: '#12E4FF', eyeOff: '#14181e', flash: '#FFFFFF',
 });
-
-export const GEO_TRIS = Object.freeze({ box: 12, plane: 2, wheel: 20 });
+export const GEO_TRIS = Object.freeze({ box: 12, plane: 2, tyre: 20, prism: 20 });
 export const TOASTER_KINDS = Object.freeze(['crumb', 'popper', 'zapper', 'four-slice', 'broiler', 'flak-popper', 'bagel']);
 
-// Sim kind -> toaster. The old Driftfall names stay mapped (play/coil-motion.mjs toastinatorFor); the roster names and
-// any unknown kind fall back to the Popper so no unit is ever invisible.
+// Sim kind -> toaster. The old Driftfall names stay mapped; roster names and any unknown kind fall back to the Popper so no
+// unit is ever invisible. (toaster-spec.mjs toasterOf does the same for exact ids.)
 const KIND_TO_TOASTER = Object.freeze({
   worker: 'crumb', grunt: 'popper', lancer: 'zapper', brute: 'four-slice', dart: 'bagel', howler: 'broiler',
   crumb: 'crumb', popper: 'popper', zapper: 'zapper', fourslice: 'four-slice', broiler: 'broiler',
@@ -26,62 +31,92 @@ const KIND_TO_TOASTER = Object.freeze({
 });
 export function toasterKindOf(kind) {
   const k = String(kind ?? '').trim().toLowerCase().replace(/[_\s-]+/g, '');
-  return KIND_TO_TOASTER[k] ?? 'popper';
+  return KIND_TO_TOASTER[k] ?? toasterOf(kind);
 }
 
-// Compact recipe -> parts. Recipes are the only per-toaster data; the face rules are shared so every toaster reads as
-// the same family (STYLE-BIBLE section 0: "same design family, different silhouettes").
-const FACE_Z = 0.006;
-function build(id, r) {
-  const [w, h, d] = r.body, fh = r.feetH ?? 0.1, by = fh + h / 2, top = fh + h;
+const clamp = (v, [lo, hi]) => Math.max(lo, Math.min(hi, v));
+const FACE_Z = 0.008;         // the face decal floats this far in front of the body
+const EYE_Z = 0.012;          // and the eyes this far in front of the face
+const PIVOT = { root: 'body', body: 'body', face: 'body', feet: 'body', toast: 'toast', striker: 'toast', volley: 'toast', emitter: 'coil', launcher: 'coil', door: 'panel', wheel: 'roll' };
+
+function build(id) {
+  const spec = SPEC[id];
+  const get = (n) => spec.find((p) => p.name === n);
+  const body = get('body'), face = get('face'), eye = get('eye'), team = get('team');
+  const [W, H, D] = body.size;
+  const isBagel = id === 'bagel';
+  const wheelD = isBagel ? 0 : WHEELS.diameterOfBodyH * H;
+  const lift = isBagel ? 0 : WHEELS.lift * wheelD;        // wheels tuck under, the body floats this high
   const parts = [];
-  const add = (p) => parts.push(p);
-  add({ id: 'feet', part: 'feet', pivot: 'feet', geo: 'box', size: [w * 0.92, fh, d * 0.85], pos: [0, fh / 2, 0] });
-  if (r.wheel) {
-    add({ id: 'wheel', part: 'chassis', pivot: 'wheel', geo: 'wheel', size: [r.wheel, r.wheel, d], pos: [0, by, 0] });
-  } else {
-    add({ id: 'body', part: 'chassis', pivot: 'body', geo: 'box', size: [w, h, d], pos: [0, by, 0] });
-  }
-  const fy = by + h * 0.08;
-  add({ id: 'face', part: 'faceplate', pivot: 'body', geo: 'plane', size: [w * 0.72, h * 0.44, 1], pos: [0, fy, d / 2 + FACE_Z] });
+  const add = (p) => parts.push(Object.freeze(p));
+
+  add(isBagel
+    ? { id: 'body', part: 'prism', pivot: 'roll', geo: 'prism', size: [...body.size], pos: [...body.pos] }
+    : { id: 'body', part: 'chassis', pivot: 'body', geo: 'box', size: [W, H, D], pos: [0, lift + H / 2, 0] });
+
+  // Face and eyes, fitted to the six rules. Face height is a share of the body height, centred a share up the body.
+  const fw = clamp(face.size[0] / W, RULE.faceWidthOfBody), fh = clamp(face.size[1] / H, RULE.faceHeightOfBody);
+  const FW = fw * W, FH = fh * H;
+  const fcy = clamp(face.pos[1] / H, RULE.faceCentreOfBodyHeight) * H;
+  const frontZ = D / 2 + FACE_Z;
+  add({ id: 'face', part: 'faceplate', pivot: 'body', geo: 'plane', size: [FW, FH, 1], pos: [0, lift + fcy, frontZ] });
+  const ew = clamp(eye.size[0] / face.size[0], RULE.eyeWidthOfFace) * FW;
+  const eh = clamp(eye.size[1] / face.size[1], RULE.eyeHeightOfFace) * FH;
+  const ex = clamp(2 * eye.pos[0] / face.size[0], RULE.eyeSpacingOfFace) * FW / 2;
+  const ey = fcy + clamp((eye.pos[1] - face.pos[1]) / face.size[1], RULE.eyeAboveFaceCentre) * FH;
   for (const s of [-1, 1]) {
-    add({ id: s < 0 ? 'eye-left' : 'eye-right', part: 'eyes', pivot: 'body', geo: 'plane', size: [w * 0.15, h * 0.14, 1], pos: [s * w * 0.17, fy, d / 2 + FACE_Z * 3], eye: s });
+    add({ id: s < 0 ? 'eye-left' : 'eye-right', part: 'eyes', pivot: 'body', geo: 'plane', size: [ew, eh, 1], pos: [s * ex, lift + ey, frontZ + EYE_Z], eye: s });
   }
-  if (r.team) add({ id: 'team', part: 'team', pivot: 'body', geo: 'box', size: r.team.size, pos: r.team.pos ?? [w * 0.27, top + r.team.size[1] / 2 - 0.02, 0] });
-  for (const [i, e] of (r.emitters ?? []).entries()) {
-    add({ id: `emitter-${i}`, part: 'team', pivot: 'coil', geo: 'box', size: e.size, pos: [e.x, top + e.size[1] / 2 - 0.02, e.z ?? 0] });
+
+  // The team block sits on top, a rule-width block.
+  const tw = clamp(team.size[0] / W, RULE.teamWidthOfBody) * W;
+  add({ id: 'team', part: 'team', pivot: 'body', geo: 'box', size: [tw, team.size[1], team.size[2]], pos: [team.pos[0], lift + team.pos[1], team.pos[2]] });
+
+  // Everything else in the spec: toast, emitters, barrels, the broiler door, heat glows.
+  let n = 0;
+  for (const p of spec) {
+    if (['body', 'face', 'eye', 'team', 'foot'].includes(p.name)) continue;
+    const mirrors = p.mirror ? [-1, 1] : [1];
+    for (const m of mirrors) {
+      const pos = [p.pos[0] * m, p.pos[1] + lift, p.pos[2]];
+      const base = { id: `${p.name}-${n++}`, pivot: PIVOT[p.pivot] ?? 'body', size: [...p.size], pos };
+      if (p.name === 'toast') add({ ...base, part: 'toast', geo: 'box', size: [clamp(p.size[0] / W, RULE.toastWidthOfBody) * W, p.size[1], p.size[2]] });
+      else if (p.name === 'glow') add({ ...base, part: 'glow', geo: 'box' });
+      else if (p.name === 'door') add({ ...base, part: 'feet', geo: 'box', hinge: [pos[0], pos[1] - p.size[1] / 2, pos[2] + p.size[2] / 2] });
+      else add({ ...base, part: 'feet', geo: 'box' });                 // emitter, barrel: dark charcoal blocks
+    }
   }
-  for (const [i, t] of (r.toast ?? []).entries()) {
-    add({ id: `toast-${i}`, part: 'toast', pivot: 'toast', geo: t.geo ?? 'box', size: t.size, pos: [t.x ?? 0, top + t.size[1] / 2 - (t.sink ?? 0.1), t.z ?? 0], rotZ: t.rotZ });
+
+  // Four wheels (every toaster except the Bagel, which is one). Front axle sits frontInset of the depth back from the front.
+  let wheels = null;
+  if (!isBagel) {
+    const tyreW = WHEELS.widthOfBodyW * W, cx = W / 2 + WHEELS.outsideSides * W - tyreW / 2, cz = D / 2 - WHEELS.frontInset * D;
+    wheels = [];
+    for (const [sx, sz] of [[-1, 1], [1, 1], [-1, -1], [1, -1]]) {
+      const w = { x: sx * cx, y: wheelD / 2, z: sz * cz, r: wheelD / 2, w: tyreW, side: sx };
+      wheels.push(w);
+      add({ id: `tyre-${wheels.length}`, part: 'tyre', pivot: 'axle', geo: 'tyre', size: [tyreW, wheelD, wheelD], pos: [w.x, w.y, w.z] });
+      add({ id: `hub-${wheels.length}`, part: 'hub', pivot: 'axle', geo: 'tyre', size: [tyreW * 1.12, wheelD * WHEELS.hubOfDiameter, wheelD * WHEELS.hubOfDiameter], pos: [w.x, w.y, w.z] });
+    }
   }
-  if (r.panel) add({ id: 'panel', part: 'feet', pivot: 'panel', geo: 'box', size: r.panel.size, pos: r.panel.pos, hinge: r.panel.hinge });
-  return Object.freeze({ id, top, height: top + (r.toast?.length ? Math.max(...r.toast.map((t) => t.size[1] - (t.sink ?? 0.1))) : 0), radius: Math.max(w, d) * 0.55, parts: Object.freeze(parts) });
+
+  const bodyTop = isBagel ? body.pos[1] + H / 2 : lift + H;
+  const toasts = parts.filter((p) => p.part === 'toast');
+  const height = Math.max(bodyTop, ...toasts.map((p) => p.pos[1] + p.size[1] / 2));
+  return Object.freeze({
+    id, top: bodyTop, height, radius: Math.max(W, D) * 0.55 + (isBagel ? 0 : WHEELS.outsideSides * W),
+    body: Object.freeze({ w: W, h: H, d: D, lift }), wheels: wheels && Object.freeze(wheels),
+    fit: Object.freeze({ faceW: FW, faceH: FH, faceY: fcy, eyeW: ew, eyeH: eh, eyeX: ex, eyeY: ey }),
+    parts: Object.freeze(parts),
+  });
 }
 
-export const TOASTERS = Object.freeze({
-  // small cube
-  crumb: build('crumb', { body: [0.56, 0.56, 0.5], team: { size: [0.18, 0.1, 0.22] }, toast: [{ size: [0.34, 0.26, 0.07], sink: 0.06 }] }),
-  // taller box, tall toast slab
-  popper: build('popper', { body: [0.66, 0.76, 0.56], team: { size: [0.2, 0.12, 0.26] }, toast: [{ size: [0.42, 0.52, 0.08], sink: 0.12 }] }),
-  // box with two block emitters on top, no toast
-  zapper: build('zapper', { body: [0.62, 0.7, 0.54], emitters: [{ x: -0.18, size: [0.16, 0.3, 0.16] }, { x: 0.18, size: [0.16, 0.3, 0.16] }] }),
-  // wide, long box with four slabs
-  'four-slice': build('four-slice', { body: [1.12, 0.78, 0.74], team: { size: [0.26, 0.12, 0.3], pos: [0.44, 1.0, 0] },
-    toast: [-0.39, -0.13, 0.13, 0.39].map((x) => ({ x, size: [0.2, 0.46, 0.06], geo: 'plane', sink: 0.04 })) }),
-  // box with a hinged front panel (the broiler door)
-  broiler: build('broiler', { body: [0.84, 0.7, 0.66], team: { size: [0.24, 0.12, 0.3] }, feetH: 0.12,
-    panel: { size: [0.74, 0.3, 0.05], pos: [0, 0.22, 0.375], hinge: [0, 0.12, 0.37] } }),
-  // popper with three fanned flak slices
-  'flak-popper': build('flak-popper', { body: [0.7, 0.76, 0.58], team: { size: [0.2, 0.12, 0.26] },
-    toast: [{ x: -0.2, size: [0.24, 0.44, 0.06], geo: 'plane', rotZ: 0.3, sink: 0.08 }, { size: [0.24, 0.52, 0.06], geo: 'plane', sink: 0.08 }, { x: 0.2, size: [0.24, 0.44, 0.06], geo: 'plane', rotZ: -0.3, sink: 0.08 }] }),
-  // short five-sided wheel rolled on its edge
-  bagel: build('bagel', { body: [0.8, 0.8, 0.36], wheel: 0.88, team: { size: [0.18, 0.1, 0.2], pos: [0, 1.0, 0] }, feetH: 0.06 }),
-});
+export const TOASTERS = Object.freeze(Object.fromEntries(TOASTER_KINDS.map((id) => [id, build(id)])));
 
 export function triangleCount(id) {
   return TOASTERS[id].parts.reduce((n, p) => n + GEO_TRIS[p.geo], 0);
 }
-// "Main" pieces = distinct rigid pivots (STYLE-BIBLE: 2-4 parts per unit, each on its own pivot).
+// "Main" pieces = distinct rigid pivots (body, toast, wheels...).
 export function mainPartCount(id) {
   return new Set(TOASTERS[id].parts.map((p) => p.pivot)).size;
 }

@@ -2,7 +2,7 @@
 // `x, y` is the tile the camera looks at; `zoom` is the visible height in tiles.
 // Scrolling: arrow keys, the mouse within `edge` px of a window edge (faster the closer it is), or a middle-button drag.
 // With the pointer locked the cursor is virtual (`rig.cursor`, moved by deltas); pushing it past an edge pans too.
-export const CAMERA = { pitch: 52 * Math.PI / 180, minZoom: 12, maxZoom: 40, edge: 16, speed: 22, distance: 60 };
+export const CAMERA = { pitch: 42 * Math.PI / 180, minZoom: 12, maxZoom: 40, edge: 16, speed: 22, distance: 60 };
 
 const OPEN_ZOOM = 16; // visible height in tiles when a game opens
 

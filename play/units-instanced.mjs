@@ -19,6 +19,7 @@
 import * as THREE from 'three';
 import { createDrawnUnits } from './drawn-units.mjs';
 import { createToasterUnits } from './toaster-units.mjs';
+import { POWER } from '../env/power.mjs';
 import { unitState } from '../env/ammo.mjs';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
@@ -315,7 +316,7 @@ export function createInstancedUnits(ctx, opts = {}) {
     const owner = u.owner === 1 ? 1 : 0;
     const v = {
       id: u.id, kind, owner, entry: toaster ? null : kindEntry(kind), spec: UNIT_SPECS[kind] ?? { rig: 'hover', size: 0.5, height: 0.8, stride: 1.2 },
-      pos: new THREE.Vector3(), yaw: owner === 0 ? Math.PI * 0.75 : -Math.PI * 0.25,
+      pos: new THREE.Vector3(), yaw: owner === 0 ? 0.35 : -0.35,   // idle toasters face the camera so their cute faces show
       lastMoveTick: -Infinity, lastHitTick: null, lastHitAt: -Infinity, hitFlash: 0,
       spawnAt: time, dying: false, deathAt: 0, dead: false, maxHp: maxHpOf(kind, stats) || u.hp, hp: u.hp,
       seed: (u.id * 7.13) % 6.28, visible: true,
@@ -336,6 +337,27 @@ export function createInstancedUnits(ctx, opts = {}) {
     try { return unitState(frameState, u); } catch { return null; }
   }
 
+  // The unit's real cord for the toasters: the anchor first, then the corners it bends round (env/cord-wrap pts), in world
+  // coordinates, and the leash length in world units. Pooled per unit so a 200-unit frame allocates nothing.
+  const cordPool = new Map();
+  function cordOf(u) {
+    const st = u?.power;
+    if (!toaster || !st || st.state !== 'plugged') return null;
+    const points = frameState?.power?.view?.points ?? frameState?.power?.points;
+    const anchor = points?.find((p) => p.id === st.anchor);
+    const pts = st.cord?.pts?.length ? st.cord.pts : anchor ? [anchor] : null;
+    if (!pts) return null;
+    let c = cordPool.get(u.id);
+    if (!c) { c = { route: [], limit: 0 }; cordPool.set(u.id, c); }
+    for (let i = 0; i < pts.length; i++) {
+      const w = c.route[i] ?? (c.route[i] = new THREE.Vector3());
+      worldOf(pts[i].x, pts[i].y, w);
+    }
+    c.route.length = pts.length;
+    c.limit = (POWER.cord[u.kind] ?? 8) * (ctx.tileSize ?? 1);
+    return c;
+  }
+
   function emit(v, u, pose, alpha, tick) {
     const spec = v.spec, size = spec.size ?? 0.5;
     const walkPhase = spec.heavy ? alpha * Math.PI : (tick + alpha) * Math.PI * (spec.stride ?? 1.2);
@@ -350,7 +372,7 @@ export function createInstancedUnits(ctx, opts = {}) {
     dummy.scale.setScalar(unitScale * tr.scale);
     dummy.updateMatrix();
     const selected = selection.has(v.id);
-    const toasted = toaster?.emit(v, u, { pose, time, dt: frameDt, selected, tr: v.dying ? { scale: 1 } : tr, state: hungerOf(u) });
+    const toasted = toaster?.emit(v, u, { pose, time, dt: frameDt, selected, tr: v.dying ? { scale: 1 } : tr, state: hungerOf(u), cord: cordOf(u) });
     if (!(toaster ? toasted : drawn?.emit(v, tr))) {
       const b = v.entry.batch;
       const i = slot(b);
