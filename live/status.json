@@ -1,15 +1,15 @@
 {
- "build": 85,
- "at": "2026-10-23T02:47:03.542Z",
- "seconds": 121.5,
+ "build": 89,
+ "at": "2026-10-23T03:07:09.903Z",
+ "seconds": 121.6,
  "state": "red",
- "nextBuildAt": "2026-10-23T02:50:03.542Z",
- "headline": "Red: 2 test file(s) failing.",
+ "nextBuildAt": "2026-10-23T03:10:09.903Z",
+ "headline": "Red: 1 test file(s) failing.",
  "tests": {
   "files": 73,
-  "pass": 1109,
-  "fail": 1,
-  "seconds": 216
+  "pass": 1118,
+  "fail": 0,
+  "seconds": 229.4
  },
  "failures": [
   {
@@ -27,17 +27,6 @@
    ],
    "tests": [],
    "error": ""
-  },
-  {
-   "file": "tests/live-spotlight.test.mjs",
-   "owners": [],
-   "imports": [
-    "live/spotlight.mjs"
-   ],
-   "tests": [
-    "mountSpotlight renders cards from the live Control Room when it is reachable (skips otherwise)"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
   }
  ],
  "parse": {
@@ -46,18 +35,18 @@
  },
  "match": {
   "ok": true,
-  "seed": 86,
+  "seed": 90,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3460,
-    3540
+    3480,
+    3520
    ]
   },
-  "ms": 644
+  "ms": 754
  },
  "changed": {
   "first": false,
@@ -80,12 +69,12 @@
   "live": 19
  },
  "previous": {
-  "build": 84,
+  "build": 88,
   "state": "red",
-  "at": "2026-10-23T02:42:01.993Z",
+  "at": "2026-10-23T03:02:08.296Z",
   "failing": [
    "tests/builtin-ai.test.mjs",
-   "tests/live-spotlight.test.mjs"
+   "tests/style-lab.test.mjs"
   ]
  }
 }

@@ -1,9 +1,16 @@
+import {buildOutlet,poseOutlet} from './outlet.mjs';
+import {buildSmokeAlarm,poseSmokeAlarm} from './smoke-alarm.mjs';
+import {buildBreadbox,poseBreadbox} from './breadbox.mjs';
+import {buildFlyingToast,poseFlyingToast} from './flying-toast.mjs';
+import {buildTimer,poseTimer} from './timer.mjs';
+import {buildTerrain,poseTerrain} from './terrain-kit.mjs';
 import {buildPower,posePower} from './cords-power.mjs';
 import {buildColdToast,poseColdToast} from './cold-toast.mjs';
 import {buildDefroster,poseDefroster} from './defroster.mjs';
 import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+export const SHAPES=Object.freeze(['outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit']);
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
 const teamColor = team => team === 'orange' ? 0xff8a2a : 0x38e0ff;
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -30,11 +37,11 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan') {
-  const g = kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
+  const g = kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+  if (kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
     // Rigid Bible rigs are built in bible.mjs.
   } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
@@ -163,11 +170,11 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   const key=new T.DirectionalLight(0xffdfb0,4);key.position.set(3,8,4);scene.add(key);
   let shards;
   let shape='all';
-  const roster=['cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip'];
+  const roster=SHAPES;
   let dam=false, expression='determined';
   let team='cyan', objects=[], units=[], stress=[], active='idle', started=0, now=0, stressOn=false, fill=0;
   const dummy=new T.Object3D();
-  const actions=['cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
+  const actions=['claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
   function rebuild(){
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
     const ground=buildModel('ground',look,team); objects.push(ground);
@@ -180,6 +187,7 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
     river.name='river-tile';river.position.y=-.06;objects.push(river);
     const crystal=buildModel('crystal',look,team);crystal.position.set(-3,0,-1.7);objects.push(crystal);
     
+    if(shape==='terrain-kit'){for(const o of [ground,river,crystal])o.visible=false;}
     objects.forEach(o=>scene.add(o));
     const rings=new T.Group();rings.name='selection-rings';
     units.forEach((u,i)=>{const ring=new T.Mesh(new T.RingGeometry(.65,.7,5),material(teamColor(team),look));ring.rotation.x=-Math.PI/2;ring.position.set(units.length===1?0:(i-(units.length-1)/2)*1.8,.012,1.2);ring.material.side=T.DoubleSide;rings.add(ring);});
@@ -208,6 +216,10 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
+      if(u.name==='outlet'){poseOutlet(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='smoke-alarm'){poseSmokeAlarm(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='breadbox'){poseBreadbox(u,{active,age,elapsed,spring,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
+      if(u.name==='terrain-kit'){u.userData.motion??={};poseTerrain(u,{active,age,elapsed,spring,expression});return;}
       const bagel=u.name==='bagel';
       const broiler=u.name==='broiler', sieging=broiler&&['siege','attack'].includes(active), patch=u.name==='ground-patches', harvesting=patch&&['harvest','gather','attack'].includes(active), generator=u.name==='generator', generating=generator&&['generate','attack','gather'].includes(active), churn=u.name==='churn', churning=churn&&['churn','attack','gather'].includes(active), pump=u.name==='pump', pumping=pump&&['pump','attack','gather'].includes(active), mill=u.name==='mill', grinding=mill&&['grind','attack','gather'].includes(active), heavy=broiler||u.name==='four-slice'||mill||pump||churn||generator||patch, zapper=u.name==='zapper', flakker=u.name==='flak-popper', homeX=units.length===1?0:(index-(units.length-1)/2)*1.8, state=u.userData.motion??={};
       const shot=age%1.1, firing=zapper&&active==='attack', heat=firing?clamp(shot/.2)*(shot<.2?1:Math.max(0,1-(shot-.2)/.09)):0;
@@ -316,6 +328,8 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
       });
       if(u.userData.bible)poseBible(u,{active,age,phase,moving,shot,expression});
       if(u.name==='cords-power')posePower(u,{active,age,elapsed,spring});
+      if(u.name==='flying-toast')poseFlyingToast(u,{active,age,elapsed,spring});
+      if(u.name==='timer')poseTimer(u,{active,age,elapsed,spring});
       if(u.name==='cold-toast')poseColdToast(u,{active,age,elapsed,spring});
       if(u.name==='defroster')poseDefroster(u,{active,age,elapsed,spring,target:scene.getObjectByName('repair-ally')||units.find(a=>a.name==='crumb')});
       // The launched slice follows a world-space parabola, independent of suspension recoil.
@@ -366,7 +380,7 @@ export function createLab({ renderer, width=1000, height=700, look=LOOKS[0] }={}
       for(let i=0;i<16;i++){const a=i*2.399;dummy.position.set([-2.3,0,2.1][i%3]+Math.sin(a)*spread*1.8,.55+Math.sin(spread*Math.PI)*1.2-spread*.5,1.2+Math.cos(a)*spread*1.8);dummy.rotation.set(p*6+a,p*4,Math.sin(a));dummy.scale.setScalar(age<.09?.18:1-p*.65);dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);}shards.instanceMatrix.needsUpdate=true;
     }
     const rings=scene.getObjectByName('selection-rings');
-    rings.visible=!stressOn;
+    rings.visible=!stressOn&&shape!=='terrain-kit';
     rings.children.forEach((r,i)=>{r.visible=units[i].visible;r.position.x=units[i].position.x;r.position.z=units[i].position.z;});
     renderer?.render(scene,camera);
   }
