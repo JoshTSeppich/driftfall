@@ -1,15 +1,15 @@
 {
- "build": 105,
- "at": "2026-10-23T04:29:19.990Z",
- "seconds": 156.3,
+ "build": 108,
+ "at": "2026-10-23T04:46:21.257Z",
+ "seconds": 160.7,
  "state": "red",
- "nextBuildAt": "2026-10-23T04:32:19.990Z",
+ "nextBuildAt": "2026-10-23T04:49:21.257Z",
  "headline": "Red: 1 test file(s) failing.",
  "tests": {
   "files": 73,
   "pass": 1137,
   "fail": 1,
-  "seconds": 254
+  "seconds": 264.9
  },
  "failures": [
   {
@@ -30,18 +30,18 @@
  },
  "match": {
   "ok": true,
-  "seed": 106,
+  "seed": 109,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3470,
-    3530
+    3480,
+    3520
    ]
   },
-  "ms": 651
+  "ms": 632
  },
  "changed": {
   "first": false,
@@ -59,9 +59,9 @@
   "live": 19
  },
  "previous": {
-  "build": 104,
+  "build": 107,
   "state": "red",
-  "at": "2026-10-23T04:23:43.654Z",
+  "at": "2026-10-23T04:40:40.576Z",
   "failing": [
    "tests/live-spotlight.test.mjs"
   ]
