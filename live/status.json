@@ -1,64 +1,42 @@
 {
- "build": 215,
- "at": "2026-10-23T14:47:29.831Z",
- "seconds": 181.4,
- "state": "red",
- "nextBuildAt": "2026-10-23T14:50:29.831Z",
- "headline": "Red: 1 test file(s) failing.",
+ "build": 219,
+ "at": "2026-10-23T15:10:53.619Z",
+ "seconds": 171.7,
+ "state": "green",
+ "nextBuildAt": "2026-10-23T15:13:53.619Z",
+ "headline": "Green: 1216 tests pass in 78 files, all 61 modules parse, new match recorded.",
  "tests": {
   "files": 78,
-  "pass": 1212,
-  "fail": 1,
-  "seconds": 321
+  "pass": 1216,
+  "fail": 0,
+  "seconds": 303.8
  },
- "failures": [
-  {
-   "file": "tests/style-lab.test.mjs",
-   "owners": [],
-   "imports": [
-    "play/style-lab/lab.mjs"
-   ],
-   "tests": [
-    "action curves settle, gathering fills then delivers, death resets on spawn"
-   ],
-   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
-  }
- ],
+ "failures": [],
  "parse": {
   "checked": 61,
   "errors": []
  },
  "match": {
   "ok": true,
-  "seed": 216,
+  "seed": 220,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3470,
-    3530
+    3460,
+    3540
    ]
   },
-  "ms": 605
+  "ms": 640
  },
  "changed": {
   "first": false,
-  "added": [
-   {
-    "file": "tests/toy-render.test.mjs",
-    "owner": null
-   }
-  ],
-  "changed": [
-   {
-    "file": "tests/style-lab.test.mjs",
-    "owner": null
-   }
-  ],
+  "added": [],
+  "changed": [],
   "removed": [],
-  "total": 2
+  "total": 0
  },
  "files": {
   "env": 30,
@@ -69,11 +47,9 @@
   "live": 19
  },
  "previous": {
-  "build": 214,
-  "state": "red",
-  "at": "2026-10-23T14:41:28.475Z",
-  "failing": [
-   "tests/style-lab.test.mjs"
-  ]
+  "build": 218,
+  "state": "green",
+  "at": "2026-10-23T15:05:01.918Z",
+  "failing": []
  }
 }

@@ -1,3 +1,4 @@
+import {buildSquad,poseSquad} from './squad.mjs';
 import {buildHitDefeat,poseHitDefeat} from './hit-defeat.mjs';
 import {buildToyShowcase,poseToyShowcase,createToyStage,applyToyMaterials,buildToyStress} from './toy-render.mjs';
 import {buildWindmillDam,poseWindmillDam} from './windmill-dam.mjs';
@@ -29,7 +30,7 @@ import {buildDefroster,poseDefroster} from './defroster.mjs';
 import {buildBible,poseBible,bibleKinds} from './bible.mjs';
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-export const SHAPES=Object.freeze(['toy-render','attack-specialists','attack-four-slice','attack-zapper','attack-popper','toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit','grid-terrain-kit','windmill-dam','hit-defeat']);
+export const SHAPES=Object.freeze(['squad','toy-render','attack-specialists','attack-four-slice','attack-zapper','attack-popper','toppings','thought-moods','toast-stacks','grudge-kettle','turret','trading-house','press','track','drill','toaster-oven','outlet','smoke-alarm','breadbox','flying-toast','timer','cords-power','cold-toast','defroster','bagel','broiler','crumb','popper','four-slice','zapper','flak-popper','mill','pump','churn','generator','ground-patches','power-strip','terrain-kit','grid-terrain-kit','windmill-dam','hit-defeat']);
 export const LOOKS = ['FACETED', 'FACETED INK', 'Y2K GLOSS'];
 const teamColor = team => team === 'orange' ? 0xff8a2a : 0x38e0ff;
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -56,11 +57,11 @@ function pentagon() {
   shape.closePath();const geo=new T.ShapeGeometry(shape);geo.userData.facets=5;return geo;
 }
 export function buildModel(kind, look = LOOKS[0], team = 'cyan', specialAttack='broiler') {
-  const g = kind==='hit-defeat'?buildHitDefeat(look,team):kind==='toy-render'?buildToyShowcase(buildModel,look,team):kind==='windmill-dam'?buildWindmillDam(look,team):kind==='grid-terrain-kit'?buildGridTerrain(look,team):kind==='attack-specialists'?buildSpecialAttack(buildModel(specialAttack,look===LOOKS[1]?LOOKS[0]:look,team),specialAttack):kind==='attack-four-slice'?buildQuadVolley(look,team):kind==='attack-zapper'?buildHotCoil(look,team):kind==='attack-popper'?buildPopShot(look,team):kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
+  const g = kind==='squad'?buildSquad(look,team):kind==='hit-defeat'?buildHitDefeat(look,team):kind==='toy-render'?buildToyShowcase(buildModel,look,team):kind==='windmill-dam'?buildWindmillDam(look,team):kind==='grid-terrain-kit'?buildGridTerrain(look,team):kind==='attack-specialists'?buildSpecialAttack(buildModel(specialAttack,look===LOOKS[1]?LOOKS[0]:look,team),specialAttack):kind==='attack-four-slice'?buildQuadVolley(look,team):kind==='attack-zapper'?buildHotCoil(look,team):kind==='attack-popper'?buildPopShot(look,team):kind==='toppings'?buildToppings(look):kind==='thought-moods'?buildMoods(look,team):kind==='toast-stacks'?buildToastStacks(look,team):kind==='grudge-kettle'?buildKettle(look):kind==='turret'?buildTurret(look,team):kind==='trading-house'?buildTradingHouse(look,team):kind==='press'?buildPress(look,team):kind==='track'?buildTrack(look,team):kind==='drill'?buildDrill(look,team):kind==='toaster-oven'?buildOven(look,team):kind==='outlet'?buildOutlet(look,team):kind==='smoke-alarm'?buildSmokeAlarm(look,team):kind==='breadbox'?buildBreadbox(look,team):kind==='flying-toast'?buildFlyingToast(look,team):kind==='timer'?buildTimer(look,team):kind==='terrain-kit'?buildTerrain(look,team):kind==='cords-power'?buildPower(look,team):kind==='cold-toast'?buildColdToast(look,team):kind==='defroster'?buildDefroster(look,team):bibleKinds.includes(kind)?buildBible(kind,look,team):new T.Group(); g.name = kind;
   const mats = { hull: material(0x3f5d4a, look), team: material(teamColor(team), look), steel: material(0x5b6470, look, false, true), tooth: material(0xf8e9b9, look), glass: material(teamColor(team), look, true), dark: material(0x222936, look), sand: material(0xb58a72, look) };
   const part = (geo, mat, p, s = [1,1,1], name = '') => { const m = new T.Mesh(geo, mats[mat]); m.position.set(...p); m.scale.set(...s); m.name = name; g.add(m); return m; };
   const oct = () => new T.ConeGeometry(1, 1.5, 5), box = () => new T.BoxGeometry(1,1,1);
-  if (kind==='hit-defeat'||kind==='toy-render'||kind==='windmill-dam'||kind==='grid-terrain-kit'||kind==='attack-specialists'||kind==='attack-four-slice'||kind==='attack-zapper'||kind==='attack-popper'||kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
+  if (kind==='squad'||kind==='hit-defeat'||kind==='toy-render'||kind==='windmill-dam'||kind==='grid-terrain-kit'||kind==='attack-specialists'||kind==='attack-four-slice'||kind==='attack-zapper'||kind==='attack-popper'||kind==='toppings'||kind==='thought-moods'||kind==='toast-stacks'||kind==='grudge-kettle'||kind==='turret'||kind==='trading-house'||kind==='press'||kind==='track'||kind==='drill'||kind==='toaster-oven'||kind==='outlet'||kind==='smoke-alarm'||kind==='breadbox'||kind==='flying-toast'||kind==='timer'||kind==='terrain-kit'||kind==='cords-power'||kind==='cold-toast'||kind==='defroster'||bibleKinds.includes(kind)) {
     // Rigid Bible rigs are built in bible.mjs.
   } else if (kind==='flak-popper') {
     const heavy=kind==='four-slice', w=heavy?1.65:kind==='popper'?1.05:.8, h=heavy?1.1:.8;
@@ -176,7 +177,7 @@ export function buildModel(kind, look = LOOKS[0], team = 'cyan', specialAttack='
     part(new T.CylinderGeometry(6.5,6.1,.45,5),'sand',[0,-.3,0]);
     for(let i=0;i<14;i++) part(oct(),i%2?'steel':'sand',[Math.sin(i*2.4)*5.4,.05,Math.cos(i*2.4)*5.4],[.25+i%3*.13,.2+i%2*.22,.35]);
   } else throw new Error(`Unknown model ${kind}`);
-  if(!['hit-defeat','toy-render','windmill-dam','grid-terrain-kit'].includes(kind))rebuildBlocky(g,kind,team);
+  if(!['squad','hit-defeat','toy-render','windmill-dam','grid-terrain-kit'].includes(kind))rebuildBlocky(g,kind,team);
   g.updateMatrixWorld(true); g.traverse(o=>{ if(o.isMesh){o.userData.home=o.position.clone();o.userData.scale=o.scale.clone();} });
   if(look===LOOKS[1]&&kind!=='toy-render') addInk(g);
   return g;
@@ -196,7 +197,7 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
   let dam=false, expression='determined';
   let team='cyan', objects=[], units=[], stress=[], active='idle', started=0, now=0, stressOn=false, fill=0;
   const dummy=new T.Object3D();
-  const actions=['happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
+  const actions=['select','victory','hungry','conga','happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','cast','push-rock','cut-cord','replug','hide','repair','stop','siege','spawn','idle','move','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','death','rank-up','shimmer','construction'];
   function rebuild(){
     toyStage.clear();
     for(const o of objects){scene.remove(o); disposeObject(o);} objects=[];stress=[];
@@ -244,11 +245,13 @@ export function createLab({ renderer, width=1000, height=700, onAttackHit=()=>{}
   function stopAttack(){trigger('idle',now);units.filter(u=>u.name==='attack-specialists').forEach(u=>poseSpecialAttack(u,{active:'attack',age:0,ms:520}));units.filter(u=>['attack-four-slice','attack-popper','attack-zapper'].includes(u.name)).forEach(u=>(u.name==='attack-four-slice'?poseQuadVolley:u.name==='attack-zapper'?poseHotCoil:posePopShot)(u,{active:'attack',age:0,ms:520}));}
   function setAnimationTime(ms){if(!Number.isFinite(ms))throw new Error('Invalid animation time');active='attack';attackSeek=Math.max(0,Math.min(520,ms));update(now);}
   function trigger(action,t=now){if(!actions.includes(action))throw new Error('Unknown action');active=action;started=t;fill=0;attackSeek=null;units.forEach(u=>{u.userData.attackHitCycle=-1;u.userData.releaseCycle=-1;});
+    if(shape==='squad'&&action==='hungry')onReactionSound('growl');
     if(shape==='hit-defeat'&&['hit','death'].includes(action))onReactionSound(action==='hit'?'squeak':'boing');
     units.forEach(u=>{u.visible=true;u.userData.bagelAngle=u.userData.motion?.rollAngle||u.userData.bagelAngle||0;if(u.name!=='bagel'||!u.userData.motion)u.userData.motion={height:0,toast:0,lever:0,lean:0};if(action==='hit')u.userData.motion.leanVelocity=9;});}
   function update(t){now=t;const age=Math.max(0,t-started), elapsed=Math.min(.1,Math.max(0,t-previous));previous=t;
     fill=active==='gather'?(age<.8?clamp(age/.8):age<2.6?1:1-clamp((age-2.6)/.16)):0;
     units.forEach((u,index)=>{
+      if(u.name==='squad'){poseSquad(u,{active,age,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='hit-defeat'){poseHitDefeat(u,{active,age,homeX:units.length===1?0:(index-(units.length-1)/2)*1.8});return;}
       if(u.name==='toy-render'){poseToyShowcase(u,{active,age});u.visible=!stressOn&&!(active==='death'&&age>=.3);return;}
       if(u.name==='attack-specialists'){

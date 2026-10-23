@@ -31,9 +31,9 @@ export function boot() {
   function playReactionSound(kind){
     const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
     const audio=new Audio(),osc=audio.createOscillator(),gain=audio.createGain(),t=audio.currentTime;
-    osc.type='triangle';osc.frequency.setValueAtTime(kind==='squeak'?900:170,t);
-    osc.frequency.exponentialRampToValueAtTime(kind==='squeak'?1500:430,t+.055);
-    osc.frequency.exponentialRampToValueAtTime(kind==='squeak'?650:65,t+.22);
+    osc.type='triangle';osc.frequency.setValueAtTime(kind==='growl'?85:kind==='squeak'?900:170,t);
+    osc.frequency.exponentialRampToValueAtTime(kind==='growl'?55:kind==='squeak'?1500:430,t+.055);
+    osc.frequency.exponentialRampToValueAtTime(kind==='growl'?75:kind==='squeak'?650:65,t+.22);
     gain.gain.setValueAtTime(.09,t);gain.gain.exponentialRampToValueAtTime(.001,t+.24);
     osc.connect(gain);gain.connect(audio.destination);osc.start(t);osc.stop(t+.25);osc.onended=()=>audio.close();
   }
@@ -63,7 +63,7 @@ export function boot() {
   addEventListener('keydown',e=>{if(['1','2','3'].includes(e.key))pickLook(Number(e.key)-1);});
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(document.querySelector('#production').checked){const u=lab.units[0];const box=new T.Box3().setFromObject(u),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());controls.target.copy(center);lab.camera.position.copy(center).add(new T.Vector3(0,1,1.5).normalize().multiplyScalar(Math.max(size.x,size.y,size.z)*2.2));}renderer.setPixelRatio(document.querySelector('#production').checked||document.querySelector('#terrain-inspection').value!=='normal'?1:Math.min(devicePixelRatio,1.5));renderer.setSize(w,h,false);composer.setSize(w,h);lab.resize(w,h);}
   addEventListener('resize',resize);pickLook(1);
-  const sequence=['happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','push-rock','cut-cord','replug','hide','repair','spawn','idle','move','stop','siege','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','rank-up','shimmer','construction','death'];
+  const sequence=['select','victory','hungry','conga','happy','grumpy','strike','trade','press','convey','drill','produce','claim','detect','drop','push-rock','cut-cord','replug','hide','repair','spawn','idle','move','stop','siege','attack','hit','gather','deliver','grind','pump','churn','generate','harvest','rank-up','shimmer','construction','death'];
   function frame(ms){requestAnimationFrame(frame);const t=ms/1000;
     if(auto&&t-lastDemo>(sequence[(step-1+sequence.length)%sequence.length]==='cut-cord'?12:sequence[(step-1+sequence.length)%sequence.length]==='gather'?4:1.5)){action(sequence[step++%sequence.length]);lastDemo=t;}
     controls.update();lab.update(t);frames++;

@@ -842,7 +842,7 @@ test('specialist signatures show shell arc, exactly five flak croutons, ram rebo
  test('Blocky revision replaces every appliance surface and keeps all looks',()=>{
  for(const look of LOOKS)for(const kind of SHAPES.filter(k=>!['toy-render','grid-terrain-kit','terrain-kit','ground-patches','toppings','windmill-dam'].includes(k))){
   const u=buildModel(kind,look);assert.equal(u.userData.blocky,true,kind);
-  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry',...(kind==='hit-defeat'?['PlaneGeometry']:[])].includes(o.geometry.type),kind+': '+o.name);});
+  u.traverse(o=>{if(o.isMesh&&!o.userData.ink)assert.ok(['BoxGeometry','BufferGeometry','CylinderGeometry',...(['hit-defeat','squad'].includes(kind)?['PlaneGeometry']:[])].includes(o.geometry.type),kind+': '+o.name);});
  }
  });
 
@@ -954,5 +954,22 @@ test('Hit and Defeat study flashes, hops, shatters, lands butter down and clears
   lab.trigger('move',3);lab.update(3.46);const x=u.position.x;lab.update(3.5);assert.equal(u.position.x,x);lab.update(3.15);assert.ok(u.position.y>0);
   lab.trigger('death',4);lab.update(4.3);const p=toast.position.clone();lab.update(4.1);lab.update(4.3);assert.deepEqual(toast.position,p);
   lab.trigger('idle',5);lab.update(5);assert.equal(u.getObjectByName('x-eyes').visible,false);lab.dispose();
+ }
+});
+
+test('Squad personality budget, shared salute/dance, planted cluster and Crumb conga in every look',()=>{
+ for(const look of LOOKS){
+  const sounds=[],lab=createLab({look,onReactionSound:s=>sounds.push(s)});assert.ok(SHAPES.includes('squad'));lab.setShape('squad');const u=lab.units[0];
+  const members=u.userData.members;assert.equal(members.length,4);assert.ok(triangles(u)<300);
+  for(const m of members){assert.equal(m.children.length,4);assert.ok(triangles(m)<=60);}
+  lab.trigger('select',0);lab.update(.12);assert.ok(members.every(m=>m.getObjectByName('toast').position.y>1.1));
+  lab.trigger('victory',1);lab.update(1.16);assert.ok(members.every(m=>m.position.y>.1));assert.equal(members[0].position.y,members[1].position.y);
+  lab.trigger('move',2);lab.update(2.16);assert.ok(members[0].position.y>0);const x=members[0].position.x;lab.update(2.18);assert.notEqual(members[0].position.x,x);
+  lab.update(2.47);const planted=members[0].position.x;lab.update(2.49);assert.equal(members[0].position.x,planted);
+  lab.trigger('hungry',3);lab.update(3.2);assert.deepEqual(sounds,['growl']);assert.ok(members.every(m=>!m.getObjectByName('toast').visible));assert.ok(members[0].getObjectByName('eye-left').rotation.z>.1);
+  lab.trigger('conga',4);lab.update(4.5);assert.ok(members[2].position.z>members[1].position.z);assert.notEqual(members[2].position.y,members[3].position.y);
+  lab.trigger('idle',5);lab.update(5.2);const cord=members[0].getObjectByName('cord').rotation.x;lab.update(5.3);assert.notEqual(members[0].getObjectByName('cord').rotation.x,cord);
+  assert.equal(members[0].getObjectByName('toast').visible,true);assert.equal(members[0].getObjectByName('eye-left').rotation.z,0);
+  lab.trigger('stop',6);lab.update(6);assert.ok(members.every(m=>m.position.y===0));lab.dispose();
  }
 });
