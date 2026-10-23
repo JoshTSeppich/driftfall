@@ -135,10 +135,18 @@ function fakeDom() {
   return { document, mk };
 }
 
-test("mountSpotlight renders cards from the live Control Room when it is reachable (skips otherwise)", async (t) => {
-  let up = false;
-  try { up = (await fetch("http://localhost:4477/api/health")).ok; } catch {}
-  if (!up) { t.skip("Control Room not running"); return; }
+test("mountSpotlight renders cards from a stubbed Control Room (deterministic: no live server needed)", async () => {
+  const realFetch = globalThis.fetch;
+  const now = Date.now();
+  const nodes = [1, 2, 3].map((i) => ({ id: `job:${i}`, kind: "job", state: "running", label: `Team ${i} · Role ${i} (sonnet)`, last: now - 1000 * i }));
+  globalThis.fetch = async (u) => {
+    const s = String(u); const ok = (body) => ({ ok: true, json: async () => body, text: async () => "" });
+    if (s.includes("/api/graph")) return ok({ now, nodes });
+    if (s.includes("/api/feed")) return ok([{ i: 1, text: "claude: reading the spec." }, { i: 2, text: "    ↳ ✔ t # tests 5 # pass 5 # fail 0" }]);
+    if (s.includes("/api/subtitles")) return ok({ items: [], total: 0 });
+    return ok({});
+  };
+  try {
   const { document, mk } = fakeDom();
   const root = mk("div"); root.ownerDocument = document;
   const sp = mountSpotlight(root, { base: "http://localhost:4477", count: 4, interval: 100000 });
@@ -149,5 +157,5 @@ test("mountSpotlight renders cards from the live Control Room when it is reachab
   assert.ok(root.children.length >= 1 && root.children.length <= 4, `shows 1–4 cards, got ${root.children.length}`);
   for (const c of root.children) { assert.equal(c.className, "sp-card"); assert.match(c.innerHTML, /sp-head/); assert.match(c.innerHTML, /sp-feed/); }
   assert.equal(sp.state.picks.length, root.children.length);
-  console.log("spotlight picks:", sp.state.picks.map((p) => `${sp.state.nodes.find((n) => n.id === p.id)?.label} [${Math.round(p.score)}]`).join(" | "));
+  } finally { globalThis.fetch = realFetch; }
 });

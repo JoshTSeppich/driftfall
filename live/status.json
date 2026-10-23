@@ -1,27 +1,25 @@
 {
- "build": 108,
- "at": "2026-10-23T04:46:21.257Z",
- "seconds": 160.7,
+ "build": 112,
+ "at": "2026-10-23T05:08:52.199Z",
+ "seconds": 163.1,
  "state": "red",
- "nextBuildAt": "2026-10-23T04:49:21.257Z",
+ "nextBuildAt": "2026-10-23T05:11:52.199Z",
  "headline": "Red: 1 test file(s) failing.",
  "tests": {
   "files": 73,
   "pass": 1137,
   "fail": 1,
-  "seconds": 264.9
+  "seconds": 279.8
  },
  "failures": [
   {
-   "file": "tests/live-spotlight.test.mjs",
+   "file": "tests/perf.test.mjs",
    "owners": [],
-   "imports": [
-    "live/spotlight.mjs"
-   ],
+   "imports": [],
    "tests": [
-    "mountSpotlight renders cards from the live Control Room when it is reachable (skips otherwise)"
+    "idle-tick is no more than 2x its baseline"
    ],
-   "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   "error": "AssertionError [ERR_ASSERTION]: idle-tick is 2.06x its baseline (3.651 us per tick, seed 7, no commands; baseline 1.521 on the recording machine). Limit is 2x. If this is a deliberate change, record a new baseline (see PERF.md)."
   }
  ],
  "parse": {
@@ -30,18 +28,18 @@
  },
  "match": {
   "ok": true,
-  "seed": 109,
+  "seed": 113,
   "file": "matches/latest.json",
   "result": {
    "winner": 1,
    "reason": "timeout",
    "tick": 2000,
    "value": [
-    3480,
-    3520
+    3470,
+    3530
    ]
   },
-  "ms": 632
+  "ms": 637
  },
  "changed": {
   "first": false,
@@ -59,11 +57,11 @@
   "live": 19
  },
  "previous": {
-  "build": 107,
+  "build": 111,
   "state": "red",
-  "at": "2026-10-23T04:40:40.576Z",
+  "at": "2026-10-23T05:05:46.117Z",
   "failing": [
-   "tests/live-spotlight.test.mjs"
+   "tests/perf.test.mjs"
   ]
  }
 }
