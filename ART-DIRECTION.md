@@ -16,7 +16,7 @@ Reference: assets/generated/snk-20-style-exploration-y2k.png (the Siphoner in th
 - **The drawn art** stays for portraits, icons and loading/menu screens; the map uses the faceted models.
 
 ## Palette
-Snakenators: slate green (#3f5d4a), gunmetal (#5b6470), cyan crystal (#38e0ff), signal lime (#b6ff3b).
+Toastinators: slate green (#3f5d4a), gunmetal (#5b6470), cyan crystal (#38e0ff), signal lime (#b6ff3b).
 Enemy mirror: same models, team colour swaps cyan for orange (#ff8a2a).
 Sky: dusk gradient (#2b1b4a → #ff9a6b). Ground: warm sand facets with darker rock.
 

@@ -28,11 +28,11 @@ export function boot() {
   addEventListener('keydown',e=>{if(['1','2','3'].includes(e.key))pickLook(Number(e.key)-1);});
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);composer.setSize(w,h);lab.resize(w,h);}
   addEventListener('resize',resize);pickLook(1);
-  const sequence=['spawn','idle','move','attack','hit','gather','rank-up','shimmer','construction','death'];
+  const sequence=['spawn','idle','move','attack','hit','gather','deliver','rank-up','shimmer','construction','death'];
   function frame(ms){requestAnimationFrame(frame);const t=ms/1000;
     if(auto&&t-lastDemo>(sequence[(step-1+sequence.length)%sequence.length]==='gather'?4:1.5)){action(sequence[step++%sequence.length]);lastDemo=t;}
     controls.update();lab.update(t);frames++;
-    if(ms-last>=500){fps=Math.round(frames*1000/(ms-last));document.querySelector('#fps').textContent=`${fps} FPS · ${stress?200:2} units · ${renderer.info.render.calls} draws · ${renderer.info.render.triangles.toLocaleString()} triangles`;frames=0;last=ms;}
+    if(ms-last>=500){fps=Math.round(frames*1000/(ms-last));document.querySelector('#fps').textContent=`${fps} FPS · ${stress?200:3} units · ${renderer.info.render.calls} draws · ${renderer.info.render.triangles.toLocaleString()} triangles`;frames=0;last=ms;}
   }
   requestAnimationFrame(frame);
 }

@@ -353,3 +353,36 @@ Centre). Camps come in three strengths (marked on the minimap with 1–3 pips) a
   costs nothing once), **Glowmoss Pouch** (slow self-heal), **Stormglass Shard** (first hit each fight stuns 0.5 s),
   **Ironroot Brace** (can't be pushed or slowed), **Amberlight Tooth** (rare: +1 rank).
 - Intuitive: items show as two small slots on the unit's portrait, a glow on the unit, and a one-line tooltip.
+
+## 15. Movable rocks, the first terrain shaping (Joshua, 19:58: "make those big rocks movable")
+- Big rocks can be **pushed** one tile by a ground unit (heavy units push fast; Siphoners can **haul** a rock to a
+  chosen tile). They can't go onto units, structures, ramps or off cliffs.
+- Rocks are walls you design: block a choke, open a path, protect a Drill line.
+- **Rocks into water make a ford; a line of rocks makes a dam.** This is the first step of the terraforming idea
+  (shape the land to win the resources: control the river, control the war).
+
+## 16. The faction is now THE TOASTINATORS (Joshua, 20:05: "make them little toasters or something easier")
+Snakes were hard to model and animate; the faction becomes little **toaster robots**: boxy, chrome-and-candy
+plastic, deadly serious, very funny, and trivially geometric. One race (mirror match) as before. Where this file says
+Snakenators or snake-specific upgrade names, read the Toastinator equivalent below; owners rename as they touch code.
+
+| Role (sim kind) | Toastinator | Look and motion |
+|---|---|---|
+| worker | **Crumb** | Tiny 2-slot toaster; carries crystal slices in its slots; hops |
+| grunt (melee) | **Popper** | Pops its toast up to bonk; scrappy |
+| lancer (ranged) | **Zapper** | Fires glowing heating-coil bolts from its slots |
+| brute (heavy) | **Four-Slice** | Huge 4-slot toaster tank; slow stomping hops |
+| spiker (anti-air) | **Flak Popper** | Launches toast flak straight up |
+| howler (siege) | **Broiler** | Mini oven on legs; lobs burning toast; deploys (siege) by opening its door |
+| dart (raider) | **Bagel** | Rolls on its side, fast |
+| mender (healer) | **Defroster** | Warm glow repairs allies |
+| shade (stealth) | **Cold Toast** | Unplugged, dark, hidden |
+| conduit (caster) | **Timer** | Dial-faced caster; spells tick |
+| skiff (air) | **Flying Toast** | Toast with little wings |
+| barge (transport) | **Breadbox** | Flying box carries units |
+| seer (detector) | **Smoke Alarm** | Floating detector that beeps |
+| core | **Power Strip** | The base; everything plugs into it |
+| claim | **Outlet** | Plug it into a Reach to claim it |
+
+Upgrade names follow the theme (e.g. Sidewind becomes **Spring Coils**, Long Strike **Hot Coils**, Swimmers
+**Rubber Feet**, Shed Skin **Unplug & Move**, Venom **Burnt Toast**, Constrict **Cord Wrap**). Numbers unchanged.

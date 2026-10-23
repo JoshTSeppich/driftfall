@@ -1,6 +1,6 @@
 # NORTH STAR: Driftfall v0.1, live and fun (Joshua, 19:21)
 
-**Goal: a stranger opens one link, plays a full Snakenators-vs-Snakenators match against the built-in AI, understands
+**Goal: a stranger opens one link, plays a full Toastinators-vs-Toastinators match against the built-in AI, understands
 everything without help, laughs at the art, and wants a rematch.** Every task you take must move that closer. If it
 doesn't, don't do it; say so in the chat.
 
@@ -12,7 +12,7 @@ doesn't, don't do it; say so in the chat.
    (Bloom, Dry-out, Flood, Quake, Squall, The Fall) is announced 30 s ahead; mining grows from hand-carrying to
    Drills, Track lines and the Press; army upkeep with no supply cap and visible debt; the Trading House with
    scarcity prices; a territory win (14 of 21 for 90 s) and a Core win.
-3. **It looks like the drawings.** Every Snakenator unit and building on the map, in the HUD and on every button
+3. **It looks like the drawings.** Every Toastinator unit and building on the map, in the HUD and on every button
    uses the hand-drawn art (ink outlines, flat colour, funny but deadly serious). No placeholder shapes or text
    buttons left in v0.1.
 4. **It's intuitive at every level.** Every button: icon, hotkey, cost, one plain sentence. Everything that can
