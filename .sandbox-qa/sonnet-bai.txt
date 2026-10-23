@@ -1,0 +1,17 @@
+✔ normal on side 0: builds, trains, expands and attacks inside 5 minutes (22126.496917ms)
+✔ normal on side 1: builds, trains, expands and attacks inside 5 minutes (18769.630917ms)
+✔ easy on side 0: builds, trains, expands and attacks inside 5 minutes (58372.937584ms)
+✔ easy on side 1: builds, trains, expands and attacks inside 5 minutes (47397.996833ms)
+✔ normal guards its expansion with a Turret (8986.220542ms)
+✔ easy is slower than normal: first blow lands later, and it still plays legally when it thinks every 4th tick (39433.207459ms)
+✔ a run is deterministic: same seed, same result and same final state (11236.649833ms)
+✔ it does not give itself away to a real opponent: holds its own against the sample bots and thinks fast (6405.087584ms)
+✔ the module is player-shaped: name, act, easy and normal helpers, unknown difficulty means normal (0.174792ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 212832.656875

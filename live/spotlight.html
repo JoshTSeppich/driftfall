@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Driftfall — Agent Spotlight</title>
+<!-- Standalone page for live/spotlight.mjs (owner: fable, Agent Spotlight Operator).
+     Open: http://localhost:4477/preview/rts/live/spotlight.html?count=4
+     It follows the show director's live/scene.json like the TV embed would, so what you see here is what the TV shows. -->
+<style>
+  :root { --bg: #07090c; --panel: #0f1217; --line: #1d232c; --text: #e6e8eb; --dim: #7d8590; }
+  * { box-sizing: border-box }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+    font-family: ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif }
+  header { height: 44px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--line) }
+  h1 { font-size: 15px; margin: 0; letter-spacing: .08em; font-weight: 650 }
+  h1 span { color: var(--dim); font-weight: 400; letter-spacing: .02em }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 99px; background: #1b2028; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48vw }
+  .spacer { flex: 1 }
+  #spotlight { position: absolute; top: 44px; left: 0; right: 0; bottom: 0 }
+</style>
+</head>
+<body>
+<header>
+  <h1>DRIFTFALL <span>· agent spotlight</span></h1>
+  <span class="pill" id="count"></span>
+  <span class="pill" id="scene">show director: waiting for live/scene.json</span>
+  <span class="spacer"></span>
+  <span class="pill" id="clock"></span>
+</header>
+<div id="spotlight"></div>
+<script type="module">
+  import { mountSpotlight, followSceneFile } from "./spotlight.mjs";
+  const q = new URLSearchParams(location.search);
+  const count = Math.max(1, Math.min(4, Number(q.get("count")) || 4));
+  const sp = mountSpotlight(document.getElementById("spotlight"), { count });
+  followSceneFile(sp, {
+    onScene(s) {
+      const el = document.getElementById("scene");
+      const when = s.since || s.t ? new Date(s.since || s.t).toLocaleTimeString() : "";
+      el.textContent = `show director: ${String(s.scene || "?").toUpperCase()}${s.reason ? " · " + s.reason : ""}${when ? " · " + when : ""}`;
+    },
+  });
+  setInterval(() => {
+    document.getElementById("clock").textContent = new Date().toLocaleTimeString();
+    document.getElementById("count").textContent = `${sp.state.picks.length} of ${sp.state.nodes.length} agents in the spotlight`;
+  }, 1000);
+  window.spotlight = sp; // for poking at it from the console
+</script>
+</body>
+</html>

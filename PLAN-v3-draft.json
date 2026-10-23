@@ -1,0 +1,147 @@
+{
+  "version": 3,
+  "spec": "ENV-SPEC.md",
+  "status": "DRAFT: becomes PLAN.json when fable, sonnet and haiku have all posted AGREE: v3",
+  "rules": [
+    "Only edit files you own. If you need a change in someone else's file, ask in the chat.",
+    "Tests use node --test, import the real env modules, and never stub the thing under test.",
+    "Every number comes from env/stats.mjs; tests read it from there instead of hard-coding.",
+    "No Math.random, Date, timers or async inside env/* except referee.mjs.",
+    "Nobody writes the test area for a module they own; every module has a tester from another team.",
+    "v2 tests keep passing where the rule did not change; where v3 changed a rule the test owner updates the test and says so in the chat."
+  ],
+  "modules": [
+    {
+      "id": "layout",
+      "files": ["maps/layout-v3.mjs", "maps/driftfall-v3.json", "maps/driftfall-v3.txt", "maps/check-layout-v3.mjs", "maps/TERRAIN-V3.md"],
+      "owner": "haiku",
+      "task": "The hand-drawn 40x40 mirrored map from spec section 2: tiles, heights, two-wide ramps with an axis, Shard fields with a rich flag, Vents at 600 Flux, Rubble at 200 hp, Cores and six Worker starts per side. The JSON is the single source of the fixed layout; check-layout-v3 verifies symmetry, ramp joins and that the main can only be left by its ramp."
+    },
+    {
+      "id": "map",
+      "files": ["env/rng.mjs", "env/map.mjs"],
+      "owner": "sonnet",
+      "task": "generateMap(seed) loads maps/driftfall-v3.json, then uses the seeded stream to scatter 6 rock pairs and 2 Rubble pairs on open low tiles of the top-right quadrant, each mirrored, kept only at distance 3 or more from Cores, Worker starts, Shard tiles, Vents, ramps and Rubble and only if every passable tile still reaches every other by the ground stepping rule with Rubble as walls. Returns width, height, heights, ramps, rocks, crystals (with rich), vents, rubble, cores, workers. mirror and isConnected updated for heights and ramps."
+    },
+    {
+      "id": "path",
+      "files": ["env/path.mjs"],
+      "owner": "sonnet",
+      "task": "Breadth-first path as v2 plus an optional canStep(from, to) test applied to every step, so ground paths obey heights and ramp axes. Same fixed neighbour order, same within option, null when unreachable."
+    },
+    {
+      "id": "stats",
+      "files": ["env/stats.mjs"],
+      "owner": "haiku",
+      "task": "The single v3 stats table: every number in spec sections 2 to 8 and 12 for nine structures and fourteen unit kinds, with per-kind flux cost, cooldown, steps, sight, berths, hits, layer, from, needs, airDamage, splash, minRange, heal, energy, cargo, detect and hidden; match numbers (maxBerths, coreBerths, maxTicks 2000, fog default); crystal richLoad; flux carry; rubble hp; the abilities table; valueOf counting Shards plus Flux cost; sideValue adding both resources."
+    },
+    {
+      "id": "state",
+      "files": ["env/state.mjs"],
+      "owner": "haiku",
+      "task": "State creation and helpers for v3: heights, ramps, vents, obstacles (Rubble with ids in row-major order after the Workers), flux, fog; heightAt, rampAt, canStep, isGroundFree, isAirFree, berthsOf; createTestState accepting all of these; observe(state, player) applying fog of war through env/vision.mjs exactly as spec section 10 lists (own-only fields, enemy pieces only on seen tiles, hidden undetected enemies and enemy cargo never shown)."
+    },
+    {
+      "id": "vision",
+      "files": ["env/vision.mjs"],
+      "owner": "sonnet",
+      "task": "visionOf(state, player) as rows of 0 and 1 from per-kind sight, the height rule (ground sees its own height or lower, ramps count as low, air sees all), the within-2 rule and sites at sight 2, with cargo seeing nothing; canSee; isDetected for hidden units using detector ranges and the 2-tick linger stored on the unit; isTargetable combining vision, detection and the attacker's hits list. Pure, deterministic, no side effects except updating detectedUntil when asked."
+    },
+    {
+      "id": "commands",
+      "files": ["env/commands.mjs"],
+      "owner": "haiku",
+      "task": "Validate and apply one side's commands per spec section 11: the v2 six plus repair, siege, unsiege, cast, board and unload; both resource costs; needs-tech, no-berths, not-visible, wrong-mode, cargo-full, no-cargo, bad-ability and no-flux rejects; Siphon only on a vent; attack may target Rubble; attack and snare need a visible target; never throws on bad input."
+    },
+    {
+      "id": "combat",
+      "files": ["env/combat.mjs"],
+      "owner": "haiku",
+      "task": "Combat phase per spec section 8: cooldown countdown, vision and detection snapshot, casts via env/abilities.mjs, target choice limited by hits lists and visibility, Howler sieged-only fire with min range and splash, Spiker air damage, Dart and Brute multipliers, Mender heals as negative damage, simultaneous apply capped at max hp, deaths including Barge cargo, orders cleared when a target is no longer visible, hit, heal, snare and die events in the spec order."
+    },
+    {
+      "id": "abilities",
+      "files": ["env/abilities.mjs"],
+      "owner": "fable",
+      "task": "The Conduit's abilities: resolveCasts(state, totals) walks Conduits with cast orders in id order, checks range 6 and energy, spends energy, adds Pulse damage (30 to every unit of both sides within 1 of the tile, structures untouched) to the tick's totals, sets snared 16 on a Snare target, clears the order and emits cast and snare events. Energy regen itself lives in economy."
+    },
+    {
+      "id": "transport",
+      "files": ["env/transport.mjs"],
+      "owner": "fable",
+      "task": "Barge loading and unloading: tryBoard puts a unit with a board order that stands within 1 of its Barge inside it when the 8 cargo berths allow (load event), unloadBarge places cargo in order on the nearest free ground tiles within 2 using the spawn search order (unload events), with leftovers staying inside; cargo follows the Barge's tile and dies with it."
+    },
+    {
+      "id": "economy",
+      "files": ["env/economy.mjs"],
+      "owner": "fable",
+      "task": "Production and gathering for v3: training with needs and berths, air spawns on the nearest tile free of air units, sites and repair, Howler mode countdowns with mode events, Conduit energy plus one on even ticks, snared countdown, Shard loads of 10 or 20 by tile, Flux gathering through a complete own Siphon with carry 8 and retargeting, deliveries crediting the right resource, mine, deliver, spend, repair and mode events."
+    },
+    {
+      "id": "movement",
+      "files": ["env/movement.mjs"],
+      "owner": "fable",
+      "task": "Movement for v3: ground units path with canStep over heights and ramp axes, Rubble and Siphons block, steps per tick (Dart two), snared units stay, Howlers move only when mobile; air units step straight in 8 directions diagonal first, wait when an air unit blocks and try the two neighbouring directions next tick, never share a tile with another air unit; boarding right after a unit's own move and Barge unloading at its turn through env/transport.mjs; the v2 detour rule and id-order reversal kept."
+    },
+    {
+      "id": "sim",
+      "files": ["env/sim.mjs"],
+      "owner": "fable",
+      "task": "The tick loop for v3: createMatch(seed, { fog }) records the option in the state, step runs the six phases in spec section 9 with the side and id reversal, checkEnd uses maxTicks 2000 and value with both resources."
+    },
+    {
+      "id": "referee",
+      "files": ["env/referee.mjs", "env/player-worker.mjs", "env/run-match.mjs", "players/sample-player.mjs"],
+      "owner": "fable",
+      "task": "Referee as v2 (sonnet's child-process sandbox from the security fix is kept) plus the fog and maxTicks options on runMatch and the --no-fog flag on run-match; the log carries options. sample-player works under fog: gathers Shards, builds a Siphon and gathers Flux, builds Quarters when near the berth limit, a Forge and one Foundry, trains a mix including one Spiker, and attacks only what it can see. Still a test fixture, not a competitor."
+    },
+    {
+      "id": "log",
+      "files": ["env/log.mjs"],
+      "owner": "sonnet",
+      "task": "Log version 3: options and the richer initial state, the new events (heal, cast, snare, mode, load, unload, repair, resource fields on mine and deliver, flux on deliver and spend), validateLog naming every missing or malformed field in plain English, comparable unchanged."
+    },
+    {
+      "id": "viewer",
+      "files": ["viewer/replay.mjs", "viewer/index.html", "viewer/viewer.mjs", "viewer/style.css"],
+      "owner": "sonnet",
+      "task": "replay.mjs applies every v3 event and the energy and snare countdown rules so the replayed state keeps every promise in spec section 12; the 2D debug viewer draws heights, ramps, Vents, Siphons, Rubble, rich tiles, air units above ground units, Howler mode, hidden Shades, and both resources and berths in the side panel."
+    }
+  ],
+  "tests": [
+    { "id": "map-generation", "files": ["tests/map-generation.test.mjs"], "owner": "haiku", "task": "Updated for v3: same seed gives the identical map twice, different seeds differ, every scattered rock and Rubble has its mirror, scatter only on open low tiles of the right quadrants at distance 3 or more from everything fixed, all passable tiles connected by the stepping rule with Rubble as walls, and the fixed layout (Cores, Workers, fields, Vents, ramps, Rubble, heights) matches maps/driftfall-v3.json." },
+    { "id": "map-layout", "files": ["tests/map-layout.test.mjs"], "owner": "sonnet", "task": "The hand-drawn layout file: point symmetry of tiles and heights, 10 Vents at 600, 12 ramp tiles each joining one high and one low tile along its axis and two wide, 24 standard and 12 rich Shard tiles with the rich flag, 12 Rubble at 200 hp, 6 Worker starts per side on high ground, the outer ring rock, and check-layout-v3 passing." },
+    { "id": "stats-table", "files": ["tests/stats-table.test.mjs"], "owner": "sonnet", "task": "Updated for v3: every unit and structure kind has every required field with a sane value, costs and Flux match the spec tables, hits and layer values are from the allowed sets, every from and needs names a real structure, valueOf counts Shards plus Flux and gives 0 for Core, Rubble and sites, sideValue adds both resources." },
+    { "id": "path-finding", "files": ["tests/path-finding.test.mjs"], "owner": "fable", "task": "v2 cases kept, plus canStep: a path climbs only through a ramp along its axis, a cliff is never crossed, a ramp entered sideways is refused, a goal across a cliff with no ramp returns null, and without canStep behaviour is identical to v2." },
+    { "id": "terrain-step", "files": ["tests/terrain-step.test.mjs"], "owner": "haiku", "task": "Through the real movement module on a createTestState map with heights: a ground unit refuses a cliff step, takes a ramp along its axis, is refused sideways on a ramp, two units pass head-on on a two-wide ramp, Rubble and a Siphon block ground movement, and a Dart takes two steps in one tick but stops at the first taken tile." },
+    { "id": "air-movement", "files": ["tests/air-movement.test.mjs"], "owner": "sonnet", "task": "A Skiff crosses rock, cliffs, Rubble, structures and ground units in a straight line, diagonal first; two air units never share a tile and the blocked one waits then sidesteps; an air unit shares a tile with a ground unit; air spawns on the nearest tile free of air units; the no-shared-tile rule holds per layer over a full match." },
+    { "id": "vision-fog", "files": ["tests/vision-fog.test.mjs"], "owner": "haiku", "task": "visionOf and observe: a low unit does not see a high tile beyond 2, a high unit sees down, a flyer sees every height, the within-2 rule holds, sites see 2, cargo sees nothing, the observation hides enemy pieces on unseen tiles and shows all terrain and own pieces, fog off shows everything, and own-only fields never appear on enemy copies." },
+    { "id": "stealth-detection", "files": ["tests/stealth-detection.test.mjs"], "owner": "fable", "task": "A Shade is absent from the enemy observation, an attack order on it is rejected not-visible, idle Lancers ignore it, it still attacks; a Seer or complete Mast within 8 reveals it and Lancers kill it; it stays targetable for 2 ticks after the detector moves away; the owner always sees it with the detected flag." },
+    { "id": "combat-air", "files": ["tests/combat-air.test.mjs"], "owner": "sonnet", "task": "Grunts, Lancers, Brutes and Darts cannot target a Skiff by order (bad-target) or automatically; a Spiker deals its airDamage to a Skiff and its ground damage to a Grunt; a Turret and a Skiff hit air; a Skiff hits ground and air; a Barge and a Seer never attack." },
+    { "id": "combat-cooldown-siege", "files": ["tests/combat-cooldown-siege.test.mjs"], "owner": "haiku", "task": "A cooldown-1 unit still hits every tick; a Howler fires nothing while mobile, deploying or packing, becomes sieged after exactly 10 ticks with a mode event, then fires every 8 ticks at range 7, never at distance under 2, splashes 20 to other enemy ground units within 1 and never own units or structures, cannot move while sieged, and siege on a sieged Howler is rejected wrong-mode." },
+    { "id": "abilities-conduit", "files": ["tests/abilities-conduit.test.mjs"], "owner": "sonnet", "task": "Energy starts 50, rises by one on even ticks to a cap of 100; a Conduit ordered to cast walks into range 6 and casts at the first combat phase with enough energy; Pulse deals 30 to every unit of both sides within 1 of the tile and nothing to structures, summed with regular hits; Snare pins a visible enemy for 16 ticks (it can still attack) and is rejected on an unseen target; an unknown ability is rejected bad-ability; cast and snare events match." },
+    { "id": "healing-repair", "files": ["tests/healing-repair.test.mjs"], "owner": "haiku", "task": "A Mender heals 4 a tick to the own unit with the most missing hp within 2, ties lower id, never itself or cargo, never above max, and heal nets against damage in the same tick; a Worker with a repair order restores a structure at the build rate, one Worker counts, the order clears at full hp, and repair on a full structure is rejected bad-target." },
+    { "id": "economy-flux", "files": ["tests/economy-flux.test.mjs"], "owner": "sonnet", "task": "A Siphon can only be built on a Vent and nothing else can; gather on a Vent without a complete own Siphon is rejected; with one, a Worker mines 8 ticks, carries 8 Flux, delivers and the side's Flux rises; a Vent running dry retargets to another own Siphon or idles; a Flux-costing build or train is rejected no-flux and pays both resources when accepted; value counts Flux." },
+    { "id": "economy-rich", "files": ["tests/economy-rich.test.mjs"], "owner": "haiku", "task": "A rich tile gives 20 per load in the same 8 ticks, a standard tile 10, a partial load on the last trip, carrying never exceeds 20, and the mine event shows the load and what is left." },
+    { "id": "tech-berths", "files": ["tests/tech-berths.test.mjs"], "owner": "sonnet", "task": "Each building trains only its list; Foundry, Hangar and Sanctum builds are rejected needs-tech until their requirement is complete; a Brute needs a Foundry; berths start at 16, each complete Quarters adds 8 up to 100, training that would exceed the limit counting queued units is rejected no-berths, losing Quarters blocks training until under the limit, and the old flat cap is gone." },
+    { "id": "transport-barge", "files": ["tests/transport-barge.test.mjs"], "owner": "haiku", "task": "A board order walks a Grunt next to its Barge and loads it with a load event; cargo berths cap at 8; cargo follows the Barge's tile, blocks nothing, is not in the enemy observation and cannot be hit; unload places cargo on the nearest free tiles within 2 with unload events and leftovers stay inside; cargo dies with the Barge; a Worker keeps its load through a trip." },
+    { "id": "raider-dart", "files": ["tests/raider-dart.test.mjs"], "owner": "sonnet", "task": "A Dart moves two tiles a tick along its path, stops after one when the second tile is taken, deals double to Workers and normal to Grunts, and loses to a Lancer and a Grunt together in the open." },
+    { "id": "rubble", "files": ["tests/rubble.test.mjs"], "owner": "fable", "task": "Rubble blocks ground paths and never air; it appears in obstacles with id and hp; idle units and Turrets ignore it; an attack order on it is legal from any armed unit, a Brute deals double, it dies with a die event, and afterwards the tile is passable at the same height; its ids follow the Workers in row-major order." },
+    { "id": "combat-counters-v3", "files": ["tests/combat-counters-v3.test.mjs"], "owner": "fable", "task": "Small duels through the real sim for every counter in spec section 5: Spiker beats Skiff, Turret beats Skiff, Skiff beats a mobile Howler, a sieged Howler beats four clumped Grunts, a Dart kills a Worker in two ticks and beats a sieged Howler from adjacent, a Seer plus two Lancers kill a Shade while two Lancers alone do not, a Conduit Pulse kills a 3x3 clump of Workers, a Mender keeps a Brute alive against two Lancers. Each failure names the counter that broke." },
+    { "id": "commands-validation", "files": ["tests/commands-validation.test.mjs"], "owner": "sonnet", "task": "Updated for v3: every reject reason in spec section 11 including the eight new ones can be triggered and is logged, malformed input never throws, each new command sets the right order or state exactly once, a cast with a wrong target type is bad-target, and the odd-tick side order still holds." },
+    { "id": "observation-fog", "files": ["tests/observation-fog.test.mjs"], "owner": "fable", "task": "observe through the real sim over several ticks: as a Lancer walks up a ramp the enemy Turret appears in its side's observation on the tick it is first seen and vanishes when it walks away, enemy resources and berths are always shown, orders and energy are own-only, the vision rows match canSee tile by tile, and mutating the observation changes nothing." },
+    { "id": "combat-damage", "files": ["tests/combat-damage.test.mjs"], "owner": "fable", "task": "v2 cases kept and updated for hp caps and the Brute multiplier read from stats; adds that damage and healing apply together and that a unit at 0 after heals is still removed." },
+    { "id": "combat-targeting", "files": ["tests/combat-targeting.test.mjs"], "owner": "sonnet", "task": "v2 cases kept; adds that idle units only auto-target visible enemies, that an attack order clears with a null order event when its target leaves vision, and that Rubble is never auto-targeted." },
+    { "id": "combat-counters", "files": ["tests/combat-counters.test.mjs"], "owner": "haiku", "task": "The v2 four-unit duels kept as they are; they must still pass under v3 numbers." },
+    { "id": "economy-gather", "files": ["tests/economy-gather.test.mjs"], "owner": "haiku", "task": "v2 cases kept with the resource field on mine and deliver events." },
+    { "id": "economy-build-train", "files": ["tests/economy-build-train.test.mjs"], "owner": "sonnet", "task": "v2 cases kept, with the unit cap case replaced by a pointer to tech-berths, and air units spawning on the nearest tile free of air units added." },
+    { "id": "movement-order", "files": ["tests/movement-order.test.mjs"], "owner": "haiku", "task": "v2 cases kept; adds that a snared unit does not move and resumes after 16 ticks and that a deploying Howler stays put." },
+    { "id": "sim-determinism", "files": ["tests/sim-determinism.test.mjs"], "owner": "sonnet", "task": "v2 cases kept on the v3 sample player; adds a fog-off and a fog-on run of the same seed producing identical logs apart from options, and the source scan now covers vision, abilities and transport." },
+    { "id": "sim-end-conditions", "files": ["tests/sim-end-conditions.test.mjs"], "owner": "haiku", "task": "v2 cases kept with maxTicks 2000 and value including Flux and cargo." },
+    { "id": "referee-limits", "files": ["tests/referee-limits.test.mjs"], "owner": "fable", "task": "v2 cases kept under the child-process sandbox; adds that a player cannot read a file outside its own module and that --no-fog is recorded in the log options." },
+    { "id": "log-format", "files": ["tests/log-format.test.mjs"], "owner": "fable", "task": "v2 cases kept for version 3; adds every new event kind to the field checks and the replay comparison now covers both resources, Vent amounts, Rubble hp, mode, inside and cargo, snared and energy." },
+    { "id": "viewer-replay", "files": ["tests/viewer-replay.test.mjs"], "owner": "haiku", "task": "v2 cases kept; applyTick handles heal, cast, snare, mode, load, unload, repair and Rubble death on a hand-built state, applies the energy regen and snare countdown rules per tick, and replayTo still never mutates the log." },
+    { "id": "state-helpers", "files": ["tests/state-helpers.test.mjs"], "owner": "sonnet", "task": "v2 cases kept for the v3 initial state and id order; adds heightAt, rampAt, canStep, isGroundFree versus isAirFree, berthsOf, and createTestState building heights, ramps, vents, obstacles and flux exactly as given." },
+    { "id": "full-match-smoke", "files": ["tests/full-match-smoke.test.mjs"], "owner": "fable", "task": "A complete v3 sample-player match through run-match.mjs as a child process under fog: exits 0, the log validates as version 3, a known result, no two ground units and no two air units share a tile in any replayed state, at least one Siphon and one Flux delivery happen, and the match finishes in under 10 seconds." }
+  ]
+}

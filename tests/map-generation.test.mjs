@@ -208,7 +208,8 @@ describe("map-generation", () => {
       const expected = sortPairs([...CRYSTALS_0, ...CRYSTALS_1]);
       for (const seed of SEEDS) {
         const map = await mapFor(seed);
-        assert.equal(map.crystals.length, 8, `seed ${seed} crystal count`);
+        // Spec section 2: 2 fields of 4 tiles per side, 2 sides = 16 crystal tiles.
+        assert.equal(map.crystals.length, 16, `seed ${seed} crystal count`);
         assert.deepEqual(sortPairs(map.crystals.map((c) => [c.x, c.y])), expected, `seed ${seed} crystal tiles`);
         for (const c of map.crystals) {
           assert.equal(c.amount, CRYSTAL_AMOUNT, `seed ${seed} crystal at ${c.x},${c.y} amount`);

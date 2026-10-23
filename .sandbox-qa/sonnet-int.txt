@@ -1,0 +1,140 @@
+wrote /Users/joshuaseppich/dev/rts/.sandbox/units-sheet.png (2100x300); columns: worker, grunt, lancer, brute, spiker, howler, dart, skiff, barge, seer, mender, shade, conduit, unknown
+THREE.WebGLRenderer: EXT_color_buffer_float extension not supported.
+✔ viewer3d folder: what has landed (0.739792ms)
+✔ assets.mjs parses (node --check) (77.661833ms)
+✔ audio.mjs parses (node --check) (71.718834ms)
+✔ buildings.mjs parses (node --check) (74.076958ms)
+✔ camera.mjs parses (node --check) (71.385167ms)
+✔ engine.mjs parses (node --check) (75.38725ms)
+✔ hud.mjs parses (node --check) (133.651542ms)
+✔ palette.mjs parses (node --check) (93.500667ms)
+✔ terrain.mjs parses (node --check) (91.827ms)
+✔ units-sheet.mjs parses (node --check) (100.832333ms)
+✔ units.mjs parses (node --check) (86.550042ms)
+✔ vfx.mjs parses (node --check) (71.301166ms)
+✔ world.mjs parses (node --check) (68.061375ms)
+✔ assets.mjs imports in node (1.638ms)
+✔ audio.mjs imports in node (0.917333ms)
+✔ buildings.mjs imports in node (0.444375ms)
+✔ camera.mjs imports in node (0.267792ms)
+✔ engine.mjs imports in node (12.709125ms)
+✔ hud.mjs imports in node (0.344917ms)
+✔ palette.mjs imports in node (0.065833ms)
+✔ terrain.mjs imports in node (0.433708ms)
+✔ units-sheet.mjs imports in node (36.185625ms)
+✔ units.mjs imports in node (0.133458ms)
+✔ vfx.mjs imports in node (0.475583ms)
+✔ world.mjs imports in node (0.337041ms)
+✔ world.mjs exports what VISUAL-3D.md says (createWorld) (0.052125ms)
+✔ engine.mjs exports what VISUAL-3D.md says (createEngine) (0.016125ms)
+✔ palette.mjs exports what VISUAL-3D.md says (colors + materials) (0.019083ms)
+✔ assets.mjs exports what VISUAL-3D.md says (loadAssets) (0.019041ms)
+✔ terrain.mjs exports what VISUAL-3D.md says (createTerrain) (0.01425ms)
+✔ units.mjs exports what VISUAL-3D.md says (createUnits) (0.0135ms)
+✔ buildings.mjs exports what VISUAL-3D.md says (createBuildings) (0.017083ms)
+✔ vfx.mjs exports what VISUAL-3D.md says (createVfx) (0.012583ms)
+✔ camera.mjs exports what VISUAL-3D.md says (createCamera) (0.018083ms)
+✔ hud.mjs exports what VISUAL-3D.md says (createHud) (0.017ms)
+✔ audio.mjs exports what VISUAL-3D.md says (createAudio) (0.014209ms)
+✔ viewer3d/index.html wires the import map and every module (1.270417ms)
+✔ assets/models/MANIFEST.json: every file it names exists (0.401375ms)
+✔ assets/audio/MANIFEST.json: every file it names exists (0.10625ms)
+✔ assets/sprites/MANIFEST.json: every file it names exists (0.127917ms)
+✔ assets/models: LICENSES.md sits next to any model (0.072917ms)
+✔ every unit, structure and tile kind is named by the module that renders it (0.4325ms)
+✔ world.mjs: createWorld(log) gives correct, fast frames on matches/sample-7.json (182.88475ms)
+✔ scripted fight log (real sim, seed 7): builds, spawns, hits and deaths all happen and the log validates (356.152125ms)
+✔ terrain.mjs: createTerrain(ctx) builds, updates on real frames, disposes (218.055416ms)
+✔ units.mjs: createUnits(ctx) builds, updates on real frames, disposes (213.395791ms)
+✔ buildings.mjs: createBuildings(ctx) builds, updates on real frames, disposes (200.492583ms)
+✔ vfx.mjs: createVfx(ctx) builds, updates on real frames, disposes (190.973875ms)
+✔ camera.mjs: createCamera(ctx) builds, updates on real frames, disposes (reported, not asserted) (167.919834ms)
+✔ hud.mjs: createHud(ctx) builds, updates on real frames, disposes (reported, not asserted) (165.830958ms)
+✔ audio.mjs: createAudio(ctx) builds, updates on real frames, disposes (reported, not asserted) (100.667625ms)
+✔ anim.mjs: createAnim(ctx) builds, updates on real frames, disposes (0.069917ms)
+✔ physics.mjs: createPhysics(ctx) builds, updates on real frames, disposes (0.019291ms)
+✔ platform.mjs: createPlatform(ctx) builds, updates on real frames, disposes (reported, not asserted) (0.015833ms)
+✔ units.mjs: 200 units at once (CLASSIC.md) stay inside the CPU budget and the scene stays instanced or baked (91.000167ms)
+✔ play/units-instanced.mjs: 200 units at once stay inside the CPU budget and use instancing (CLASSIC.md) (25.991875ms)
+✖ Classic: no Core falls before 3:00 against the page's default AI (?ai=sonnet, players/sonnet/bot.mjs) with an idle human (seed 7) (66.05875ms)
+✖ Classic: no Core falls before 3:00 against the built-in AI, normal (players/builtin/ai.mjs) with an idle human (seed 7) (15363.622375ms)
+✔ Classic: no Core falls before 3:00 against the built-in AI, easy (players/builtin/ai.mjs) with an idle human (seed 7) (18944.412167ms)
+✔ Classic: the opening camera from play/app.mjs (what the page runs today) frames the human's base (5.657041ms)
+✔ Classic: the opening camera from play/camera.mjs (the drop-in rig) frames the human's base (3.379125ms)
+✔ Classic: play/app.mjs draws units through the instanced path (CLASSIC.md: 200 units at 60 fps on the page, not just in a module) (0.296042ms)
+✔ Classic: play/render.mjs builds the whole renderer headless, steps 30 frames with no system switched off, picks a unit, takes fog, disposes (106.334791ms)
+✔ engine.mjs: createEngine exists and is shaped right (reported; needs WebGL to run) (0.233208ms)
+
+=== viewer3d QA report ===
+- landed: world.mjs, engine.mjs, palette.mjs, assets.mjs, terrain.mjs, units.mjs, buildings.mjs, vfx.mjs, camera.mjs, hud.mjs, audio.mjs
+- not landed: (all present)
+- files outside the contract (fine, but say what they are in the chat): units-sheet.mjs
+- assets/models/MANIFEST.json: 51 file reference(s), all present
+- assets/audio/MANIFEST.json: 16 file reference(s), all present
+- assets/sprites/MANIFEST.json: 21 file reference(s), all present
+- roster from env/stats.mjs: units worker, grunt, lancer, brute; structures core, forge, turret; tiles open, rock, crystal
+- world.mjs: build 72 ms, 0.013 ms/frame forward, 6 scrubs 1 ms
+- fight log: 900 ticks, result timeout (winner null); first hit at tick 172, first death 176, first building done 35
+- terrain.mjs: 0.391 ms/update over 238 frames; scene now 10 meshes, 13 instanced (1904 instances), 2 point clouds, 1 lights, ~34523 tris
+- units.mjs: 0.386 ms/update over 238 frames; scene now 186 meshes, 0 instanced (0 instances), 0 point clouds, 0 lights, ~4184 tris
+- buildings.mjs: 0.325 ms/update over 238 frames; scene now 192 meshes, 0 instanced (0 instances), 2 point clouds, 0 lights, ~3723 tris
+- vfx.mjs: 0.360 ms/update over 238 frames; scene now 68 meshes, 1 instanced (0 instances), 2 point clouds, 0 lights, ~5148 tris
+- camera.mjs: 0.280 ms/update over 238 frames; scene now 0 meshes, 0 instanced (0 instances), 0 point clouds, 0 lights, ~0 tris
+- hud.mjs: 0.289 ms/update over 238 frames; scene now 0 meshes, 0 instanced (0 instances), 0 point clouds, 0 lights, ~0 tris
+- audio.mjs (haiku) in node: createAudio(ctx) threw: TypeError: (window.AudioContext || window.webkitAudioContext) is not a constructor |     at AudioContext.getContext (file:///Users/joshuaseppich/dev/rts/node_modules/three/build/three.module.js:47899:15)
+- units.mjs stress: 208 units, 0.19 ms/update CPU, 2796 meshes + 0 instanced meshes (13.4 draw objects per unit), ~60576 tris
+- units.mjs (fable): 13.4 draw objects per unit; CLASSIC.md wants instancing so 200 units hold 60 fps (aim for one InstancedMesh per part per kind, a handful of draw calls total)
+- play/units-instanced.mjs stress: 208 units, 0.12 ms/update CPU, 0 meshes + 24 instanced meshes (275 instances), ~59414 tris
+- Classic survival vs the page's default AI (?ai=sonnet, players/sonnet/bot.mjs): core at tick 259 (10.8 s), winner 1; first Core hit tick 239 (10.0 s); human Core hp 0
+- Classic survival vs the built-in AI, normal (players/builtin/ai.mjs): core at tick 2439 (101.6 s), winner 1; first Core hit tick 2425 (101.0 s); human Core hp 0
+- Classic survival vs the built-in AI, easy (players/builtin/ai.mjs): no result by tick 4320; first Core hit never; human Core hp 1000
+- opening camera (play/app.mjs, side 0): centre (14.2, 10.2) zoom 16, ground view x 0..28 y 0..20, 0% of the view is off the map, Core in view
+- opening camera (play/app.mjs, side 1): centre (17.8, 21.8) zoom 16, ground view x 4..32 y 12..32, 0% of the view is off the map, Core in view
+- opening camera (play/camera.mjs, side 0): centre (14.2, 10.2) zoom 16, ground view x 0..28 y 0..20, 0% of the view is off the map, Core in view
+- opening camera (play/camera.mjs, side 1): centre (17.8, 21.8) zoom 16, ground view x 4..32 y 12..32, 0% of the view is off the map, Core in view
+- play/app.mjs units path: ./units-instanced.mjs
+- play/render.mjs headless: systems terrain, buildings, vfx, fog
+- play/render.mjs headless: 8 units in scene, 4 drawn with a 12x12 visible window, 4 draw calls for units
+- assets.mjs: loadAssets resolved with keys version, ready, report, tileSize, manifest, models, sounds, materials, whenAll, onLoad, placeholder, get, repaint, fit, dispose
+=== end report ===
+
+✔ assets.mjs: loadAssets falls back cleanly when files are missing (14.754709ms)
+✔ QA report (plain English, copy into viewer3d/QA.md) (0.264542ms)
+ℹ tests 66
+ℹ suites 0
+ℹ pass 64
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42578.24775
+
+✖ failing tests:
+
+test at tests/viewer3d-integration.test.mjs:773:3
+✖ Classic: no Core falls before 3:00 against the page's default AI (?ai=sonnet, players/sonnet/bot.mjs) with an idle human (seed 7) (66.05875ms)
+  AssertionError [ERR_ASSERTION]: the human's Core fell at tick 259 (10.8 s of real time at 24 tps) against the page's default AI (?ai=sonnet, players/sonnet/bot.mjs); CLASSIC.md wants a 10 to 15 minute match, Joshua saw DEFEAT at 0:10. Owners: Classic AI (sonnet) and the stats rescale (haiku/fable)
+      at TestContext.<anonymous> (file:///Users/joshuaseppich/dev/rts/tests/viewer3d-integration.test.mjs:779:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/viewer3d-integration.test.mjs:773:3
+✖ Classic: no Core falls before 3:00 against the built-in AI, normal (players/builtin/ai.mjs) with an idle human (seed 7) (15363.622375ms)
+  AssertionError [ERR_ASSERTION]: the human's Core fell at tick 2439 (101.6 s of real time at 24 tps) against the built-in AI, normal (players/builtin/ai.mjs); CLASSIC.md wants a 10 to 15 minute match, Joshua saw DEFEAT at 0:10. Owners: Classic AI (sonnet) and the stats rescale (haiku/fable)
+      at TestContext.<anonymous> (file:///Users/joshuaseppich/dev/rts/tests/viewer3d-integration.test.mjs:779:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

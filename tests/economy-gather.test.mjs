@@ -7,10 +7,11 @@ import { step } from '../env/sim.mjs';
 import { STATS } from '../env/stats.mjs';
 
 // Every number comes from the stats table. If these key names differ, change only this block.
-const CARRY = STATS.worker.carry;
-const MINE_TICKS = STATS.worker.mineTicks;
-const START_SHARDS = STATS.startShards;
-const WORKER_HP = STATS.worker.hp;
+// Shape of env/stats.mjs: STATS.units[kind], STATS.crystal, STATS.match, STATS.core (same as tests/stats-table.test.mjs).
+const CARRY = STATS.crystal.carry;
+const MINE_TICKS = STATS.crystal.mineTicks;
+const START_SHARDS = STATS.match.startShards;
+const WORKER_HP = STATS.units.worker.hp;
 const CORE_HP = STATS.core.hp;
 
 const CORE = 1;     // side 0's Core, id 1 (spec section 13)
@@ -34,7 +35,8 @@ function makeState(crystals) {
   });
 }
 
-// Runs `ticks` steps. The first step carries `first` commands; the rest are empty.
+// Runs `ticks` steps. The first step carries `first` (side 0's commands; step takes [cmds0, cmds1] per spec §8);
+// the rest are empty.
 // Before each step it records the Worker's position, order and load, and the side's Shards,
 // because mining and delivery are decided from the state at the start of the tick.
 function play(state, first, ticks) {
@@ -52,7 +54,7 @@ function play(state, first, ticks) {
       carrying: worker.carrying,
       shards: state.shards[0],
     };
-    const events = step(state, i === 0 ? first : NO_CMDS);
+    const events = step(state, i === 0 ? [first, []] : NO_CMDS);
     frames.push({ before, events });
   }
   return frames;

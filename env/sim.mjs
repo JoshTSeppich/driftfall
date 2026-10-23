@@ -14,6 +14,7 @@ import { stepProduction, stepGathering } from './economy.mjs';
 import { stepMovement } from './movement.mjs';
 import { stepCombat } from './combat.mjs';
 import { STATS, sideValue } from './stats.mjs';
+import { applyRuleCommands, stepRulesPre, stepRulesPost, runProduction } from './sim-territory.mjs';
 
 const DEFAULT_MAX_TICKS = 2000;
 
@@ -50,11 +51,12 @@ export function step(state, commands) {
 
   // 1. Commands, one side then the other.
   for (const player of sideOrder(state.tick)) {
-    applyCommands(state, player, perSide[player]);
+    applyCommands(state, player, applyRuleCommands(state, player, perSide[player]));
   }
 
-  // 2. Production: training queues and construction sites.
-  stepProduction(state);
+  // 2. Production: training queues and construction sites. (Territory rules, only when on: Drift clock, claims, budget.)
+  stepRulesPre(state);
+  runProduction(state, stepProduction);
 
   // 3. Gathering: mining, delivery, retargeting.
   stepGathering(state);
@@ -68,6 +70,7 @@ export function step(state, commands) {
   // 6. Tick ends, then the end check.
   state.tick += 1;
   state.result = checkEnd(state);
+  if (!state.result) state.result = stepRulesPost(state);
 
   return state.events;
 }

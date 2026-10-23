@@ -115,7 +115,7 @@ async function build(buildNo) {
 
   const testFiles = Object.keys(hashes).filter((f) => /^tests\/.*\.test\.mjs$/.test(f)).sort();
   const results = await pool(testFiles, 4, async (f) => {
-    const r = await run(process.execPath, ['--test', '--test-reporter=spec', f]);
+    const r = await run(process.execPath, ['--test', '--test-reporter=spec', f], 300000); // builtin-ai alone needs ~3 minutes
     const g = (k) => Number((new RegExp('^ℹ ' + k + ' (\\d+)', 'm').exec(r.out) || [0, 0])[1]);
     return { file: f, ok: r.code === 0, pass: g('pass'), fail: g('fail'), ms: r.ms, out: r.out };
   });

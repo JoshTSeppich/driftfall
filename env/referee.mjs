@@ -4,12 +4,23 @@
 // commands into `step`, records what the simulation reports, and adds only the four things the spec gives it:
 // `late`, `error` and `forfeit` events plus the per-tick `timing` list kept apart from the deterministic log.
 //
-//   runMatch({ seed, players: [path0, path1], thinkMs, hardMs, maxTicks, maxErrors }) -> Promise<{ log, result }>
+// A reply is accepted only when its commands are an array in which every command, written as JSON, is at most
+// `maxCommandChars` characters long (STATS.referee.commandChars). A reply with a bigger command, or one that is not
+// plain JSON at all (BigInt, cycles), counts as an `error` like a throw or a non-array: empty commands for that tick.
+// So no oversized command field reaches `step` or the log. The count of commands is not limited here: spec section
+// 10 has the simulation reject every command past the 100th as `too-many`.
 //
-// Each player lives in its own worker thread (env/player-worker.mjs) so a player that never answers can be cut off.
+//   runMatch({ seed, players: [path0, path1], thinkMs, hardMs, maxTicks, maxErrors, maxCommandChars })
+//     -> Promise<{ log, result }>
+//
+// Each player lives in its own child process (env/player-worker.mjs) so a player that never answers can be killed.
+// The child runs under Node's permission model with an empty environment: it can read only its own player file
+// (and the wrapper), and cannot write files, spawn processes, start workers or load native addons.
 
-import { Worker } from 'node:worker_threads';
+import { fork } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { createMatch, step, checkEnd } from './sim.mjs';
@@ -17,7 +28,7 @@ import { observe } from './state.mjs';
 import { STATS, sideValue } from './stats.mjs';
 import { createLog, appendTick, finishLog } from './log.mjs';
 
-const WORKER_FILE = new URL('./player-worker.mjs', import.meta.url);
+const WORKER_FILE = fileURLToPath(new URL('./player-worker.mjs', import.meta.url));
 
 // The section 11 numbers live in env/stats.mjs (STATS.referee and STATS.match).
 export const DEFAULTS = Object.freeze({
@@ -25,7 +36,43 @@ export const DEFAULTS = Object.freeze({
   hardMs: STATS.referee.hardMs,
   maxErrors: STATS.referee.throwLimit,
   maxTicks: STATS.match.maxTicks,
+  maxCommandChars: STATS.referee.commandChars,
 });
+
+// Length of `value` as JSON, or null when it cannot be turned into JSON (BigInt, cycles, hostile getters).
+// The log is JSON, so a reply that cannot be written there is refused before it reaches the simulation.
+function jsonLength(value) {
+  try {
+    const text = JSON.stringify(value);
+    return typeof text === 'string' ? text.length : null;
+  } catch {
+    return null;
+  }
+}
+
+// Null when every command in `list` fits in `limit` characters of JSON, otherwise a plain-English reason.
+// The whole list is measured first, so the usual small reply costs one JSON.stringify; only a big list is walked.
+function oversizedCommand(list, limit) {
+  const notJson = 'act returned commands that are not plain JSON';
+  const whole = jsonLength(list);
+  if (whole === null) return notJson;
+  if (whole <= limit) return null;
+  for (let i = 0; i < list.length; i++) {
+    const size = jsonLength(list[i]);
+    if (size === null) return notJson;
+    if (size > limit) return 'command ' + i + ' is ' + size + ' characters of JSON, more than the ' + limit + ' allowed';
+  }
+  return null;
+}
+
+// The permission model matches real paths (macOS /tmp is a symlink), so grant access to the resolved file.
+const realPath = (p) => {
+  try {
+    return fs.realpathSync(p);
+  } catch {
+    return p; // missing file: the player then fails to load, as before
+  }
+};
 
 const describe = (err) => (err instanceof Error ? err.message || err.name : String(err));
 
@@ -33,16 +80,22 @@ const describe = (err) => (err instanceof Error ? err.message || err.name : Stri
 class PlayerHandle {
   constructor(side, modulePath, seed) {
     this.side = side;
-    this.path = path.resolve(String(modulePath));
+    this.path = realPath(path.resolve(String(modulePath)));
     this.name = path.basename(this.path);
     this.errors = 0; // ticks on which act threw or returned a non-array
     this.alive = true;
     this.exitInfo = null;
     this.pending = null; // { tick, resolve } for the reply we are waiting on
-    this.worker = new Worker(WORKER_FILE, { workerData: { path: this.path, side, seed, stats: STATS } });
+    this.worker = fork(WORKER_FILE, [], {
+      env: {},
+      serialization: 'advanced',
+      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+      execArgv: ['--permission', '--allow-fs-read=' + WORKER_FILE, '--allow-fs-read=' + this.path],
+    });
     this.worker.on('message', (msg) => this.onMessage(msg));
     this.worker.on('error', (err) => this.onExit('crashed: ' + describe(err)));
-    this.worker.on('exit', (code) => this.onExit('exited with code ' + code));
+    this.worker.on('exit', (code, signal) => this.onExit('exited with ' + (signal ?? 'code ' + code)));
+    this.worker.send({ type: 'init', path: this.path, side, seed, stats: STATS });
     this.readyPromise = new Promise((resolve) => {
       this.readyResolve = resolve;
     });
@@ -112,7 +165,7 @@ class PlayerHandle {
         }
       }, hardMs);
       try {
-        this.worker.postMessage({ type: 'observe', tick, observation });
+        this.worker.send({ type: 'observe', tick, observation });
       } catch (err) {
         this.pending = null;
         clearTimeout(timer);
@@ -125,7 +178,7 @@ class PlayerHandle {
     if (!this.alive) return;
     this.alive = false;
     try {
-      await this.worker.terminate();
+      this.worker.kill('SIGKILL');
     } catch {
       /* already gone */
     }
@@ -152,6 +205,7 @@ export async function runMatch(options = {}) {
   const hardMs = options.hardMs ?? DEFAULTS.hardMs;
   const maxErrors = options.maxErrors ?? DEFAULTS.maxErrors;
   const maxTicks = options.maxTicks ?? DEFAULTS.maxTicks;
+  const maxCommandChars = options.maxCommandChars ?? DEFAULTS.maxCommandChars;
 
   const state = createMatch(seed);
   // A shorter match than the stats table (tests use this): sim.mjs reads state.maxTicks in its own end check,
@@ -210,7 +264,13 @@ export async function runMatch(options = {}) {
           handle.errors += 1;
           events.push({ e: 'error', player: side, message: 'act returned ' + describeValue(reply.commands) + ', not an array' });
         } else if (!late) {
-          commands[side] = reply.commands;
+          const problem = oversizedCommand(reply.commands, maxCommandChars);
+          if (problem) {
+            handle.errors += 1;
+            events.push({ e: 'error', player: side, message: problem });
+          } else {
+            commands[side] = reply.commands;
+          }
         }
         if (handle.errors >= maxErrors) {
           forfeited[side] = true;

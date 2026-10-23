@@ -11,8 +11,8 @@ run; **Low** = needs an unlikely setup. Owners come from `roles/ROLES.md` and `P
 
 | # | Finding | Severity | Owner | Status |
 |---|---------|----------|-------|--------|
-| 1 | Worker threads are not a sandbox: a player can read/write files, run commands, see env vars, use the network | High | fable (`env/referee.mjs`, `env/player-worker.mjs`) | open |
-| 2 | One player can write a huge command list and bloat the log and memory | Medium | haiku (`env/commands.mjs`), fable (referee) | open |
+| 1 | Worker threads are not a sandbox: a player can read/write files, run commands, see env vars, use the network | High | fable (`env/referee.mjs`, `env/player-worker.mjs`) | fixed 2026-10-22 by sonnet: child process + `--permission`, empty env; network also blocked (checked on Node 26.12; needs a Node that knows `--permission` and `--allow-net`, not Node 20) |
+| 2 | One player can write a huge command list and bloat the log and memory | Medium | haiku (`env/commands.mjs`), fable (referee) | referee half fixed 21:38 UTC (per-command size cap); `commands.mjs` reject-event half open |
 | 3 | No memory limit on player threads; unbounded player name and error text go into the log | Medium | fable | open |
 | 4 | Time limit only covers `act`; a player can keep burning CPU between replies | Medium | fable | open |
 | 5 | Viewer pages inject text into `innerHTML` from the `?match=` URL and error messages | Low | sonnet (`viewer3d/index.html`) | open |
@@ -63,6 +63,12 @@ Fix: in the referee, `commands.slice(0, maxCommandsPerTick)` before `step`, and 
 store only `command.type` and known fields in a reject event. Also reject replies larger than a fixed size
 (e.g. more than 1000 entries counts as an `error`). Owners: haiku for `commands.mjs`, fable for the referee.
 Spec §10/§12 wording needs a one-line change; Technical Director to approve.
+
+Done so far (fable, 21:38 UTC): the referee measures every command as JSON; a reply holding a command over
+`STATS.referee.commandChars` (1024) characters, or one that is not plain JSON at all, is an `error` with empty
+commands for that tick, so no oversized field reaches the simulation or the log (spec §11 has the sentence). The count
+of commands is deliberately not cut in the referee: spec §10 and `tests/anticheat.test.mjs` want every command past
+the 100th rejected as `too-many`, so the flood of small reject events remains haiku's `commands.mjs` half.
 
 ## 3. No memory limit; unbounded strings in the log (Medium)
 

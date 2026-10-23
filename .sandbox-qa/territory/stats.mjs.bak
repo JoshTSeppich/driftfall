@@ -1,0 +1,388 @@
+// The one stats table. Every number from spec sections 3, 4, 5 and 11 lives here.
+// Balance changes are one-line edits in this file.
+//
+// Shape: STATS.units and STATS.structures are keyed by kind and hold the same fields for every kind, so tests can loop
+// over UNIT_KINDS and STRUCTURE_KINDS. The Core is kept apart in STATS.core because it can't be built and has no cost.
+//
+// TERRITORY.md (sections 3, 5, 6, 8, 9) adds the tables after STATS.units: clock, territory, tiers, upgrades, factions,
+// economy and upkeep. They are additive: nothing above them changes, and the new kinds (totem, mound, drill, depot,
+// track, press) are NOT in STATS.structures until env/sim.mjs wires territory and the economy, so the current game
+// plays exactly as before. Times are given in seconds (the design unit) with the tick value beside them at 24 tps.
+
+function deepFreeze(value) {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.values(value).forEach(deepFreeze);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+// The live clock (CLASSIC.md principle 2, env/live.mjs DEFAULTS.tps). Seconds in the tables below become ticks here.
+const TICKS_PER_SECOND = 24;
+export function secondsToTicks(seconds) {
+  return Math.max(1, Math.round(seconds * TICKS_PER_SECOND));
+}
+const ticks = secondsToTicks;
+
+// One upgrade row. cost is { shards, flux, alloy }; extra fields carry the effect numbers (TERRITORY.md section 6).
+function upgrade(id, name, faction, tier, [shards, flux, alloy = 0], seconds, effect, extra = {}) {
+  return { id, name, faction, tier, cost: { shards, flux, alloy }, seconds, ticks: ticks(seconds), effect, ...extra };
+}
+
+// Weapons and Hide, ground and air, levels 1 to 3. Hide costs 25% more, rounded to 5 (125, 220, 315).
+function levelTrack(track, layer, name, costs, extra) {
+  const Layer = layer[0].toUpperCase() + layer.slice(1);
+  const seconds = [60, 75, 90];
+  return costs.map(([shards, flux, alloy], i) => {
+    const level = i + 1;
+    return upgrade(`${track}${Layer}${level}`, `${name} ${level}`, "shared", level, [shards, flux, alloy], seconds[i],
+      track === "weapons" ? `${layer} units deal +1 damage per hit` : `${layer} units gain +1 armor`,
+      { track, layer, level, bonus: 1, ...(level > 1 ? { requires: `${track}${Layer}${level - 1}` } : {}), ...extra });
+  });
+}
+const WEAPON_COSTS = [[100, 100, 0], [175, 175, 0], [250, 250, 50]];
+const HIDE_COSTS = [[125, 125, 0], [220, 220, 0], [315, 315, 50]];
+
+export const UPGRADES = Object.freeze([
+  // Shared skeleton: numeric tracks (TERRITORY.md section 6). Level n needs tier n.
+  ...levelTrack("weapons", "ground", "Ground Weapons", WEAPON_COSTS),
+  ...levelTrack("hide", "ground", "Ground Hide", HIDE_COSTS),
+  ...levelTrack("weapons", "air", "Air Weapons", WEAPON_COSTS),
+  ...levelTrack("hide", "air", "Air Hide", HIDE_COSTS),
+  // Land upgrades.
+  upgrade("driftSense", "Drift Sense", "shared", 1, [100, 50], 45, "see Drift warnings 60 s ahead instead of 30", { warnSeconds: 60 }),
+  upgrade("deepClaim", "Deep Claim", "shared", 2, [150, 100], 60, "claims build 40% faster and take 10 s longer to lose",
+    { claimBuildBonus: 0.4, holdExtraSeconds: 10 }),
+  upgrade("holdFast", "Hold Fast", "shared", 2, [150, 150], 75, "claims gain a weapon: 8 damage, range 4", { damage: 8, range: 4 }),
+  // Mining upgrades (section 8 stage 4). Numbers proposed by fable in the territory accord.
+  upgrade("drillSpeed1", "Drill Speed 1", "shared", 2, [100, 50], 50, "Drills and Siphons mine 25% faster", { level: 1, drillSpeedBonus: 0.25 }),
+  upgrade("drillSpeed2", "Drill Speed 2", "shared", 2, [150, 75], 60, "Drills and Siphons mine another 25% faster",
+    { level: 2, drillSpeedBonus: 0.25, requires: "drillSpeed1" }),
+  upgrade("drillSpeed3", "Drill Speed 3", "shared", 3, [200, 100, 25], 70, "Drills and Siphons mine another 25% faster",
+    { level: 3, drillSpeedBonus: 0.25, requires: "drillSpeed2" }),
+  upgrade("trackSpeed", "Track Speed", "shared", 2, [100, 100], 60, "Tracks carry 2 loads a second", { loadsPerSecond: 2 }),
+  upgrade("biggerBuffers", "Bigger Buffers", "shared", 2, [100, 50], 45, "Drill, Siphon and Depot buffers hold 50% more", { bufferBonus: 0.5 }),
+  upgrade("twinPress", "Twin Press", "shared", 3, [200, 100, 50], 75, "a Press makes 2 Alloy per cycle", { alloyPerCycle: 2 }),
+  // The Coil: serpents, cyan. Fast, fragile; good at taking ground.
+  upgrade("sidewind", "Sidewind", "coil", 2, [100, 100], 55, 'Grunt-role "Fang" +50% speed', { unit: "grunt", speedBonus: 0.5 }),
+  upgrade("longStrike", "Long Strike", "coil", 2, [150, 150], 65, 'Lancer-role "Spitter" +2 range', { unit: "lancer", rangeBonus: 2 }),
+  upgrade("swimmers", "Swimmers", "coil", 2, [150, 100], 60, "ground units cross Flood water at half speed and take no Flood damage",
+    { floodSpeed: 0.5, floodDamage: 0 }),
+  upgrade("shedSkin", "Shed Skin", "coil", 2, [100, 100], 50, "a claim can be packed up and moved to a new Reach", { movesClaim: true }),
+  upgrade("venom", "Venom", "coil", 3, [200, 200, 50], 80, 'Shade-role "Adder" attacks slow the target 50% for 3 s',
+    { unit: "shade", slow: 0.5, slowSeconds: 3 }),
+  upgrade("constrict", "Constrict", "coil", 3, [200, 200, 50], 90, 'Conduit-role "Charmer" can hold one unit in place for 4 s',
+    { unit: "conduit", holdSeconds: 4 }),
+  // The Burrow: wombats, amber. Slow, tough; good at holding ground and moving under it.
+  upgrade("tunnels", "Tunnels", "burrow", 2, [150, 100], 60,
+    "ground units walk into one Mound and come out of any other own Mound 3 s later; a Quake collapses that Reach's tunnel for 30 s",
+    { travelSeconds: 3, quakeCollapseSeconds: 30 }),
+  upgrade("thickHide", "Thick Hide", "burrow", 2, [150, 150], 65, 'Brute-role "Bulldozer" +2 armor', { unit: "brute", armorBonus: 2 }),
+  upgrade("cubePress", "Cube Press", "burrow", 2, [100, 100], 55, "Diggers and Drills hold 25% more", { bufferBonus: 0.25 }),
+  upgrade("bankUp", "Bank Up", "burrow", 2, [75, 50], 40, "Workers can build dirt walls (1 tile, 150 hp)", { wallHp: 150 }),
+  upgrade("undermine", "Undermine", "burrow", 3, [200, 200, 50], 80, "a Mound can be built in a Reach the enemy holds; their hold there breaks after 20 s",
+    { breakSeconds: 20 }),
+  upgrade("rumble", "Rumble", "burrow", 3, [200, 200, 50], 90, 'Siege-role "Thumper" splash also stuns for 1 s', { unit: "howler", stunSeconds: 1 }),
+].map(deepFreeze));
+
+const UPGRADE_BY_ID = new Map(UPGRADES.map((u) => [u.id, u]));
+export function upgradeById(id) {
+  return UPGRADE_BY_ID.get(id) ?? null;
+}
+
+export const STATS = deepFreeze({
+  // Whole-match rules (spec sections 3, 4, 9).
+  match: {
+    startShards: 100,
+    maxTicks: 2000,
+    unitCap: 40,
+    queueMax: 5,
+    maxCommandsPerTick: 100,
+  },
+
+  // Crystal tiles and gathering (spec sections 2 and 3).
+  crystal: {
+    amount: 400,
+    mineTicks: 8,
+    carry: 10,
+  },
+
+  // Map generation (spec section 2).
+  map: {
+    width: 32,
+    height: 32,
+    rockPairs: 24,
+    rockClearance: 2,
+    rockAttempts: 2000,
+  },
+
+  // Referee limits (spec section 11).
+  referee: {
+    thinkMs: 50,
+    hardMs: 1000,
+    throwLimit: 50,
+    // One command, written as JSON, may be at most this many characters; a reply holding a bigger one is an error.
+    // A legal command is about 45 characters, so this is about 20x headroom for extra fields.
+    commandChars: 1024,
+  },
+
+  // The Core (spec section 4). Can't be built, so it has no cost.
+  core: {
+    hp: 1000,
+    trains: ["worker"],
+  },
+
+  // Buildable structures (spec section 4). Cost is paid when the build command is accepted.
+  structures: {
+    forge: { cost: 150, hp: 400, buildTicks: 40, trains: ["grunt", "lancer", "brute"] },
+    turret: { cost: 100, hp: 150, buildTicks: 30, damage: 12, range: 5, structureMultiplier: 1 },
+  },
+
+  // Units (spec section 5). speed is ticks per step: 1 moves every tick, 2 moves on even ticks only.
+  units: {
+    worker: { cost: 50, hp: 40, damage: 2, range: 1, speed: 1, trainTicks: 20, structureMultiplier: 1 },
+    grunt: { cost: 50, hp: 60, damage: 8, range: 1, speed: 1, trainTicks: 15, structureMultiplier: 1 },
+    lancer: { cost: 75, hp: 40, damage: 10, range: 4, speed: 1, trainTicks: 20, structureMultiplier: 1 },
+    brute: { cost: 150, hp: 240, damage: 25, range: 1, speed: 2, trainTicks: 40, structureMultiplier: 2 },
+  },
+
+  // ---- TERRITORY.md tables (additive; see the header). ----
+
+  clock: { ticksPerSecond: TICKS_PER_SECOND },
+
+  // Section 3: claim and hold. The claim structures are listed here, not in STATS.structures, until the sim wires them.
+  territory: {
+    reachCount: 21,
+    claimCost: 100,
+    claimSeconds: 20,
+    claimTicks: ticks(20),
+    // A Reach is lost when an enemy combat unit has stood in it this long with none of yours present.
+    holdSeconds: 10,
+    holdTicks: ticks(10),
+    holdMiningBonus: 0.25,
+    winReaches: 14,
+    winSeconds: 90,
+    winTicks: ticks(90),
+    claims: { coil: "totem", burrow: "mound" },
+    claimStructures: {
+      totem: { faction: "coil", cost: 100, flux: 0, hp: 300, buildSeconds: 20, buildTicks: ticks(20), sight: 6 },
+      mound: { faction: "burrow", cost: 100, flux: 0, hp: 300, buildSeconds: 20, buildTicks: ticks(20), sight: 6 },
+    },
+  },
+
+  // Section 4: the Drift's numbers (env/drift.mjs owns the schedule and keeps its own copy until it reads these).
+  // floodDamage is sonnet's assumption from the Flood push-out (#353); a Flood never takes a unit below 1 hp.
+  drift: {
+    announceSeconds: 30,
+    announceTicks: ticks(30),
+    flood: { seconds: 60, ticks: ticks(60), damage: 10, minHp: 1 },
+    squall: { seconds: 45, ticks: ticks(45), sight: 2 },
+    dryOut: { keep: 1 / 3 },
+    fall: { startSeconds: 14 * 60, gapSeconds: 20, gapTicks: ticks(20) },
+    schedule: [
+      { seconds: 3 * 60, kind: "bloom", where: "each Flank" },
+      { seconds: 5 * 60, kind: "squall", where: "the Centre" },
+      { seconds: 5 * 60, kind: "bloom", where: "the Centre" },
+      { seconds: 7 * 60, kind: "flood", where: "one Natural" },
+      { seconds: 8 * 60, kind: "flood", where: "the other Natural" },
+      { seconds: 9 * 60, kind: "quake", where: "a Main ramp closes, a Mesa ramp opens" },
+      { seconds: 11 * 60, kind: "random", where: "weighted toward Dry-outs" },
+      { seconds: 13 * 60, kind: "random", where: "weighted toward Dry-outs" },
+      { seconds: 14 * 60, kind: "fall", where: "the Outer Reaches, one every 20 s" },
+    ],
+    randomWeights: { "dry-out": 3, bloom: 1, flood: 1, quake: 1, squall: 1 },
+  },
+
+  // Section 5: three tiers; a tier needs a building (any one of `needs` when needsAny) and a Hold count.
+  // upgradeLevel is the highest Weapons/Hide level the tier allows. typicalSeconds is the target window, not a rule.
+  tiers: {
+    1: {
+      needs: [], needsAny: false, hold: 0, upgradeLevel: 1, typicalSeconds: [0, 0],
+      unlocks: ["worker", "grunt", "lancer", "turret", "siphon", "forge", "claim", "drill", "depot", "track"],
+    },
+    2: {
+      needs: ["foundry", "sanctum"], needsAny: true, hold: 3, upgradeLevel: 2, typicalSeconds: [210, 270],
+      unlocks: ["brute", "spiker", "howler", "dart", "mender", "shade", "mast", "press"],
+    },
+    3: {
+      needs: ["hangar"], needsAny: false, hold: 6, upgradeLevel: 3, typicalSeconds: [480, 600],
+      unlocks: ["skiff", "barge", "seer", "conduit"],
+    },
+  },
+
+  // Section 6: every upgrade, one flat list (see UPGRADES above for the rows and upgradeById for lookup).
+  upgrades: UPGRADES,
+
+  // Faction names named in TERRITORY.md and the concept note (#237). roles maps the v3 roster kind to the in-game name
+  // where TERRITORY.md gives one; the design round fills the rest. buffer is the Drill buffer (Burrow cubes hold 30).
+  // Joshua renamed the serpents "the Snakenators" (18:27); the table key stays `coil` because budget.mjs, territory.mjs
+  // and the sim wiring already use it, so only the shown name changed.
+  factions: {
+    // Which faction each side plays (TERRITORY.md section 13, Joshua 18:34): one race first, a Snakenator mirror.
+    sides: ["coil", "coil"],
+    coil: {
+      name: "The Snakenators", adjective: "Snakenator", creature: "serpents", colour: "cyan", claim: "totem", track: "coil", worker: "Siphoner",
+      buffer: 20, trackWaterSpeed: 0.5,
+      roles: { grunt: "Fang", lancer: "Spitter", shade: "Adder", conduit: "Charmer", mender: "Shedder" },
+    },
+    burrow: {
+      name: "The Burrow", creature: "wombats", colour: "amber", claim: "mound", track: "run", worker: "Digger",
+      buffer: 30, trackUnderground: true,
+      parked: true, // section 13: the Burrow waits until the Snakenators feel great; its numbers stay here
+      roles: { brute: "Bulldozer", howler: "Thumper" },
+    },
+  },
+
+  // A Flux vent (ENV-SPEC-v3-draft section 2; the v4 map reads it too, sonnet #346).
+  vent: { amount: 600 },
+
+  // Section 8: mining you build up to. Rates are per second of game time; the HUD shows them per minute.
+  // hp and build times are fable's proposal (TERRITORY.md gives costs only). None of these kinds is buildable yet.
+  economy: {
+    hand: { carry: 5 },
+    // Drills and Siphons mine one unit every mineEveryTicks (2 a second) into their buffer (Mining chain, #330).
+    drill: {
+      cost: 75, flux: 0, hp: 200, buildSeconds: 15, buildTicks: ticks(15), tier: 1, on: "shard", buffer: 20,
+      shardsPerSecond: 2, mineEveryTicks: 12,
+    },
+    // A Siphon on a Vent works like a Drill for Flux (the Siphon's own cost and hp stay in the v3 structures table).
+    siphon: { buffer: 20, fluxPerSecond: 2, mineEveryTicks: 12 },
+    depot: { cost: 100, flux: 0, hp: 300, buildSeconds: 20, buildTicks: ticks(20), tier: 1 },
+    track: {
+      costPerTile: 5, flux: 0, hp: 50, buildSeconds: 1, buildTicks: ticks(1), tier: 1, hold: 2, walkable: true,
+      loadSize: 5, loadsPerSecond: 1, passEveryTicks: ticks(1), unheldSpeed: 0.5,
+    },
+    press: {
+      cost: 200, flux: 100, hp: 400, buildSeconds: 30, buildTicks: ticks(30), tier: 2,
+      recipe: { shards: 2, flux: 1, alloy: 1, seconds: 2 },
+    },
+    holdMiningBonus: 0.25,
+  },
+
+  // Section 12: every resource. Shards are the currency the Trading House pays in, so they are not tradable themselves.
+  // basePrice is Shards a unit; target is the amount (both banks plus the market) at which scarcity is 1. The rare
+  // five come from land and Drift events: `from` names the event or Reach role, `yield` how much one event gives.
+  // Base prices, targets and yields are fable's proposal in the accord; the sources and uses are Joshua's.
+  resources: {
+    shards: { name: "Shards", kind: "basic", currency: true, tradable: false, preferredBy: null },
+    flux: { name: "Flux", kind: "basic", basePrice: 2, target: 600, preferredBy: null },
+    alloy: { name: "Alloy", kind: "refined", basePrice: 5, target: 200, preferredBy: null },
+    glowmoss: {
+      name: "Glowmoss", kind: "rare", basePrice: 6, target: 100, preferredBy: "coil",
+      source: "grows in a lowland Reach after its Flood drains", from: "flood", yield: 60, growSeconds: 120,
+      use: "healing and the Shedder line",
+    },
+    stormglass: {
+      name: "Stormglass", kind: "rare", basePrice: 8, target: 100, preferredBy: "coil",
+      source: "forms where a Squall passed; Workers pick it up", from: "squall", yield: 40,
+      use: "air units and sight upgrades",
+    },
+    quakestone: {
+      name: "Quakestone", kind: "rare", basePrice: 6, target: 100, preferredBy: "burrow",
+      source: "exposed on tiles a Quake changed", from: "quake", yield: 30,
+      use: "Hide upgrades and walls",
+    },
+    ironroot: {
+      name: "Ironroot", kind: "rare", basePrice: 10, target: 100, preferredBy: "burrow",
+      source: "grows slowly on Mesa Reaches", from: "mesa", yield: 1, everySeconds: 10,
+      use: "siege units and the Press",
+    },
+    amberlight: {
+      name: "Amberlight", kind: "rare", basePrice: 15, target: 100, preferredBy: null,
+      source: "one deposit in the Centre, refilled by each Bloom", from: "bloom", yield: 50, start: 100,
+      use: "tier-3 capstones",
+    },
+  },
+
+  // Section 12: the Trading House. Sell price = basePrice * scarcity; scarcity = clamp(sqrt(target / (held + market
+  // + 1)), scarcityMin, scarcityMax) where held is both banks. Buying adds buySpread. Each unit you sell dips your own
+  // price by ownSaleDip, recovering over dipRecoverSeconds; the market's stock drains drainPerSecond.
+  market: {
+    house: {
+      name: "Trading House", cost: 150, flux: 0, hp: 400, buildSeconds: 25, buildTicks: ticks(25), tier: 1, sight: 6,
+      perSide: 1, secondAtHold: 4,
+    },
+    formula: "base * clamp(sqrt(target / (held + market + 1)), min, max)",
+    scarcityMin: 0.25,
+    scarcityMax: 4,
+    buySpread: 0.25,
+    drainPerSecond: 0.02,
+    ownSaleDip: 0.01,
+    dipRecoverSeconds: 60,
+    tradeSizes: [10, 50],
+  },
+
+  // Section 9: army upkeep, no supply cap. ratePerMinute of a unit's cost (both resources) is drawn every second.
+  upkeep: {
+    supplyCap: null,
+    trainDraw: "gradual",
+    ratePerMinute: 0.1,
+    drawEverySeconds: 1,
+    drawEveryTicks: ticks(1),
+    exempt: ["worker"],
+    debtPauses: ["build", "research"],
+    deepDebt: -500,
+    wearyAttackSpeed: -0.25,
+    holdDiscount: 0.03,
+    holdDiscountMax: 0.3,
+    moundDiscount: 0.02,
+    coilHeldDiscount: 0.2,
+    // Cap on all discounts together (held Reaches, Mounds, Coil inside held land): sonnet's budget assumption, #326.
+    discountMax: 0.6,
+  },
+});
+
+// Upkeep per minute of one unit kind or stats entry: 10% of its cost in each resource. Workers and structures pay none.
+// (env/budget.mjs has upkeepPerMinute(state, player, opts) for a whole side; this is the per-kind table lookup.)
+export function upkeepOf(kindOrStats) {
+  const s = typeof kindOrStats === "string" ? STATS.units[kindOrStats] : kindOrStats;
+  if (!s || typeof s !== "object" || (typeof kindOrStats === "string" && STATS.upkeep.exempt.includes(kindOrStats))) {
+    return { shards: 0, flux: 0 };
+  }
+  const rate = STATS.upkeep.ratePerMinute;
+  return { shards: (s.cost ?? 0) * rate, flux: (s.flux ?? 0) * rate };
+}
+
+export const UNIT_KINDS = Object.freeze(Object.keys(STATS.units));
+export const STRUCTURE_KINDS = Object.freeze(Object.keys(STATS.structures));
+
+// The territory-round structure kinds that are not in STATS.structures (so the default game cannot build them) but
+// still have cost, hp and buildTicks, so a site of that kind progresses once the flagged match places one.
+const RULE_STRUCTURES = Object.freeze({
+  totem: STATS.territory.claimStructures.totem,
+  mound: STATS.territory.claimStructures.mound,
+  drill: STATS.economy.drill,
+  depot: STATS.economy.depot,
+  press: STATS.economy.press,
+  house: STATS.market.house,
+});
+export const RULE_STRUCTURE_KINDS = Object.freeze(Object.keys(RULE_STRUCTURES));
+
+// Returns the stats entry for any kind (unit, buildable structure, core, or a territory-round structure), or null
+// for an unknown kind. The territory-round kinds resolve here so economy.tickConstruction can finish their sites;
+// whether a side may build one is decided by the flagged match, not by this lookup.
+export function kindStats(kind) {
+  if (kind === "core") return STATS.core;
+  if (Object.prototype.hasOwnProperty.call(STATS.units, kind)) return STATS.units[kind];
+  if (Object.prototype.hasOwnProperty.call(STATS.structures, kind)) return STATS.structures[kind];
+  if (Object.prototype.hasOwnProperty.call(RULE_STRUCTURES, kind)) return RULE_STRUCTURES[kind];
+  return null;
+}
+
+// Value of one entity, in Shards (spec sections 5 and 9). Units and complete buildable structures count their cost.
+// The Core, unfinished sites (complete !== true) and anything unknown count 0.
+export function valueOf(entity) {
+  if (!entity || typeof entity !== "object") return 0;
+  if (UNIT_KINDS.includes(entity.kind)) return STATS.units[entity.kind].cost;
+  if (STRUCTURE_KINDS.includes(entity.kind) && entity.complete === true) return STATS.structures[entity.kind].cost;
+  return 0;
+}
+
+// Value of one side: its Shards plus the value of its living units and complete structures.
+// Reads the state shape from spec section 14 directly, so this module has no dependency on state.mjs.
+export function sideValue(state, player) {
+  const shards = state.shards[player];
+  const units = state.units.filter((u) => u.owner === player);
+  const structures = state.structures.filter((s) => s.owner === player);
+  return shards + units.reduce((sum, u) => sum + valueOf(u), 0) + structures.reduce((sum, s) => sum + valueOf(s), 0);
+}

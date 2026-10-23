@@ -25,7 +25,8 @@ const ago = (ms) => {
 };
 
 // ---- clock ----
-setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString(); }, 1000);
+// unref: in node (tests) a timer must not keep the process alive; in the browser unref is absent and this is a no-op.
+setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString(); }, 1000).unref?.();
 
 // ---- scene (show director: live/show.mjs decides, we lay out) ----
 let spotlight = null;
@@ -189,11 +190,11 @@ function playCaption() {
   if (!item) { capBusy = false; return; }
   capBusy = true;
   $('capText').textContent = item.text;
-  setTimeout(playCaption, capQueue.length ? 4500 : 9000);
+  setTimeout(playCaption, capQueue.length ? 4500 : 9000).unref?.();
 }
 
 // ---- loops ----
-const loop = (fn, ms) => { const run = () => fn().catch(() => {}).finally(() => setTimeout(run, ms)); run(); };
+const loop = (fn, ms) => { const run = () => fn().catch(() => {}).finally(() => setTimeout(run, ms).unref?.()); run(); };
 loop(pickStage, 10000);
 loop(pollStatus, 5000);
 loop(pollChat, 3000);

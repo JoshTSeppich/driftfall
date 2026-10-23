@@ -2,10 +2,60 @@
 // The WebGL parts need a browser; these run in node with the real three.js module.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import * as THREE from 'three';
 import {
   makeGridToWorld, makeWorldToGrid, advanceTime, createFpsMeter, fitSize, pickQuality, defaultCameraPose,
-  DEFAULT_PALETTE, VignetteShader, QUALITY,
+  resolveLook, createPlaceholder, DEFAULT_PALETTE, VignetteShader, QUALITY,
 } from '../viewer3d/engine.mjs';
+import { readFileSync } from 'node:fs';
+
+test('resolveLook reads the flat default palette', () => {
+  const l = resolveLook(DEFAULT_PALETTE);
+  assert.deepEqual(l.teams, DEFAULT_PALETTE.teams);
+  assert.equal(l.ground, DEFAULT_PALETTE.ground);
+  assert.equal(l.fog.color, DEFAULT_PALETTE.fog);
+  assert.equal(l.fog.near, null);
+  assert.equal(l.sun.position, null);
+  assert.equal(l.bloom.strength, DEFAULT_PALETTE.bloom.strength);
+  assert.equal(resolveLook().exposure, DEFAULT_PALETTE.exposure);
+});
+
+test('resolveLook reads the rich palette.mjs shape when it is present', async () => {
+  let mod = null;
+  try { mod = await import('../viewer3d/palette.mjs'); } catch { /* palette.mjs not landed yet */ }
+  if (!mod?.createPalette) return;
+  const l = resolveLook(mod.createPalette(THREE));
+  assert.equal(l.teams[0], mod.TEAM[0].main);
+  assert.equal(l.strips[1], mod.TEAM[1].strip);
+  assert.equal(l.ground, mod.WORLD.ground);
+  assert.equal(l.crystal, mod.WORLD.shard);
+  assert.equal(l.fog.color, mod.FOG.color);
+  assert.equal(l.fog.near, mod.FOG.near);
+  assert.deepEqual(l.sun.position, mod.LIGHTS.sun.position);
+  assert.equal(l.bloom.threshold, mod.LIGHTS.bloom.threshold);
+  assert.ok(l.ambient, 'ambient light from LIGHTS.ambient');
+});
+
+test('placeholder draws every unit, structure, rock and crystal of a real match with real three.js', async () => {
+  const log = JSON.parse(readFileSync(new URL('../matches/sample-7.json', import.meta.url), 'utf8'));
+  const { createWorld } = await import('../viewer3d/world.mjs');
+  const world = createWorld(log);
+  const scene = new THREE.Scene();
+  const ctx = { THREE, scene, gridToWorld: makeGridToWorld(32, 32, 1), tileSize: 1, grid: { width: 32, height: 32 },
+    look: resolveLook(DEFAULT_PALETTE) };
+  const sys = createPlaceholder(ctx);
+  const group = scene.getObjectByName('placeholder');
+  const countMeshes = () => { let n = 0; group.traverse((o) => { if (o.isMesh) n++; }); return n; };
+  sys.update(world.frame(0.5), 1 / 60);
+  const f = world.frame(0.5);
+  const expected = 1 + f.next.rocks.length + f.next.crystals.length + f.next.units.length + f.next.structures.length;
+  assert.equal(countMeshes(), expected, 'ground + rocks + crystals + units + structures');
+  for (let t = 1; t < world.ticks; t += 97) sys.update(world.frame(t + 0.25), 1 / 60);
+  const last = world.frame(world.ticks - 0.5);
+  assert.equal(countMeshes(), 1 + last.next.rocks.length + last.next.crystals.length + last.next.units.length + last.next.structures.length);
+  sys.dispose();
+  assert.equal(scene.getObjectByName('placeholder'), undefined);
+});
 
 test('gridToWorld centres the map on the origin, y up, grid y along +z', () => {
   const g = makeGridToWorld(32, 32, 1);
@@ -55,6 +105,14 @@ test('advanceTime wraps when looping and ignores paused or bad dt', () => {
   advanceTime(t, NaN);
   advanceTime(t, -1);
   assert.equal(t.t, 1);
+});
+
+test('advanceTime never ends an open-ended (live) match', () => {
+  const t = { t: 0, speed: 1, playing: true, duration: Infinity, loop: false, ticksPerSecond: 24 };
+  for (let i = 0; i < 1000; i++) advanceTime(t, 1);
+  assert.equal(t.t, 24000);
+  assert.equal(t.playing, true);
+  assert.notEqual(t.ended, true);
 });
 
 test('fps meter averages over its window', () => {

@@ -68,7 +68,8 @@ export function resolveLook(p = {}) {
     teams: [team(0), team(1)],
     strips: [strip(0), strip(1)],
     background: p.background ?? p.sky?.mid ?? fogColor,
-    fog: { color: fogColor, density: p.fog?.density ?? p.fogDensity ?? d.fogDensity },
+    // near/far are in tiles (palette.mjs FOG); when both are present the engine uses linear fog, else FogExp2.
+    fog: { color: fogColor, density: p.fog?.density ?? p.fogDensity ?? d.fogDensity, near: p.fog?.near ?? null, far: p.fog?.far ?? null },
     ground: p.world?.ground ?? p.ground ?? d.ground,
     rock: p.world?.rock ?? p.rock ?? d.rock,
     crystal: p.world?.shard ?? p.shard ?? p.crystal ?? d.crystal,
@@ -149,7 +150,7 @@ export function defaultCameraPose(width, height, tileSize = 1) {
     target: { x: 0, y: 0, z: 0 },
     fov: 42,
     near: 0.5,
-    far: span * 6,
+    far: Math.max(span * 6, 320), // room for terrain's sky dome and far mesas (QA asked for ~150 tiles minimum)
   };
 }
 
@@ -210,13 +211,22 @@ export function createEngine(canvas, opts = {}) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setClearColor(new THREE.Color(look.background), 1);
 
-  // Scene, fog, camera. terrain.mjs (sky and fog owner) may replace background and fog; these are the defaults.
+  // Scene, fog, camera. Fog and background come from palette.mjs (FOG) through the engine, one source for the
+  // whole scene (agreed with QA and terrain in the chat); terrain.mjs owns the sky dome and distant mesas.
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(look.background);
-  scene.fog = new THREE.FogExp2(new THREE.Color(look.fog.color), look.fog.density);
+  scene.fog = look.fog.near != null && look.fog.far != null
+    ? new THREE.Fog(new THREE.Color(look.fog.color), look.fog.near * tileSize, look.fog.far * tileSize)
+    : new THREE.FogExp2(new THREE.Color(look.fog.color), look.fog.density);
 
   const pose = defaultCameraPose(width, height, tileSize);
-  const camera = new THREE.PerspectiveCamera(pose.fov, 16 / 9, pose.near, pose.far);
+  // opts.ortho = true gives the fixed tilted orthographic view CLASSIC.md asks for (camera.mjs may still move it);
+  // ctx.orthoHeight (world units visible top to bottom) is what a zoom changes on an orthographic camera.
+  const ortho = !!opts.ortho;
+  const orthoHeight = opts.orthoHeight ?? Math.max(width, height) * tileSize * 0.8;
+  const camera = ortho
+    ? new THREE.OrthographicCamera(-1, 1, 1, -1, -pose.far, pose.far)
+    : new THREE.PerspectiveCamera(pose.fov, 16 / 9, pose.near, pose.far);
   camera.position.set(pose.position.x, pose.position.y, pose.position.z);
   camera.lookAt(pose.target.x, pose.target.y, pose.target.z);
 
@@ -270,12 +280,14 @@ export function createEngine(canvas, opts = {}) {
   const time = { t: 0, speed: opts.speed ?? 1, playing: opts.autoplay !== false, duration: 0, loop: !!opts.loop,
     ticksPerSecond: opts.ticksPerSecond ?? 8, ended: false };
   const size = { width: 1, height: 1, dpr: 1 };
-  const perf = { fps: 0, ms: 0, calls: 0, triangles: 0, systems: 0, failed: 0 };
+  const perf = { fps: 0, ms: 0, calls: 0, triangles: 0, systems: 0, failed: 0, renderMs: 0, systemMs: {} };
   const ctx = {
     THREE, scene, camera, renderer, composer, clock, palette, look, assets: opts.assets ?? {},
     gridToWorld, worldToGrid, tileSize, grid: { width, height }, time, size, perf, quality,
     stats: opts.stats ?? null,          // the game's stats table (log.stats); vfx and units read it
     heightAt: () => 0,                  // terrain.mjs replaces this with the real surface height per tile
+    ortho, orthoHeight,                 // orthographic view (CLASSIC.md); change ctx.orthoHeight then engine.resize()
+    failures: [],                       // { name, message } for every system switched off after an error
     lights: { sun, hemi, rim, ambient }, passes: { render: renderPass, bloom: bloomPass, vignette: vignettePass },
     canvas, world: null, engine: null,
   };
@@ -292,15 +304,20 @@ export function createEngine(canvas, opts = {}) {
   function remove(system) {
     const i = systems.indexOf(system);
     if (i >= 0) systems.splice(i, 1);
-    failed.delete(system);
+    if (failed.delete(system)) ctx.failures = ctx.failures.filter((f) => f.name !== (system.name ?? 'system'));
     perf.systems = systems.length;
+    perf.failed = failed.size;
   }
 
   // World (frame source). setWorld(null) clears it. ---------------------------------------------------------------
+  // A live world (the in-page sim for CLASSIC.md) owns the clock: give it now() -> fractional tick and the engine
+  // reads it every frame instead of advancing its own playback clock; world.ticks may be Infinity or missing.
   function setWorld(world) {
     ctx.world = world ?? null;
-    time.duration = world ? (world.ticks ?? 0) : 0;
-    time.t = 0;
+    const live = !!world && typeof world.now === 'function';
+    time.live = live;
+    time.duration = world ? (Number.isFinite(world.ticks) ? world.ticks : Infinity) : 0;
+    time.t = live ? world.now() : 0;
     time.ended = false;
   }
   if (opts.world) setWorld(opts.world);
@@ -318,7 +335,11 @@ export function createEngine(canvas, opts = {}) {
     composer.setSize(fit.width, fit.height);
     bloomPass.resolution.set(Math.round(fit.width * quality.bloomScale), Math.round(fit.height * quality.bloomScale));
     vignettePass.uniforms.aspect.value = fit.width / fit.height;
-    camera.aspect = fit.width / fit.height;
+    const aspect = fit.width / fit.height;
+    if (camera.isOrthographicCamera) {
+      const h = ctx.orthoHeight ?? orthoHeight;
+      camera.top = h / 2; camera.bottom = -h / 2; camera.left = -h * aspect / 2; camera.right = h * aspect / 2;
+    } else camera.aspect = aspect;
     camera.updateProjectionMatrix();
   }
   let ro = null;
@@ -355,6 +376,8 @@ export function createEngine(canvas, opts = {}) {
       `tick ${time.t.toFixed(1)}/${time.duration}  x${time.speed}  ${time.playing ? 'playing' : 'paused'}` +
         (f ? `  events ${f.events?.length ?? 0}` : '  (no world)'),
       `systems ${systems.length}${failed.size ? `  FAILED ${failed.size}` : ''}  objects ${sceneObjectCount()}`,
+      `cpu ms  render ${perf.renderMs.toFixed(2)}  ` +
+        Object.entries(perf.systemMs).map(([k, v]) => `${k} ${v.toFixed(2)}`).join('  '),
     ].join('\n');
   }
   function sceneObjectCount() { let n = 0; scene.traverse(() => n++); return n; }
@@ -362,7 +385,8 @@ export function createEngine(canvas, opts = {}) {
   // Render loop ---------------------------------------------------------------------------------------------------
   let running = false, raf = 0, lastFrame = null;
   function step(dt) {
-    advanceTime(time, dt);
+    if (time.live) time.t = ctx.world.now();
+    else advanceTime(time, dt);
     let frame = null;
     if (ctx.world) {
       try { frame = ctx.world.frame(time.t); }
@@ -370,16 +394,23 @@ export function createEngine(canvas, opts = {}) {
     }
     ctx.lastFrame = lastFrame = frame;
     if (typeof palette.update === 'function') palette.update(frame, dt); // shared emissives breathe in step
+    const now = typeof performance !== 'undefined' ? () => performance.now() : () => Date.now();
     for (const s of systems) {
       if (failed.has(s)) continue;
+      const t0 = now();
       try { s.update(frame, dt); }
       catch (err) {
         failed.add(s); perf.failed = failed.size;
+        ctx.failures.push({ name: s.name ?? 'system', message: String(err?.message ?? err) });
         console.error('[engine] system switched off after an error:', s.name ?? s, err);
       }
+      const key = s.name ?? 'system';
+      perf.systemMs[key] = (perf.systemMs[key] ?? 0) * 0.9 + (now() - t0) * 0.1; // smoothed per-system cost
     }
     renderer.info.reset();
+    const r0 = now();
     composer.render(dt);
+    perf.renderMs = perf.renderMs * 0.9 + (now() - r0) * 0.1;
     perf.calls = renderer.info.render.calls;
     perf.triangles = renderer.info.render.triangles;
     const m = fpsMeter.tick(dt);

@@ -69,10 +69,12 @@ test('on an odd tick the higher id wins the same contested tile', () => {
 });
 
 test('a Brute moves only on even ticks; a Grunt moves every tick', () => {
+  // A 12-wide room: the Grunt's target is 11 steps away, so it is still walking after the 8 ticks checked below.
   const state = room({
+    width: 12,
     units: [
       unit(3, 'brute', 0, 0, { type: 'move', x: 6, y: 0 }),
-      unit(4, 'grunt', 0, 4, { type: 'move', x: 6, y: 4 }),
+      unit(4, 'grunt', 0, 4, { type: 'move', x: 11, y: 4 }),
     ],
   });
   assert.equal(STATS.units.brute.speed, 2, 'spec says a Brute has speed 2');

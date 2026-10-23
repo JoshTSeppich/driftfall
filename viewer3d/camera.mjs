@@ -157,7 +157,7 @@ export function pointsFromEvents(frame) {
       if (t) out.push({ x: t.x, y: t.y, w: t.structure ? W.dieStructure : W.dieUnit, kind: "fight" });
     } else if (ev.e === "done") {
       const s = frame.next?.structures?.find((e) => e.id === ev.id);
-      if (s && BIG_BUILDS.has(s.kind)) out.push({ x: s.x, y: s.y, w: W.done, kind: "build" });
+      if (s && isBigBuild(s.kind)) out.push({ x: s.x, y: s.y, w: W.done, kind: "build" });
     } else if (ev.e === "spawn" && ev.structure) {
       out.push({ x: ev.structure.x, y: ev.structure.y, w: W.spawnStructure, kind: "build" });
     }

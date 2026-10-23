@@ -1,0 +1,7 @@
+not ok 346 - env sources (except referee and player-worker) avoid nondeterministic APIs
+# Subtest: play/units-instanced.mjs: 200 units at once stay inside the CPU budget and use instancing (CLASSIC.md)
+ok 535 - play/units-instanced.mjs: 200 units at once stay inside the CPU budget and use instancing (CLASSIC.md)
+# tests 709
+# pass 708
+# fail 1
+# duration_ms 191031.377167

@@ -7,7 +7,7 @@ import { step, checkEnd } from '../env/sim.mjs';
 import { STATS } from '../env/stats.mjs';
 
 // Hand-built unit and structure records, with every field the spec lists in section 10.
-function unit(id, owner, kind, x, y, hp = STATS[kind].hp) {
+function unit(id, owner, kind, x, y, hp = STATS.units[kind].hp) {
   return { id, owner, kind, x, y, hp, carrying: 0, order: null };
 }
 
@@ -16,7 +16,7 @@ function core(id, owner, x, y, hp = STATS.core.hp) {
 }
 
 function finished(id, owner, kind, x, y) {
-  return { id, owner, kind, x, y, hp: STATS[kind].hp, progress: STATS[kind].buildTicks, complete: true, queue: [] };
+  return { id, owner, kind, x, y, hp: STATS.structures[kind].hp, progress: STATS.structures[kind].buildTicks, complete: true, queue: [] };
 }
 
 // Two Cores at the spec spots, nothing else on the map unless a test adds it.
@@ -91,24 +91,24 @@ test('reaching maxTicks with a higher value wins with reason timeout', () => {
     units: [unit(3, 0, 'grunt', 10, 10)],
     structures: [finished(4, 1, 'forge', 20, 20)],
   });
-  state.tick = STATS.maxTicks - 1;
+  state.tick = STATS.match.maxTicks - 1;
 
   step(state, NO_COMMANDS);
 
-  const v0 = 100 + STATS.grunt.cost;
-  const v1 = 100 + STATS.forge.cost;
-  assert.equal(state.tick, STATS.maxTicks);
+  const v0 = 100 + STATS.units.grunt.cost;
+  const v1 = 100 + STATS.structures.forge.cost;
+  assert.equal(state.tick, STATS.match.maxTicks);
   assert.deepEqual(state.result?.value, [v0, v1]);
   assert.deepEqual(state.result?.winner, 1);
   assert.equal(state.result?.reason, 'timeout');
-  assert.equal(state.result?.tick, STATS.maxTicks);
+  assert.equal(state.result?.tick, STATS.match.maxTicks);
 });
 
 test('reaching maxTicks with a higher value for side 0 wins for side 0', () => {
   const state = matchState({
-    shards: [STATS.forge.cost + 10, 0],
+    shards: [STATS.structures.forge.cost + 10, 0],
   });
-  state.tick = STATS.maxTicks - 1;
+  state.tick = STATS.match.maxTicks - 1;
 
   step(state, NO_COMMANDS);
 
@@ -118,12 +118,12 @@ test('reaching maxTicks with a higher value for side 0 wins for side 0', () => {
 
 test('an exact value tie at maxTicks is a draw with reason timeout', () => {
   // Side 0: 100 Shards plus one Grunt. Side 1: Shards equal to that total and nothing else.
-  const total = 100 + STATS.grunt.cost;
+  const total = 100 + STATS.units.grunt.cost;
   const state = matchState({
     shards: [100, total],
     units: [unit(3, 0, 'grunt', 10, 10)],
   });
-  state.tick = STATS.maxTicks - 1;
+  state.tick = STATS.match.maxTicks - 1;
 
   step(state, NO_COMMANDS);
 
@@ -167,16 +167,16 @@ test('the timeout is not reported one tick early', () => {
   const state = matchState({
     shards: [900, 0],
   });
-  state.tick = STATS.maxTicks - 2;
+  state.tick = STATS.match.maxTicks - 2;
 
   step(state, NO_COMMANDS);
 
-  assert.equal(state.tick, STATS.maxTicks - 1);
+  assert.equal(state.tick, STATS.match.maxTicks - 1);
   assert.equal(state.result, null);
   assert.equal(checkEnd(state), null);
 
   step(state, NO_COMMANDS);
 
-  assert.equal(state.tick, STATS.maxTicks);
+  assert.equal(state.tick, STATS.match.maxTicks);
   assert.equal(state.result?.reason, 'timeout');
 });

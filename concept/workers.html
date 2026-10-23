@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driftfall · Worker concepts</title>
+<style>
+html,body{margin:0;height:100%;background:#07080b;overflow:hidden;font-family:ui-sans-serif,-apple-system,"SF Pro Display",system-ui,sans-serif;color:#e8e6e1}
+canvas{display:block}
+.tag{position:absolute;bottom:7%;width:34%;text-align:center;pointer-events:none}
+.tag h2{margin:0;font-size:clamp(18px,2.4vw,30px);letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+.tag h3{margin:.2em 0 0;font-size:clamp(11px,1vw,14px);letter-spacing:.32em;text-transform:uppercase;font-weight:500;opacity:.7}
+.tag p{margin:.6em auto 0;max-width:30ch;font-size:clamp(11px,.95vw,13px);line-height:1.45;opacity:.65}
+#a{left:8%} #b{right:8%}
+#a h2{color:#5fd4ff} #b h2{color:#ffab52}
+.title{position:absolute;top:4%;width:100%;text-align:center;letter-spacing:.5em;font-size:12px;opacity:.55;text-transform:uppercase}
+</style>
+<script type="importmap">{ "imports": { "three": "../node_modules/three/build/three.module.js", "three/addons/": "../node_modules/three/examples/jsm/" } }</script>
+</head><body>
+<div class="title">Driftfall · faction workers · concept</div>
+<div class="tag" id="a"><h3>The Coil</h3><h2>Siphoner</h2><p>Armored serpent harvester. Tail-drill bores Shard crystal; the haul rides in a pressure canister on its spine.</p></div>
+<div class="tag" id="b"><h3>The Burrow</h3><h2>Digger</h2><p>Wombat miner in a salvaged exo-rig. Drill-claws break the seam; ore is compacted into dense cubes for the haul home.</p></div>
+<script type="module">
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07080b); scene.fog = new THREE.Fog(0x07080b, 14, 30);
+const camera = new THREE.PerspectiveCamera(34, innerWidth / innerHeight, 0.1, 100);
+const frame = () => { const a = innerWidth / innerHeight, d = a >= 1.6 ? 11.5 : 11.5 * Math.min(1.9, 1.6 / a); camera.aspect = a; camera.position.set(0, d * .36, d); camera.lookAt(0, 1.05, 0); camera.updateProjectionMatrix(); };
+frame();
+
+// --- lights: cold key, warm rim, faint fill
+scene.add(new THREE.HemisphereLight(0x8fa3c0, 0x1a1410, 0.55));
+const key = new THREE.DirectionalLight(0xdfe8ff, 2.4); key.position.set(-5, 9, 6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8 }); key.shadow.bias = -0.0004; scene.add(key);
+const rim = new THREE.DirectionalLight(0xffb36b, 2.2); rim.position.set(6, 4, -7); scene.add(rim);
+const rim2 = new THREE.DirectionalLight(0x6fd0ff, 1.6); rim2.position.set(-7, 3, -6); scene.add(rim2);
+
+// --- materials
+const tex = (draw, w = 256, h = 256) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return t; };
+const hazard = tex((g, w, h) => { g.fillStyle = "#c9a227"; g.fillRect(0, 0, w, h); g.fillStyle = "#16130e";
+  for (let i = -h; i < w; i += 64) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 32, 0); g.lineTo(i + 32 + h, h); g.lineTo(i + h, h); g.fill(); }
+  g.globalAlpha = .25; for (let k = 0; k < 400; k++) { g.fillStyle = Math.random() < .5 ? "#000" : "#fff"; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); } });
+const grime = tex((g, w, h) => { g.fillStyle = "#808080"; g.fillRect(0, 0, w, h);
+  for (let k = 0; k < 2500; k++) { const v = 90 + Math.random() * 90 | 0; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(Math.random() * w, Math.random() * h, 1 + Math.random() * 3, 1 + Math.random() * 3); } });
+const scales = tex((g, w, h) => { g.fillStyle = "#2c3a2e"; g.fillRect(0, 0, w, h);
+  for (let y = 0; y < h; y += 16) for (let x = (y / 16) % 2 ? 8 : 0; x < w; x += 16) { const grd = g.createRadialGradient(x + 8, y + 4, 1, x + 8, y + 8, 10);
+    grd.addColorStop(0, "#5b7a55"); grd.addColorStop(1, "#1d271f"); g.fillStyle = grd; g.beginPath(); g.ellipse(x + 8, y + 8, 8, 7, 0, 0, Math.PI * 2); g.fill(); } });
+scales.repeat.set(10, 2);
+const fur = tex((g, w, h) => { g.fillStyle = "#5a4634"; g.fillRect(0, 0, w, h);
+  for (let k = 0; k < 6000; k++) { const v = Math.random(); g.strokeStyle = v < .5 ? "#3e2f22" : v < .85 ? "#6e5741" : "#8a7055"; g.lineWidth = 1;
+    const x = Math.random() * w, y = Math.random() * h; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (Math.random() - .5) * 3, y + 4 + Math.random() * 5); g.stroke(); } });
+fur.repeat.set(2, 2);
+const M = {
+  scale: new THREE.MeshStandardMaterial({ map: scales, roughness: .55, metalness: .1 }),
+  belly: new THREE.MeshStandardMaterial({ color: 0x8c8466, roughness: .7 }),
+  steel: new THREE.MeshStandardMaterial({ color: 0x6d737b, roughness: .38, metalness: .85, roughnessMap: grime }),
+  dark: new THREE.MeshStandardMaterial({ color: 0x23262b, roughness: .5, metalness: .7 }),
+  hazard: new THREE.MeshStandardMaterial({ map: hazard, roughness: .6, metalness: .3 }),
+  fur: new THREE.MeshStandardMaterial({ map: fur, roughness: .95 }),
+  snout: new THREE.MeshStandardMaterial({ color: 0x2a211b, roughness: .6 }),
+  cyan: new THREE.MeshStandardMaterial({ color: 0x0a2530, emissive: 0x3fd0ff, emissiveIntensity: 3.2 }),
+  amber: new THREE.MeshStandardMaterial({ color: 0x301806, emissive: 0xff9a3a, emissiveIntensity: 3.0 }),
+  shard: new THREE.MeshStandardMaterial({ color: 0x0b3d37, emissive: 0x4ef2d8, emissiveIntensity: 2.4, roughness: .2, metalness: .1, transparent: true, opacity: .92 }),
+  ore: new THREE.MeshStandardMaterial({ color: 0x1b2a2a, emissive: 0x4ef2d8, emissiveIntensity: .9, roughness: .4, metalness: .4 }),
+  ground: new THREE.MeshStandardMaterial({ color: 0x1b1d21, roughness: .92, metalness: .15, roughnessMap: grime }),
+};
+const shadowAll = (o) => o.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+
+// --- ground: a hex plate with a faint grid
+const plate = new THREE.Mesh(new THREE.CylinderGeometry(9, 9.4, .35, 6), M.ground); plate.position.y = -.18; plate.receiveShadow = true; scene.add(plate);
+const grid = new THREE.GridHelper(18, 18, 0x2b3036, 0x1e2226); grid.position.y = .005; scene.add(grid);
+
+// ================= THE COIL: SIPHONER (armored serpent) =================
+function siphoner() {
+  const g = new THREE.Group();
+  const pts = [[1.9,.3,-1.3],[1.0,.32,-1.65],[.05,.34,-1.2],[-.35,.36,-.2],[.25,.38,.6],[1.1,.4,.55],[1.25,.75,-.05],[1.0,1.35,-.15],[.75,1.85,.2],[.7,2.05,.75]].map((p) => new THREE.Vector3(p[0]-.6, p[1], p[2]));
+  const curve = new THREE.CatmullRomCurve3(pts, false, "catmullrom", .4);
+  const segs = 160, rad = 20, geo = new THREE.TubeGeometry(curve, segs, .4, rad, false);
+  const pos = geo.attributes.position, tmp = new THREE.Vector3();
+  for (let i = 0; i <= segs; i++) { const t = i / segs, c = curve.getPointAt(t), k = t < .14 ? .2 + t / .14 * .8 : t > .7 ? 1 - (t - .7) * 1.1 : 1;
+    for (let j = 0; j <= rad; j++) { const idx = i * (rad + 1) + j; tmp.fromBufferAttribute(pos, idx).sub(c).multiplyScalar(k); pos.setXYZ(idx, c.x + tmp.x, c.y + tmp.y * .85, c.z + tmp.z); } }
+  geo.computeVertexNormals();
+  g.add(new THREE.Mesh(geo, M.scale));
+  // dorsal armor plates with hazard trims along the spine
+  for (let i = 0; i < 11; i++) { const t = .16 + i * .06, p = curve.getPointAt(t), tg = curve.getTangentAt(t);
+    const plateG = new THREE.Mesh(new RoundedBoxGeometry(.5, .14, .32, 2, .05), i % 3 === 1 ? M.hazard : M.steel);
+    plateG.position.copy(p).add(new THREE.Vector3(0, .33, 0)); plateG.lookAt(p.clone().add(tg)); plateG.rotateX(-.1); g.add(plateG); }
+  // pressure canister on the spine, with a glowing Shard window
+  const cp = curve.getPointAt(.4), ct = curve.getTangentAt(.4);
+  const can = new THREE.Group(); can.position.copy(cp).add(new THREE.Vector3(0, .62, 0)); can.lookAt(cp.clone().add(ct).add(new THREE.Vector3(0, .62, 0)));
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, .78, 18), M.steel); body.rotation.x = Math.PI / 2; can.add(body);
+  const win = new THREE.Mesh(new THREE.CylinderGeometry(.225, .225, .42, 18, 1, true, -.9, 1.8), M.shard); win.rotation.x = Math.PI / 2; can.add(win);
+  for (const z of [-.39, .39]) { const cap = new THREE.Mesh(new THREE.CylinderGeometry(.25, .25, .07, 18), M.dark); cap.rotation.x = Math.PI / 2; cap.position.z = z; can.add(cap); }
+  const strapA = new THREE.Mesh(new THREE.TorusGeometry(.3, .03, 6, 24, Math.PI), M.dark); strapA.position.set(0, -.12, .2); strapA.rotation.z = Math.PI; can.add(strapA);
+  const strapB = strapA.clone(); strapB.position.z = -.2; can.add(strapB);
+  g.add(can);
+  // head: armored skull, jaw, cyan visor slit
+  const hp = curve.getPointAt(1), ht = curve.getTangentAt(1);
+  const head = new THREE.Group(); head.position.copy(hp).add(ht.clone().multiplyScalar(.25)); head.lookAt(hp.clone().add(new THREE.Vector3(0, -.45, 1))); head.scale.setScalar(1.35);
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(.38, 24, 16), M.scale); skull.scale.set(.85, .62, 1.35); head.add(skull);
+  const helm = new THREE.Mesh(new THREE.SphereGeometry(.4, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2.2), M.steel); helm.scale.set(.82, .55, 1.25); helm.position.y = .04; head.add(helm);
+  const visor = new THREE.Mesh(new THREE.TorusGeometry(.3, .035, 8, 32, Math.PI * .9), M.cyan); visor.rotation.set(Math.PI / 2, 0, Math.PI * 1.05); visor.position.set(0, .07, .18); head.add(visor);
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(.3, 18, 12), M.belly); jaw.scale.set(.75, .3, 1.15); jaw.position.set(0, -.13, .06); head.add(jaw);
+  const ant = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .5, 6), M.dark); ant.position.set(.16, .38, -.15); ant.rotation.z = -.3; head.add(ant);
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 8), M.cyan); tip.position.set(.23, .62, -.15); head.add(tip);
+  const hood = new THREE.Mesh(new THREE.SphereGeometry(.62, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M.steel); hood.scale.set(1.25, .22, .9);
+  hood.rotation.x = -1.35; hood.position.set(0, .05, -.32); head.add(hood);
+  for (const s2 of [-1, 1]) { const fin = new THREE.Mesh(new THREE.ConeGeometry(.08, .45, 6), M.hazard); fin.position.set(.48 * s2, .05, -.4); fin.rotation.set(-1.2, 0, .9 * s2); head.add(fin); }
+  g.add(head);
+  // tail drill
+  const tp = curve.getPointAt(0), tt = curve.getTangentAt(0);
+  const drill = new THREE.Group(); drill.position.copy(tp); drill.lookAt(tp.clone().sub(tt));
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(.16, .62, 16), M.steel); cone.rotation.x = Math.PI / 2; cone.position.z = .3; drill.add(cone);
+  for (let i = 0; i < 4; i++) { const ring = new THREE.Mesh(new THREE.TorusGeometry(.13 - i * .028, .018, 6, 20), M.dark); ring.position.z = .1 + i * .12; drill.add(ring); }
+  const collar = new THREE.Mesh(new THREE.CylinderGeometry(.2, .2, .12, 16), M.hazard); collar.rotation.x = Math.PI / 2; drill.add(collar);
+  g.add(drill); g.userData.drill = drill;
+  // team-color glow strip along the flank
+  const strip = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([.2,.3,.4,.5,.6,.7].map((t) => curve.getPointAt(t).add(new THREE.Vector3(0, .1, .3)))), 40, .025, 6), M.cyan);
+  g.add(strip);
+  shadowAll(g); return g;
+}
+
+// ================= THE BURROW: DIGGER (wombat in an exo-rig) =================
+function digger() {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), M.fur); body.scale.set(.95, .72, 1.25); body.position.y = .82; g.add(body);
+  const rump = new THREE.Mesh(new THREE.SphereGeometry(.85, 24, 18), M.fur); rump.scale.set(1, .8, .7); rump.position.set(0, .78, -.75); g.add(rump);
+  const head = new THREE.Group(); head.position.set(0, .95, 1.15); g.add(head);
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(.55, 28, 20), M.fur); skull.scale.set(1.12, .82, .95); head.add(skull);
+  const snout = new THREE.Mesh(new RoundedBoxGeometry(.5, .32, .3, 3, .12), M.snout); snout.position.set(0, -.08, .5); head.add(snout);
+  for (const s of [-1, 1]) { const ear = new THREE.Mesh(new THREE.ConeGeometry(.12, .24, 10), M.fur); ear.position.set(.38 * s, .42, -.05); ear.rotation.z = -.35 * s; head.add(ear);
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(.05, 10, 10), new THREE.MeshStandardMaterial({ color: 0x050505, roughness: .1 })); eye.position.set(.27 * s, .12, .42); head.add(eye); }
+  // headlamp + goggles strap
+  const strap = new THREE.Mesh(new THREE.TorusGeometry(.56, .035, 6, 32), M.dark); strap.rotation.x = Math.PI / 2; strap.position.y = .18; strap.scale.set(1.05, 1, .9); head.add(strap);
+  const lamp = new THREE.Mesh(new THREE.CylinderGeometry(.11, .13, .14, 16), M.steel); lamp.rotation.x = Math.PI / 2; lamp.position.set(0, .3, .43); head.add(lamp);
+  const lens = new THREE.Mesh(new THREE.CircleGeometry(.09, 16), M.amber); lens.position.set(0, .3, .505); head.add(lens);
+  const beam = new THREE.SpotLight(0xffb060, 7, 5, .4, .7, 1.5); beam.position.set(0, .3, .5); beam.target.position.set(0, -.8, 3); head.add(beam, beam.target);
+  // legs + drill-claws
+  for (const [x, z] of [[-.62, .62], [.62, .62], [-.62, -.62], [.62, -.62]]) {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(.2, .17, .42, 12), M.fur); leg.position.set(x, .22, z); g.add(leg);
+    const paw = new THREE.Mesh(new THREE.SphereGeometry(.2, 12, 8), M.snout); paw.scale.set(1, .45, 1.2); paw.position.set(x, .05, z + .05); g.add(paw); }
+  for (const s of [-1, 1]) { const arm = new THREE.Group(); arm.position.set(.55 * s, .55, 1.25); arm.rotation.set(-.5, .25 * s, 0);
+    const piston = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .5, 10), M.steel); piston.rotation.x = Math.PI / 2; piston.position.z = .1; arm.add(piston);
+    for (let k = -1; k <= 1; k++) { const claw = new THREE.Mesh(new THREE.ConeGeometry(.055, .32, 8), M.steel); claw.rotation.x = Math.PI / 2; claw.position.set(k * .07, 0, .48); arm.add(claw); }
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(.13, .13, .1, 12), M.hazard); hub.rotation.x = Math.PI / 2; hub.position.z = .33; arm.add(hub);
+    g.add(arm); }
+  // exo-rig: spine frame, shoulder plates, ore crate with compacted cubes
+  const frame = new THREE.Mesh(new RoundedBoxGeometry(.32, .14, 1.7, 2, .05), M.dark); frame.position.set(0, 1.58, -.05); g.add(frame);
+  for (const s of [-1, 1]) { const pad = new THREE.Mesh(new RoundedBoxGeometry(.5, .12, .62, 2, .05), M.hazard); pad.position.set(.48 * s, 1.36, .45); pad.rotation.z = -.38 * s; g.add(pad);
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(.035, .035, 1.3, 8), M.steel); tube.rotation.x = Math.PI / 2; tube.position.set(.22 * s, 1.55, -.1); g.add(tube); }
+  const crate = new THREE.Group(); crate.position.set(0, 1.78, -.55); g.add(crate);
+  const tray = new THREE.Mesh(new RoundedBoxGeometry(.9, .14, .75, 2, .04), M.steel); crate.add(tray);
+  for (const [x, z] of [[-.38, -.3], [.38, -.3], [-.38, .3], [.38, .3]]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.05, .4, .05), M.dark); post.position.set(x, .2, z); crate.add(post); }
+  for (let i = 0; i < 6; i++) { const cube = new THREE.Mesh(new RoundedBoxGeometry(.22, .22, .22, 2, .03), M.ore); cube.position.set(-.25 + (i % 3) * .25, .19 + (i > 2 ? .24 : 0), (i > 2 ? 0 : (i % 2 ? .12 : -.12))); cube.rotation.y = i * .4; crate.add(cube); }
+  // team-color stripe across the rig
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(.34, .03, 1.5), M.amber); stripe.position.set(0, 1.66, -.05); g.add(stripe);
+  shadowAll(g); g.userData.lamp = lens; return g;
+}
+
+const a = siphoner(); a.position.set(-2.7, 0, .3); a.rotation.y = .5; scene.add(a);
+const b = digger(); b.position.set(2.8, 0, .3); b.rotation.y = -.55; b.scale.setScalar(.95); scene.add(b);
+// props: a Shard cluster by the Siphoner, ore seam by the Digger
+const cl = new THREE.Group(); for (let i = 0; i < 7; i++) { const c = new THREE.Mesh(new THREE.OctahedronGeometry(.25 + Math.random() * .25, 0), M.shard); c.scale.y = 2.2; c.position.set((Math.random() - .5) * .8, .35, (Math.random() - .5) * .8); c.rotation.set(Math.random() * .4, Math.random() * 3, Math.random() * .4); cl.add(c); }
+cl.position.set(-4.6, 0, -3.2); cl.scale.setScalar(.8); scene.add(cl);
+const sl = new THREE.PointLight(0x4ef2d8, 3, 4); sl.position.set(-4.6, 1, -3); scene.add(sl);
+const seam = new THREE.Group(); for (let i = 0; i < 9; i++) { const c = new THREE.Mesh(new RoundedBoxGeometry(.32, .32, .32, 2, .04), M.ore); c.position.set((i % 3) * .34, (i / 3 | 0) * .34 + .16, 0); c.rotation.y = .2; seam.add(c); }
+seam.position.set(4.9, 0, -3.0); seam.rotation.y = -.6; shadowAll(seam); scene.add(seam);
+
+const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), .7, .5, .82)); composer.addPass(new OutputPass());
+addEventListener("resize", () => { frame(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => { const t = clock.getElapsedTime();
+  a.rotation.y = .35 + Math.sin(t * .35) * .45; b.rotation.y = -.55 - Math.sin(t * .35) * .45;
+  a.userData.drill.rotateZ(.25); M.cyan.emissiveIntensity = 2.8 + Math.sin(t * 3) * .6; M.shard.emissiveIntensity = 1.3 + Math.sin(t * 1.7) * .25;
+  composer.render(); });
+</script></body></html>

@@ -37,9 +37,14 @@ function runDuel(state, { maxTicks, plan = () => [[], []], done }) {
   return ticks;
 }
 
-// Order given on the first tick, through the normal command path (side 1 sends it).
-const attackOnFirstTick = (unitId, targetId) => (state, tick) =>
-  tick === 0 ? [[], [{ type: 'attack', unit: unitId, target: targetId }]] : [[], []];
+// Order given on the first tick, through the normal command path. The order goes in the list of the side that
+// owns the unit, because the sim rejects commands for units a side does not own.
+const attackOnFirstTick = (unitId, targetId) => (state, tick) => {
+  if (tick !== 0) return [[], []];
+  const lists = [[], []];
+  lists[findEntity(state, unitId).owner].push({ type: 'attack', unit: unitId, target: targetId });
+  return lists;
+};
 
 // Checks that `winnerId` survives and `loserId` dies within `maxTicks`. The message names the counter.
 function assertCounter(state, { counter, winnerId, loserId, ticks, maxTicks }) {

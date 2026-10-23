@@ -181,12 +181,18 @@ A new order replaces the unit's old one. Rejected commands carry one of these re
 
 `env/referee.mjs` runs a match between two player modules:
 
-- **Each player runs in its own worker thread** (`node:worker_threads`), so the referee can cut off a player that
-  never answers. The referee sends the observation as a message and waits for the commands message back.
+- **Each player runs in its own sandboxed child process** (`child_process.fork` under Node's `--permission` mode,
+  empty environment), so the referee can kill a player that never answers. The process may read only its own player
+  file; it cannot write files, start processes or workers, or see environment variables. The referee sends the
+  observation as an IPC message and waits for the commands message back. A player must be a single self-contained
+  file (it cannot import its siblings).
 - Each tick it asks side 0 and side 1 for commands with their observations, measures wall-clock time from send to
   reply, then calls `step`. Think limit is **50 ms** per tick. If the reply takes longer, that side's commands for
   the tick are discarded (a `late` event with the time is logged) and the match continues. If `act` throws or
-  returns something that is not an array, the side's commands are empty for that tick (`error` event).
+  returns something that is not an array, the side's commands are empty for that tick (`error` event). The same
+  happens when any one command, written as JSON, is longer than **1024** characters, or the list cannot be written
+  as JSON at all: an oversized command never reaches the simulation or the log (the number is
+  `STATS.referee.commandChars`). The number of commands is not limited here; §10's `too-many` rule handles it.
 - If no reply has arrived after **1000 ms**, the worker is terminated and that side **forfeits** (reason `forfeit`).
   A player that has thrown on **50** ticks in total also forfeits. A player module that fails to load forfeits at
   tick 0.

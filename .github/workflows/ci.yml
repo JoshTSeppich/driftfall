@@ -1,0 +1,40 @@
+# Driftfall CI (owner: sonnet, shipping). On every push and pull request: install, run the tests, build dist/.
+# It does not deploy anywhere. Pick a host in HOSTING.md first; the uploaded dist/ is available as an artifact.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+      - name: Check dist has no tests, secrets or sandboxes
+        run: |
+          if find dist \( -name '*.test.mjs' -o -name '.env*' -o -path '*/.sandbox/*' -o -path '*/tests/*' \) | grep -q .; then
+            echo 'dist contains files that must not ship'; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: driftfall-dist
+          path: dist
+          retention-days: 14

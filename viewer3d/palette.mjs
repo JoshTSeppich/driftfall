@@ -25,20 +25,23 @@ export const PALETTE_VERSION = 1;
 // ---------- teams ----------
 // `main` body paint, `light` highlight, `dark` shadow, `deep` deepest shade, `strip` the emissive glow strip colour
 // (a bright step of the same hue so bloom reads as the team), `glow` an rgba for 2D halos, `css` for the HUD.
+// `base` and `main` are the same value (ART-GUIDE says base; the 2D art says main). `hex` is the base as a number
+// for code that feeds THREE.Color directly. Per the Art Director, the glow strips are the light steps pushed
+// through bloom (Joshua's "cyan" and "amber"), while hull paint stays the base colours.
 export const TEAM = Object.freeze([
   Object.freeze({
-    side: 0, name: 'Cobalt', main: '#3fa9ff', light: '#aee0ff', dark: '#174e8f', deep: '#0b2a4f',
-    strip: '#7fd4ff', laser: '#9fe4ff', glow: 'rgba(63,169,255,0.55)', css: '#3fa9ff',
+    side: 0, name: 'Cobalt', base: '#3fa9ff', main: '#3fa9ff', hex: 0x3fa9ff, light: '#aee0ff', dark: '#174e8f', deep: '#0b2a4f',
+    strip: '#aee0ff', stripHex: 0xaee0ff, laser: '#aee0ff', glow: 'rgba(63,169,255,0.55)', css: '#3fa9ff',
   }),
   Object.freeze({
-    side: 1, name: 'Ember', main: '#ff8a3d', light: '#ffd4ae', dark: '#9a3f14', deep: '#4f1f08',
-    strip: '#ffb070', laser: '#ffc98a', glow: 'rgba(255,138,61,0.55)', css: '#ff8a3d',
+    side: 1, name: 'Ember', base: '#ff8a3d', main: '#ff8a3d', hex: 0xff8a3d, light: '#ffd4ae', dark: '#9a3f14', deep: '#4f1f08',
+    strip: '#ffd4ae', stripHex: 0xffd4ae, laser: '#ffd4ae', glow: 'rgba(255,138,61,0.55)', css: '#ff8a3d',
   }),
 ]);
 
 export const NEUTRAL = Object.freeze({
-  side: null, name: 'Drift', main: '#9aa3ad', light: '#d8dde3', dark: '#4e5660', deep: '#262b32',
-  strip: '#c4ccd4', laser: '#e0e6ec', glow: 'rgba(154,163,173,0.5)', css: '#9aa3ad',
+  side: null, name: 'Drift', base: '#9aa3ad', main: '#9aa3ad', hex: 0x9aa3ad, light: '#d8dde3', dark: '#4e5660', deep: '#262b32',
+  strip: '#d8dde3', stripHex: 0xd8dde3, laser: '#e0e6ec', glow: 'rgba(154,163,173,0.5)', css: '#9aa3ad',
 });
 
 export const HIT = Object.freeze({ color: '#ffffff', halo: 'rgba(255,255,255,0.8)', emissive: 4.0, ticks: 1 });
@@ -65,6 +68,20 @@ export const WORLD = Object.freeze({
 
 export const SKY = Object.freeze({ zenith: '#0a0e18', mid: '#1a2238', horizon: '#4a3a4e', dusk: '#b0603a', star: '#dfe8ff' });
 export const FOG = Object.freeze({ color: '#1a1f2c', near: 28, far: 80, density: 0.018 });
+
+// The keys terrain.mjs (sonnet) spreads over its defaults, filled from the guide values above so the plateau,
+// rocks, Shards, cliffs, ramps, vents and sky all come from this one file.
+export const TERRAIN = Object.freeze({
+  ground: WORLD.ground, groundHi: WORLD.groundLight, seam: WORLD.groundDark,
+  rock: WORLD.rock, rockDark: WORLD.rockDark, rockLight: WORLD.rockLight,
+  crystal: WORLD.shard, crystalCore: WORLD.shardLight, crystalDead: WORLD.shardEmpty, crystalDark: WORLD.shardDark,
+  crack: WORLD.crack,
+  cliff: WORLD.cliff, cliffLip: WORLD.cliffLight, ramp: WORLD.ramp, rampMark: WORLD.scaffold,
+  vent: WORLD.flux, ventFloor: WORLD.fluxDark, rubble: WORLD.rubble,
+  skyTop: SKY.zenith, skyMid: SKY.mid, skyHorizon: SKY.horizon, skyDusk: SKY.dusk, star: SKY.star,
+  fog: FOG.color, hemiSky: '#3a4a6e', hemiGround: '#15110f',
+  mesa: WORLD.mesa, dust: WORLD.dust,
+});
 
 // Light rig (positions in tile units from the map centre, the renderer scales by tileSize). Light comes from the
 // upper left (ART-GUIDE rule 3) with a warm low dusk sun, a cool sky fill and a faint cyan rim from the Shards.
@@ -100,42 +117,68 @@ export const SIZE_CLASS = Object.freeze({
 const look = (category, sizeClass, shape, extra = {}) =>
   Object.freeze({ category, sizeClass, shape, ...SIZE_CLASS[sizeClass], air: false, ranged: false, heavy: false, ...extra });
 
-// ENV-SPEC v2 kinds plus the v3 roster proposed in the chat (sonnet, Unit Designer). Unknown kinds fall back to
-// a medium ground unit / tile building so nothing ever fails to draw.
+// ENV-SPEC v2 kinds plus the v3 roster the design trio settled on in the chat (fable's names: Spiker, Howler, Dart,
+// Skiff, Barge, Mender, Shade, Seer, Conduit; Quarters, Siphon, Sensor Mast, Foundry, Hangar, Sanctum; vent, ramp,
+// rich crystal, rubble). The earlier working names (Skyspike, Bombard, Gale, Ferry, Lumen, Hexer, Aerie, Flak
+// Spire, Beacon) stay as aliases because the model manifest uses them. Shape words are the Art Director's.
+// Unknown kinds fall back to a medium ground unit / tile building so nothing ever fails to draw.
+const SPIKER = look('unit', 'medium', 'spike', { ranged: true, antiAir: true });
+const HOWLER = look('unit', 'large', 'barrel', { ranged: true, heavy: true, splash: true, deploys: true });
+const SKIFF = look('unit', 'medium', 'wing', { air: true, ranged: true, hover: 1.4 });
+const BARGE = look('unit', 'large', 'hull', { air: true, hover: 1.6, cargo: true });
+const SEER = look('unit', 'tiny', 'eye', { air: true, hover: 2.0, detector: true, glow: WORLD.shard });
+const CONDUIT = look('unit', 'medium', 'crown', { caster: true });
+const QUARTERS = look('structure', 'tile', 'block-low', { height: 0.6 });
+const HANGAR = look('structure', 'tile', 'pad', { air: true });
+const SENSOR_MAST = look('structure', 'medium', 'dish', { detector: true, height: 1.1 });
+const FLAK_SPIRE = look('structure', 'large', 'spire', { ranged: true, antiAir: true, aims: true, height: 1.2 });
+const RICH = look('terrain', 'tile', 'cluster-big', { shard: true, rich: true, height: 0.7 });
+const RUBBLE = look('terrain', 'tile', 'scrap', { height: 0.3, destructible: true });
+
 export const KIND_LOOK = Object.freeze({
   // units
   worker: look('unit', 'small', 'round', { accent: 'visor', carries: true }),
   grunt: look('unit', 'medium', 'wedge'),
   lancer: look('unit', 'medium', 'needle', { ranged: true, size: 0.9, width: 0.3 }),
   brute: look('unit', 'large', 'hex', { heavy: true, dust: true }),
-  skyspike: look('unit', 'medium', 'spike', { ranged: true, antiAir: true }),
-  bombard: look('unit', 'large', 'barrel', { ranged: true, heavy: true, splash: true }),
+  spiker: SPIKER, skyspike: SPIKER,
+  howler: HOWLER, bombard: HOWLER,
   dart: look('unit', 'small', 'dart', { fast: true }),
-  gale: look('unit', 'medium', 'wing', { air: true, ranged: true, hover: 1.4 }),
-  ferry: look('unit', 'large', 'hull', { air: true, hover: 1.6 }),
+  skiff: SKIFF, gale: SKIFF,
+  barge: BARGE, ferry: BARGE,
   mender: look('unit', 'small', 'halo', { healer: true }),
-  shade: look('unit', 'medium', 'blade', { ranged: true, cloak: true }),
-  lumen: look('unit', 'tiny', 'eye', { air: true, hover: 2.0, detector: true }),
-  hexer: look('unit', 'medium', 'crown', { caster: true }),
+  shade: look('unit', 'medium', 'blade', { cloak: true }),
+  seer: SEER, lumen: SEER,
+  conduit: CONDUIT, hexer: CONDUIT,
   // structures
   core: look('structure', 'huge', 'octagon-ring', { overflow: true, height: 1.2 }),
+  quarters: QUARTERS,
   forge: look('structure', 'tile', 'block-stack', { heat: true }),
   turret: look('structure', 'large', 'disc-barrels', { ranged: true, aims: true, size: 0.85 }),
   siphon: look('structure', 'large', 'pump', { flux: true }),
   foundry: look('structure', 'tile', 'block-heavy', { heat: true, height: 1.0 }),
-  aerie: look('structure', 'tile', 'pad', { air: true }),
-  sanctum: look('structure', 'tile', 'dome', { flux: true }),
-  flakspire: look('structure', 'large', 'spire', { ranged: true, antiAir: true, aims: true, height: 1.2 }),
-  beacon: look('structure', 'medium', 'dish', { detector: true, height: 1.1 }),
+  hangar: HANGAR, aerie: HANGAR,
+  sanctum: look('structure', 'tile', 'dome', { flux: true, height: 1.3 }),
+  'sensor-mast': SENSOR_MAST, sensormast: SENSOR_MAST, mast: SENSOR_MAST, beacon: SENSOR_MAST,
+  'flak-spire': FLAK_SPIRE, flakspire: FLAK_SPIRE,
   // terrain tile kinds (v3)
   open: look('terrain', 'tile', 'floor'), floor: look('terrain', 'tile', 'floor'),
   ramp: look('terrain', 'tile', 'ramp'), cliff: look('terrain', 'tile', 'cliff'),
   rock: look('terrain', 'tile', 'boulder', { height: 0.6 }),
   crystal: look('terrain', 'tile', 'cluster', { shard: true, height: 0.55 }),
+  'shard-field': look('terrain', 'tile', 'cluster', { shard: true, height: 0.55 }),
   shard: look('terrain', 'tile', 'cluster', { shard: true, height: 0.4 }),
-  'rich-shard': look('terrain', 'tile', 'cluster-big', { shard: true, height: 0.7 }),
+  'rich-crystal': RICH, 'rich-shard': RICH,
   vent: look('terrain', 'tile', 'crater', { flux: true, height: 0.15 }),
-  rubble: look('terrain', 'tile', 'scrap', { height: 0.3, destructible: true }),
+  rubble: RUBBLE, debris: RUBBLE, scrap: RUBBLE,
+});
+
+// The agreed v3 names, one per kind (aliases above are not repeated here). Renderers use this to make sure every
+// kind has a look; the QA integration test can compare it with env/stats.mjs when v3 lands there.
+export const ROSTER = Object.freeze({
+  units: Object.freeze(['worker', 'grunt', 'lancer', 'spiker', 'brute', 'howler', 'dart', 'skiff', 'barge', 'mender', 'shade', 'seer', 'conduit']),
+  structures: Object.freeze(['core', 'quarters', 'forge', 'turret', 'siphon', 'foundry', 'hangar', 'sanctum', 'sensor-mast']),
+  terrain: Object.freeze(['open', 'rock', 'crystal', 'rich-crystal', 'vent', 'ramp', 'cliff', 'rubble']),
 });
 
 const DEFAULT_LOOK = Object.freeze({
@@ -147,14 +190,17 @@ const DEFAULT_LOOK = Object.freeze({
 // Normalises names the sim or manifest might use ('rich_shard', 'richShard', 'flak_spire') to the palette key.
 export function kindKey(kind) {
   if (!kind) return '';
-  return String(kind).trim().toLowerCase().replace(/[_\s]+/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2');
+  return String(kind).trim().replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase().replace(/[_\s]+/g, '-');
 }
+
+// Same looks keyed without dashes, so 'richshard', 'rich_shard' and 'rich-shard' all resolve.
+const KIND_LOOK_FLAT = Object.freeze(Object.fromEntries(Object.entries(KIND_LOOK).map(([k, v]) => [k.replace(/-/g, ''), v])));
 
 // Look up render hints for any kind; `category` ('unit' | 'structure' | 'terrain') picks the fallback when the kind
 // is new. Always returns an object, never undefined.
 export function lookFor(kind, category = 'unit') {
   const k = kindKey(kind);
-  return KIND_LOOK[k] ?? KIND_LOOK[k.replace(/-/g, '')] ?? DEFAULT_LOOK[category] ?? DEFAULT_LOOK.unit;
+  return KIND_LOOK[k] ?? KIND_LOOK_FLAT[k.replace(/-/g, '')] ?? DEFAULT_LOOK[category] ?? DEFAULT_LOOK.unit;
 }
 
 export function teamColors(owner) {
@@ -285,7 +331,10 @@ export function makeMaterials(THREE, opts = {}) {
     walk(materials); team.forEach(walk); walk(neutral);
     return [...new Set(out)];
   };
-  materials.dispose = () => { for (const m of materials.all()) m.dispose(); materialCache.delete(THREE); };
+  materials.dispose = () => {
+    for (const m of materials.all()) m.dispose();
+    if (materialCache.get(THREE) === materials) materialCache.delete(THREE);
+  };
 
   if (!opts.fresh) materialCache.set(THREE, materials);
   return materials;
@@ -312,9 +361,13 @@ export function createPalette(ctxOrThree = null, opts = {}) {
 
   const palette = {
     version: PALETTE_VERSION,
-    team: TEAM, neutral: NEUTRAL, hit: HIT, health: HEALTH, heat: HEAT,
-    world: WORLD, terrain: WORLD, sky: SKY, fog: FOG, lights: LIGHTS, emissive: EMISSIVE,
-    kinds: KIND_LOOK, sizeClass: SIZE_CLASS,
+    team: TEAM, teams: TEAM.map((t) => t.main), teamHex: TEAM.map((t) => t.hex), strips: TEAM.map((t) => t.strip),
+    neutral: NEUTRAL, hit: HIT, health: HEALTH, heat: HEAT,
+    world: WORLD, terrain: TERRAIN, sky: SKY, fog: FOG, lights: LIGHTS, emissive: EMISSIVE,
+    // flat shortcuts other systems asked for (vfx: shard, dust; engine: ground, rock, crystal; guide: heat)
+    shard: WORLD.shard, crystal: WORLD.shard, shardGlow: WORLD.shardGlow, dust: WORLD.dust, smoke: WORLD.smoke,
+    ground: WORLD.ground, rock: WORLD.rock, flux: WORLD.flux, background: SKY.mid,
+    kinds: KIND_LOOK, roster: ROSTER, sizeClass: SIZE_CLASS,
     materials,
     teamColors, healthColor, lookFor, kindKey, pulse, hexToInt,
     // THREE.Color for any css value, cached and shared (do not mutate; clone first).
@@ -338,5 +391,8 @@ export function createPalette(ctxOrThree = null, opts = {}) {
   };
   return palette;
 }
+
+// Colour data only (no materials), for modules that never touch three.js and for the QA test's shape check.
+export const PALETTE = createPalette(null);
 
 export default createPalette;

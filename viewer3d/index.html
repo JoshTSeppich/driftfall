@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- Driftfall 3D viewer (owner: fable). Open as viewer3d/index.html?log=../matches/sample-7.json
      Also ?playlist=a.json,b.json  ?tv=1 (full-screen auto camera, loops the playlist)  ?speed=2  ?quality=high|medium|low
-     ?debug=1 (fps overlay on; press ` to toggle)  ?loop=1  ?mute=1
+     ?debug=1 (fps overlay on; press ` to toggle)  ?loop=1  ?mute=1  ?ortho=1 (fixed orthographic view, CLASSIC.md)
      Keys: space play/pause (hud), m mute (hud), v director / r reset view (camera), [ ] speed, , . step one tick,
      Home restart, n next match in the playlist -->
 <html lang="en">
@@ -53,10 +53,15 @@ async function optional(name, file) {
     return null;
   }
 }
+let shownFailures = 0;
 function showModules() {
+  const failures = engine?.ctx.failures ?? [];
+  shownFailures = failures.length;
+  const failedNames = new Set(failures.map((f) => f.name));
   modulesEl.innerHTML = Object.entries(loaded)
-    .map(([n, m]) => `<span class="${m ? 'ok' : 'missing'}">${n}${m ? '' : '*'}</span>`).join(' · ') +
-    ' <span>(* missing, placeholder used)</span>';
+    .map(([n, m]) => `<span class="${m && !failedNames.has(n) ? 'ok' : 'missing'}">${n}${m ? (failedNames.has(n) ? '!' : '') : '*'}</span>`).join(' · ') +
+    ' <span>(* missing, placeholder used; ! switched off after an error, see the console)</span>' +
+    failures.map((f) => `<br><span class="missing">${f.name}: ${f.message}</span>`).join('');
 }
 
 // Playlist -------------------------------------------------------------------------------------------------------
@@ -111,6 +116,7 @@ async function loadMatch(url) {
     engine = createEngine(canvas, {
       width, height, tileSize: 1, palette, stats: log.stats,
       quality: q.get('quality') ?? 'high',
+      ortho: q.get('ortho') === '1',
       speed: Number(q.get('speed') ?? 1) || 1,
       ticksPerSecond: Number(q.get('tps') ?? 8) || 8,
       loop: q.get('loop') === '1' || (tv && playlist.length === 1),
@@ -183,6 +189,7 @@ async function loadMatch(url) {
 
 // Advance the playlist when a match ends (the engine sets time.ended when it is not looping).
 function watchEnd() {
+  if ((engine?.ctx.failures.length ?? 0) !== shownFailures) showModules();
   const t = engine?.ctx.time;
   if (t && t.ended && playlist.length > 1) {
     t.ended = false;

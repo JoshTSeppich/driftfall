@@ -196,6 +196,7 @@ const TEMPLATE = `
 export function createHud(ctx, opts = {}) {
   const world = opts.world;
   const control = opts.control || {};
+  const audio = opts.audio;
   const colors = opts.colors || DEFAULT_COLORS;
   const names = opts.names || world?.players || DEFAULT_NAMES;
   const mount = opts.mount || (typeof document !== "undefined" ? document.body : null);

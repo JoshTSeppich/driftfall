@@ -48,6 +48,10 @@ function randomCommand(obs, side, rng) {
   const foes = obs.units.filter((u) => u.owner !== side);
   const enemyTargets = [...foes, ...obs.structures.filter((s) => s.owner !== side)];
   const workers = mine.filter((u) => u.kind === 'worker');
+  // Units mid-build are mostly left alone, otherwise random orders cancel every build before it can complete.
+  const free = mine.filter((u) => u.order?.type !== 'build');
+  const movable = free.length ? free : mine;
+  const freeWorkers = workers.filter((u) => u.order?.type !== 'build');
   const fields = obs.crystals.filter((c) => c.amount > 0);
   const buildings = obs.structures.filter((s) => s.owner === side);
   const roll = rng();
@@ -55,11 +59,11 @@ function randomCommand(obs, side, rng) {
   if (roll < 0.03 || mine.length === 0) return pickOf(rng, JUNK);
 
   if (roll < 0.2) {
-    return { type: 'move', unit: pickOf(rng, mine).id, x: rng.int(MAP_W + 2) - 1, y: rng.int(MAP_H + 2) - 1 };
+    return { type: 'move', unit: pickOf(rng, movable).id, x: rng.int(MAP_W + 2) - 1, y: rng.int(MAP_H + 2) - 1 };
   }
-  if (roll < 0.35 && workers.length && fields.length) {
+  if (roll < 0.35 && freeWorkers.length && fields.length) {
     const c = pickOf(rng, fields);
-    return { type: 'gather', unit: pickOf(rng, workers).id, x: c.x, y: c.y };
+    return { type: 'gather', unit: pickOf(rng, freeWorkers).id, x: c.x, y: c.y };
   }
   if (roll < 0.5 && workers.length) {
     const w = pickOf(rng, workers);

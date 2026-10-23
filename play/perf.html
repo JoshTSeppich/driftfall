@@ -1,0 +1,129 @@
+<!doctype html>
+<!-- Driftfall perf gate (owner: haiku). Boots the real play renderer on the 128 x 128 v4 map with 200 units (half marching),
+     steps the sim at 24 tps, and reports frame time, draw calls, triangles and sim tick cost. Open from the repo-root server:
+     http://localhost:8123/play/perf.html?n=200&frames=600&quality=high
+     Result: the page text, and window.__perf (JSON) when the run is done. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driftfall perf gate</title>
+<script type="importmap">{ "imports": {
+  "three": "../node_modules/three/build/three.module.js",
+  "three/addons/": "../node_modules/three/examples/jsm/" } }</script>
+<style>
+  html, body { margin: 0; height: 100%; background: #171326; color: #e8e4f4; font: 13px/1.4 ui-monospace, Menlo, monospace; overflow: hidden; }
+  #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  #out { position: fixed; left: 8px; top: 8px; margin: 0; padding: 8px 10px; background: #000b; white-space: pre; max-width: 60%; }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<pre id="out">starting</pre>
+<script type="module">
+import * as THREE from 'three';
+import { createPlayRenderer } from './render.mjs';
+import { createLiveWorld } from './app.mjs';
+import { buildPerfScenario } from './perf-scenario.mjs';
+import { step } from '../env/sim.mjs';
+import { observe } from '../env/state.mjs';
+import { STATS } from '../env/stats.mjs';
+
+const q = new URLSearchParams(location.search);
+const units = Number(q.get('n') ?? 200) || 200;
+const targetFrames = Number(q.get('frames') ?? 600) || 600;
+const warmup = 60;                 // the first frames compile shaders and warm caches; they are not counted
+const quality = q.get('quality') ?? 'high';
+const TICK_MS = 1000 / 24;
+const out = document.getElementById('out');
+const say = (s) => { out.textContent = s; };
+
+const palMod = await import('../viewer3d/palette.mjs').catch(() => null);
+const palette = palMod?.createPalette ? palMod.createPalette(THREE) : (palMod?.PALETTE ?? palMod?.palette);
+const { state, map } = buildPerfScenario({ units });
+const world = createLiveWorld(observe(state, 0), STATS);
+const renderer = createPlayRenderer(document.getElementById('stage'), {
+  width: map.width, height: map.height, stats: STATS, palette, side: 0, quality,
+});
+renderer.setWorld({ now: () => performance.now(), frame: () => world.frame() });
+await renderer.ready;
+renderer.camera.center(map.width / 2, map.height / 2);
+renderer.start();
+say(`building: ${units} units on ${map.width} x ${map.height}, quality ${quality}`);
+
+// Sim at 24 tps on wall time, as env/live.mjs does; each tick's snapshot goes to the world the renderer draws.
+const stepMs = [];
+let simTicks = 0, lastSim = performance.now(), acc = 0;
+const frameMs = [];
+let prev = 0, frames = 0, done = false;
+const started = performance.now();
+
+function loop(now) {
+  if (done) return;
+  if (prev) frameMs.push(now - prev);
+  prev = now;
+  acc = Math.min(acc + now - lastSim, 4 * TICK_MS); lastSim = now;   // a background tab must not replay minutes of ticks
+  while (acc >= TICK_MS) {
+    acc -= TICK_MS;
+    const t0 = performance.now();
+    const events = step(state, []);
+    stepMs.push(performance.now() - t0);
+    simTicks++;
+    world.push(observe(state, 0), events.filter((e) => e.e !== 'late'));
+  }
+  world.setAlpha(Math.min(1, acc / TICK_MS));
+  frames++;
+  if (frames >= targetFrames) return finish();
+  requestAnimationFrame(loop);
+}
+
+function pct(sorted, p) { return sorted[Math.min(sorted.length - 1, Math.floor((sorted.length - 1) * p))]; }
+function summary(list) {
+  const s = [...list].sort((a, b) => a - b);
+  const mean = s.reduce((a, b) => a + b, 0) / Math.max(1, s.length);
+  return { n: s.length, mean: +mean.toFixed(2), p50: +pct(s, 0.5).toFixed(2), p95: +pct(s, 0.95).toFixed(2), max: +s[s.length - 1].toFixed(2) };
+}
+
+function finish() {
+  done = true;
+  const counted = frameMs.slice(warmup);
+  const f = summary(counted);
+  const ticked = stepMs.slice(0);
+  const perf = renderer.perf;
+  const result = {
+    units: renderer.units.live().length,
+    spawned: units,
+    map: `${map.width}x${map.height}`,
+    quality,
+    viewport: { w: innerWidth, h: innerHeight, dpr: devicePixelRatio },
+    frames: f,
+    fps: +(1000 / f.p50).toFixed(1),
+    fpsAtMean: +(1000 / f.mean).toFixed(1),
+    drawCalls: perf.calls,
+    triangles: perf.triangles,
+    renderMs: +perf.renderMs.toFixed(2),
+    simTicks,
+    simTick: summary(ticked),
+    failures: renderer.failures,
+    passes60: f.p95 <= 1000 / 60 * 1.05 && perf.calls > 0,   // p95 frame within 5% of 16.7 ms
+  };
+  window.__perf = result;
+  const line = (k, v) => `${k.padEnd(14)}${v}`;
+  say([
+    `DRIFTFALL perf gate  ${result.spawned} units, ${result.map}, quality ${quality}`,
+    line('units live', result.units),
+    line('fps (p50)', result.fps),
+    line('frame ms', `mean ${f.mean}  p50 ${f.p50}  p95 ${f.p95}  max ${f.max}`),
+    line('draw calls', result.drawCalls),
+    line('triangles', result.triangles),
+    line('render ms', result.renderMs),
+    line('sim tick ms', `mean ${result.simTick.mean}  p50 ${result.simTick.p50}  p95 ${result.simTick.p95}  max ${result.simTick.max}`),
+    line('viewport', `${result.viewport.w}x${result.viewport.h} @${result.viewport.dpr}`),
+    line('60 fps gate', result.passes60 ? 'PASS' : 'FAIL'),
+  ].join('\n'));
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -42,7 +42,37 @@ Recorded on the Mac mini, Node v20.19.6, 2026-10-22, against the sim as it stood
 
 <!-- perf-baseline:start -->
 ```json
-{}
+{
+  "note": "Normalised by the calibration workload (see tests/perf.test.mjs). Limit is 2x each value.",
+  "calibrationMs": 5.072,
+  "metrics": {
+    "idle-tick": {
+      "unit": "us per tick, seed 7, no commands",
+      "normalized": 0.2999,
+      "rawAtRecord": 1.521
+    },
+    "army-40v40-march": {
+      "unit": "us per tick, 40 v 40 all moving across",
+      "normalized": 827.6166,
+      "rawAtRecord": 4197.533
+    },
+    "army-40v40-engage": {
+      "unit": "us per tick, 40 v 40 all attacking",
+      "normalized": 258.5203,
+      "rawAtRecord": 1311.172
+    },
+    "findpath-open-32": {
+      "unit": "us per call, open 32x32, corner to corner",
+      "normalized": 3.2996,
+      "rawAtRecord": 16.735
+    },
+    "findpath-sealed-32": {
+      "unit": "us per call, goal sealed by rocks",
+      "normalized": 3.3527,
+      "rawAtRecord": 17.005
+    }
+  }
+}
 ```
 <!-- perf-baseline:end -->
 

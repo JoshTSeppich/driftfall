@@ -1,4 +1,12 @@
 {
+  "name": "driftfall",
+  "private": true,
+  "engines": { "node": ">=20.15" },
+  "scripts": {
+    "test": "node scripts/test.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/preview.mjs"
+  },
   "dependencies": {
     "three": "^0.169.0"
   }

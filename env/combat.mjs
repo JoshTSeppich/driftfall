@@ -7,9 +7,6 @@ import { distance, emit } from "./state.mjs";
 // Idle units that fight on their own (spec section 7). Workers only fight when ordered.
 const AUTO_KINDS = ["grunt", "lancer", "brute"];
 
-// Brute damage against structures and sites is doubled (spec sections 5 and 7).
-const BRUTE_STRUCTURE_MULTIPLIER = 2;
-
 const isUnit = (e) => UNIT_KINDS.includes(e.kind);
 const isStructure = (e) => e.kind === "core" || STRUCTURE_KINDS.includes(e.kind);
 const byId = (a, b) => a.id - b.id;
@@ -68,7 +65,7 @@ export function stepCombat(state) {
     const target = chooseTarget(state, attacker);
     if (!target) continue;
     let dmg = statsOf(attacker).damage;
-    if (attacker.kind === "brute" && isStructure(target)) dmg *= BRUTE_STRUCTURE_MULTIPLIER;
+    if (isStructure(target)) dmg *= statsOf(attacker).structureMultiplier;
     attacks.push({ attacker, target, dmg });
   }
 

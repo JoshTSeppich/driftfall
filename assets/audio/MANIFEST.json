@@ -17,6 +17,9 @@
     "alert_under_attack": { "file": "kenney-ui/error_006.ogg", "kind": "alert", "loop": false },
     "victory": { "file": "kenney-jingles/jingles_NES13.ogg", "kind": "stinger", "loop": false },
     "defeat": { "file": "kenney-jingles/jingles_SAX13.ogg", "kind": "stinger", "loop": false },
+    "drift_warning": { "file": "kenney-ui/error_006.ogg", "kind": "alert", "loop": false },
+    "price_up": { "file": "kenney-ui/select_001.ogg", "kind": "blip", "loop": false },
+    "price_down": { "file": "kenney-ui/click_002.ogg", "kind": "blip", "loop": false },
     "ambient_loop": { "file": "oga-ambient/MyVeryOwnDeadShip.ogg", "kind": "ambient", "loop": true }
   }
 }

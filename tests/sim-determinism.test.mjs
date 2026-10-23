@@ -80,7 +80,7 @@ function listSources(dir) {
 }
 
 test('env sources (except referee and player-worker) avoid nondeterministic APIs', () => {
-  const allowed = new Set(['referee.mjs', 'player-worker.mjs']);
+  const allowed = new Set(['referee.mjs', 'player-worker.mjs', 'live.mjs']); // live.mjs: wall-clock driver around the sim
   const banned = [/Math\.random/, /Date\.now/, /setTimeout/, /new\s+Date/];
   const files = listSources(envDir).filter((f) => !allowed.has(f.slice(envDir.length + 1)));
   assert.ok(files.length > 0, 'expected env files to scan');

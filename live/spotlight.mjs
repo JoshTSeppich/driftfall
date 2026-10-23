@@ -449,6 +449,37 @@ export function registerWithShow(show, root, opts = {}) {
   return sp;
 }
 
+/** Turn one live/scene.json record (written by the show director) into a pin request, or null.
+ *  scene = { scene, focus, agent, title, reason, until, ... }. Only a SPOTLIGHT scene naming an agent pins. */
+export function cueFromScene(scene, now = Date.now()) {
+  if (!scene || scene.scene !== "spotlight") return null;
+  const id = typeof scene.agent === "string" ? scene.agent : scene.agent?.id || scene.agent?.node || null;
+  if (!id) return null;
+  const until = typeof scene.until === "number" ? scene.until : Date.parse(scene.until || "") || 0;
+  const ms = until > now ? Math.min(until - now, 120000) : 30000;
+  return { id, ms, reason: scene.reason || scene.title || "" };
+}
+
+/** Standalone pages: poll live/scene.json and pin whatever the show director's SPOTLIGHT cue names, so the page
+ *  shows the same agents the TV embed would. Returns a stop() function. */
+export function followSceneFile(sp, { path = "/preview/rts/live/scene.json", interval = 2000, onScene } = {}) {
+  let lastKey = "", timer = null, stopped = false;
+  async function poll() {
+    if (stopped) return;
+    try {
+      const r = await fetch(`${path}?v=${Date.now()}`, { cache: "no-store" }); if (!r.ok) return;
+      const scene = await r.json();
+      onScene?.(scene);
+      const cue = cueFromScene(scene);
+      const key = cue ? `${cue.id}|${scene.since || scene.t || scene.until || ""}` : "";
+      if (cue && key !== lastKey) { lastKey = key; sp.pin(cue.id, cue.ms); }
+      if (!cue) lastKey = "";
+    } catch {}
+  }
+  timer = setInterval(poll, interval); poll();
+  return () => { stopped = true; clearInterval(timer); };
+}
+
 // self-mount for <div data-spotlight>
 if (typeof document !== "undefined") {
   for (const el of document.querySelectorAll("[data-spotlight]")) {

@@ -133,13 +133,13 @@ export function createPlayer({ side }) {
 
 test('a forged reply, a flood of messages and early replies cannot change the match', { timeout: 30000 }, async () => {
   const forger = writePlayer('forger', `
-import { parentPort } from 'node:worker_threads';
+// The player runs in a child process now, so the channel to the referee is process.send (was parentPort).
 export function createPlayer() {
   // pretend to be ready again, answer ticks that have not been asked yet, and flood the referee
-  parentPort.postMessage({ type: 'ready', name: 'definitely-not-the-forger' });
-  for (let t = 0; t < 50; t++) parentPort.postMessage({ type: 'commands', tick: t, commands: [{ type: 'stop', unit: 1 }] });
+  process.send({ type: 'ready', name: 'definitely-not-the-forger' });
+  for (let t = 0; t < 50; t++) process.send({ type: 'commands', tick: t, commands: [{ type: 'stop', unit: 1 }] });
   return { name: 'forger', act(obs) {
-    for (let i = 0; i < 20000; i++) parentPort.postMessage({ type: 'commands', tick: obs.tick + 1 + (i % 5), commands: [] });
+    for (let i = 0; i < 20000; i++) process.send({ type: 'commands', tick: obs.tick + 1 + (i % 5), commands: [] });
     return [];
   } };
 }`);
@@ -188,7 +188,7 @@ export function createPlayer() { return { act() { const v = values[i++ % values.
   assertSaneFinalState(log);
 });
 
-test('a player cannot read the other player\'s source or any file outside its own folder', { timeout: 20000, todo: 'workers are not sandboxed: node:fs works inside a player (fable/security: needs --permission or a vm/loader jail)' }, async () => {
+test('a player cannot read the other player\'s source or any file outside its own folder', { timeout: 20000 }, async () => {
   const secret = path.join(dir, 'opponent-secret.txt');
   fs.writeFileSync(secret, 'opponent plan');
   const reader = writePlayer('reader', `
@@ -201,7 +201,7 @@ export function createPlayer() { return { name: 'reader', act() { return [{ type
   assert.equal(log.ticks[0].commands[0][0].result, 'blocked', 'file reads from a player must fail');
 });
 
-test('a player cannot spawn processes, open sockets or write files', { timeout: 20000, todo: 'workers are not sandboxed: child_process, net and fs writes work inside a player' }, async () => {
+test('a player cannot spawn processes, open sockets or write files', { timeout: 20000 }, async () => {
   const marker = path.join(dir, 'written-by-player.txt');
   const writer = writePlayer('writer', `
 import fs from 'node:fs';

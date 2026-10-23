@@ -9,10 +9,10 @@ const missing = [];
 for (const name of ['stats', 'state', 'commands', 'economy', 'combat', 'sim']) {
   try { loaded[name] = await import(`../env/${name}.mjs`); } catch (err) { missing.push(`env/${name}.mjs (${err.code || err.message})`); }
 }
-// A clear "module missing" failure, so it is not confused with a real rule bug.
+// A clear "module missing" failure, so it is not confused with a real rule bug. Returns the first named module.
 function need(...names) {
   for (const n of names) if (!loaded[n]) assert.fail(`MODULE MISSING: env/${n}.mjs could not be loaded [${missing.join('; ')}]`);
-  return loaded;
+  return loaded[names[0]];
 }
 
 const stat = (kind) => {

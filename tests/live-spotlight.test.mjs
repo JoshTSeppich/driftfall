@@ -2,7 +2,25 @@
 // the last test mounts the panel into a tiny fake DOM against the real Control Room if it is reachable.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { classifyLine, parseSay, extractChatPosts, chatTone, parseLabel, describeWork, scoreAgent, pickSpotlight, renderCard, mountSpotlight, fmtAgo } from "../live/spotlight.mjs";
+import { classifyLine, parseSay, extractChatPosts, chatTone, parseLabel, describeWork, scoreAgent, pickSpotlight, renderCard, mountSpotlight, fmtAgo, cueFromScene } from "../live/spotlight.mjs";
+import fs from "node:fs";
+
+test("cueFromScene pins only on a SPOTLIGHT scene that names an agent, for as long as the cue lasts", () => {
+  const now = 1_000_000;
+  assert.equal(cueFromScene(null), null);
+  assert.equal(cueFromScene({ scene: "wall", agent: "job:x" }), null);
+  assert.equal(cueFromScene({ scene: "spotlight", agent: null }), null);
+  assert.deepEqual(cueFromScene({ scene: "spotlight", agent: "job:x", until: now + 15000, reason: "finished" }, now), { id: "job:x", ms: 15000, reason: "finished" });
+  assert.equal(cueFromScene({ scene: "spotlight", agent: { id: "job:y" } }, now).ms, 30000, "no until: default 30 s");
+  assert.equal(cueFromScene({ scene: "spotlight", agent: "job:z", until: now + 999999 }, now).ms, 120000, "capped at two minutes");
+  assert.equal(cueFromScene({ scene: "spotlight", agent: "job:z", until: new Date(now + 5000).toISOString() }, now).ms, 5000, "ISO until works");
+});
+
+test("the standalone page imports the module it ships with", () => {
+  const html = fs.readFileSync(new URL("../live/spotlight.html", import.meta.url), "utf8");
+  assert.match(html, /import \{ mountSpotlight, followSceneFile \} from "\.\/spotlight\.mjs"/);
+  assert.match(html, /id="spotlight"/);
+});
 
 test("classifyLine tells narration, tools, results, tests and denials apart", () => {
   assert.equal(classifyLine("claude: I'll start by reading the spec.").kind, "say");

@@ -88,13 +88,22 @@ export function normalizeAudioManifest(json) {
 }
 
 // Aliases so sim names, manifest names and palette names all meet: 'rich_shard' = 'rich-shard' = 'richShard'.
-const MODEL_ALIASES = { open: 'floor', 'shard-field': 'crystal', flakspire: 'flak-spire', 'flak-spire': 'flakspire', richshard: 'rich-shard', 'rich-shard': 'rich_shard' };
+// The agreed v3 names on the left, the scout's manifest names (and older working names) on the right.
+export const MODEL_ALIASES = Object.freeze({
+  open: 'floor', 'shard-field': 'crystal', 'rich-crystal': 'rich-shard', richshard: 'rich-shard', debris: 'rubble', scrap: 'rubble',
+  spiker: 'skyspike', howler: 'bombard', skiff: 'gale', barge: 'ferry', seer: 'lumen', conduit: 'hexer',
+  hangar: 'aerie', 'sensor-mast': 'beacon', sensormast: 'beacon', mast: 'beacon', 'flak-spire': 'flakspire',
+});
 
 export function resolveModel(manifest, kind) {
   if (!manifest?.entries) return null;
   const k = kindKey(kind);
-  const tries = [k, k.replace(/-/g, '_'), k.replace(/-/g, ''), MODEL_ALIASES[k], kindKey(MODEL_ALIASES[k] ?? '')].filter(Boolean);
-  for (const t of tries) { const e = manifest.entries[t] ?? manifest.entries[kindKey(t)]; if (e) return e; }
+  const alias = MODEL_ALIASES[k] ?? MODEL_ALIASES[k.replace(/-/g, '')];
+  const variants = (s) => (s ? [s, s.replace(/-/g, '_'), s.replace(/-/g, '')] : []);
+  for (const t of [...variants(k), ...variants(alias)]) {
+    const e = manifest.entries[t] ?? manifest.entries[kindKey(t)];
+    if (e) return e;
+  }
   return null;
 }
 
@@ -128,12 +137,23 @@ export const MATERIAL_ROLES = Object.freeze({
   skin: 'trim', colormap: 'keep', texture: 'keep',
 });
 
-export function roleForMaterial(name, overrides = null) {
+// On units and structures the kit's big `metal` areas take the team paint (ART-GUIDE: team colour on the body),
+// its small `metalRed` accents become the glow strip, and crystal-named parts glow in the team colour rather than
+// Shard teal (teal means resource only). Terrain and props keep the plain table above.
+export const PIECE_MATERIAL_ROLES = Object.freeze({
+  metal: 'team', metallight: 'teamLight', metalred: 'strip', red: 'strip', accent: 'strip',
+  metaldark: 'hull', darkmetal: 'hull', dark: 'hullDark', black: 'dark',
+  crystal: 'strip', crystals: 'strip', gem: 'strip', glass: 'glass', window: 'glass', skin: 'trim',
+});
+
+export function roleForMaterial(name, overrides = null, category = null) {
   const n = String(name ?? '').toLowerCase().replace(/[^a-z]/g, '');
   if (overrides) {
     const o = overrides[name] ?? overrides[n];
     if (o) return o;
   }
+  if (!n || n === 'defaultmat' || n === 'material') return 'hull';   // unnamed glTF materials become plain hull
+  if ((category === 'unit' || category === 'structure') && PIECE_MATERIAL_ROLES[n]) return PIECE_MATERIAL_ROLES[n];
   if (MATERIAL_ROLES[n]) return MATERIAL_ROLES[n];
   for (const [key, role] of Object.entries(MATERIAL_ROLES)) if (n.includes(key)) return role;
   return 'keep';
@@ -144,6 +164,7 @@ function paletteMaterialFor(role, owner, materials) {
   switch (role) {
     case 'team': return team.body;
     case 'teamDark': return team.bodyDark;
+    case 'teamLight': return team.bodyLight;
     case 'strip': return team.strip;
     case 'glass': return team.glass;
     case 'trim': return team.trim;
@@ -216,17 +237,32 @@ export function fitToFootprint(THREE, object, footprint, { scale = null, offset 
   object.scale.setScalar(s);
   const box1 = boxOf(THREE, wrapper);
   const centre = box1.getCenter(new THREE.Vector3());
-  object.position.set(-centre.x + offset[0], -box1.min.y + offset[1], -centre.z + offset[2]);
+  // shift whatever position the object already has so the bounds land centred on x/z with the base on y = 0
+  object.position.x += -centre.x + offset[0];
+  object.position.y += -box1.min.y + offset[1];
+  object.position.z += -centre.z + offset[2];
   wrapper.updateMatrixWorld(true);
   return wrapper;
+}
+
+// A load that never settles (a stalled request, or a stubbed image that never fires onload) must not hold the
+// whole scene hostage: each file gets this long, then it is reported and its kinds use placeholders.
+export const DEFAULT_LOAD_TIMEOUT_MS = 4000;
+
+function withTimeout(promise, ms, label) {
+  if (!(ms > 0)) return promise;
+  let timer;
+  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`timed out after ${ms} ms: ${label}`)), ms); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
 export async function loadAssets(ctx = {}, opts = {}) {
   const THREE = opts.THREE ?? ctx.THREE ?? null;
   const tileSize = ctx.tileSize ?? opts.tileSize ?? 1;
   const base = opts.base ?? ASSET_ROOT;
-  const fetchJson = opts.fetchJson ?? defaultFetchJson;
-  const loadGLTF = opts.loadGLTF ?? defaultLoadGLTF;
+  const timeoutMs = opts.timeoutMs ?? DEFAULT_LOAD_TIMEOUT_MS;
+  const fetchJson = (url) => withTimeout((opts.fetchJson ?? defaultFetchJson)(url), timeoutMs, url);
+  const loadGLTF = (url) => withTimeout((opts.loadGLTF ?? defaultLoadGLTF)(url), timeoutMs, url);
   const log = opts.log ?? (() => {});
   const materials = THREE ? (ctx.palette?.materials ?? makeMaterials(THREE)) : null;
 
@@ -250,42 +286,59 @@ export async function loadAssets(ctx = {}, opts = {}) {
     report.sounds.listed = Object.keys(audioManifest.events);
   } catch (err) { report.sounds.manifest = `missing (${err?.message ?? err})`; log('audio manifest', err); }
 
-  // --- models: load each distinct file once, in parallel ---
+  // --- models: load each distinct file once. The kinds the match needs (opts.kinds, else the kinds in the log's
+  // stats table, else the v2 set) are awaited so the first frame has them; every other file streams in behind and
+  // assets.onLoad(cb) tells owners when a kind's model has arrived so they can swap a placeholder for it.
   const sources = new Map(); // file -> { scene, animations, skinned }
+  const listeners = new Set();
   const wantModels = THREE && opts.models !== false;
+  const kindsByFile = (file) => Object.values(modelManifest.entries).filter((e) => e.file === file).map((e) => e.key);
+  let skeletonClone = null;
+
+  async function loadFile(file) {
+    try {
+      const r = await loadGLTF(new URL(`${stripSlashes(modelManifest.root)}/${file}`, base).href);
+      if (!r?.scene) throw new Error('no scene');
+      let skinned = false;
+      r.scene.traverse((o) => { if (o.isSkinnedMesh) skinned = true; });
+      if (skinned && !skeletonClone) skeletonClone = (await gltfModule()).cloneSkinned;
+      sources.set(file, { scene: r.scene, animations: r.animations ?? [], skinned });
+      const kinds = kindsByFile(file);
+      report.models.loaded.push(...kinds);
+      for (const cb of listeners) { try { cb({ file, kinds }); } catch (err) { log('onLoad listener', err); } }
+    } catch (err) {
+      report.models.failed.push({ file, kinds: kindsByFile(file), error: String(err?.message ?? err ?? 'no scene') });
+    }
+  }
+
+  let background = Promise.resolve();
   if (wantModels) {
     const files = [...modelManifest.files];
-    const kindsByFile = (file) => Object.values(modelManifest.entries).filter((e) => e.file === file).map((e) => e.key);
-    const results = await Promise.allSettled(files.map((file) => loadGLTF(new URL(`${stripSlashes(modelManifest.root)}/${file}`, base).href)));
-    results.forEach((r, i) => {
-      const file = files[i];
-      if (r.status === 'fulfilled' && r.value?.scene) {
-        let skinned = false;
-        r.value.scene.traverse((o) => { if (o.isSkinnedMesh) skinned = true; });
-        sources.set(file, { scene: r.value.scene, animations: r.value.animations ?? [], skinned });
-        report.models.loaded.push(...kindsByFile(file));
-      } else {
-        report.models.failed.push({ file, kinds: kindsByFile(file), error: String(r.reason?.message ?? r.reason ?? 'no scene') });
-      }
-    });
+    const wanted = opts.eager ? null : wantedKinds(opts.kinds ?? kindsFromStats(ctx.stats ?? ctx.log?.stats));
+    const first = wanted ? files.filter((f) => kindsByFile(f).some((k) => wanted.has(k) || wanted.has(resolveModel(modelManifest, k)?.key))) : files;
+    const rest = files.filter((f) => !first.includes(f));
+    report.models.awaited = first.slice();
+    report.models.background = rest.slice();
+    await Promise.all(first.map(loadFile));
+    background = Promise.all(rest.map(loadFile)).then(() => undefined);
   }
-  const skeletonClone = wantModels && [...sources.values()].some((s) => s.skinned) ? (await gltfModule()).cloneSkinned : null;
 
   // --- re-paint + fit ---
   function repaint(root, owner, entry, { unique = false } = {}) {
     if (!materials) return root;
+    const category = entry?.category ?? null;
     root.traverse((o) => {
       if (!o.isMesh) return;
       const mats = Array.isArray(o.material) ? o.material : [o.material];
       const painted = mats.map((m) => {
-        const role = roleForMaterial(m?.name, entry?.parts);
+        const role = roleForMaterial(m?.name, entry?.parts, category);
         const pm = paletteMaterialFor(role, owner, materials);
         if (!pm) return m;                       // 'keep': textured or unknown material stays as is
         return unique ? pm.clone() : pm;
       });
       o.material = Array.isArray(o.material) ? painted : painted[0];
       o.castShadow = true; o.receiveShadow = true;
-      const role = roleForMaterial(mats[0]?.name, entry?.parts);
+      const role = roleForMaterial(mats[0]?.name, entry?.parts, category);
       if (!o.name) o.name = role === 'team' ? 'body' : role === 'strip' ? 'strip' : role === 'shard' ? 'crystal' : role;
     });
     return root;
@@ -302,8 +355,11 @@ export async function loadAssets(ctx = {}, opts = {}) {
     url(kind) { const e = resolveModel(modelManifest, kind); return e ? modelUrl(modelManifest, e, base) : null; },
     raw(kind) { const e = resolveModel(modelManifest, kind); return e && sources.get(e.file)?.scene || null; },
     animations(kind) { const e = resolveModel(modelManifest, kind); return (e && sources.get(e.file)?.animations) || []; },
-    // A fitted, re-painted clone; null when there is no loaded model for the kind.
-    get(kind, { owner = null, category = null, unique = false, footprint = null } = {}) {
+    // A fitted, re-painted clone; null when there is no loaded model for the kind. The second argument is either
+    // an options object or just the owner (units.mjs calls models.get(kind, owner)).
+    get(kind, ownerOrOpts = {}) {
+      const o = typeof ownerOrOpts === 'number' || ownerOrOpts === null ? { owner: ownerOrOpts } : ownerOrOpts;
+      const { owner = null, category = null, unique = false, footprint = null } = o;
       const e = resolveModel(modelManifest, kind);
       const src = e && sources.get(e.file);
       if (!src || !THREE) return null;
@@ -350,17 +406,52 @@ export async function loadAssets(ctx = {}, opts = {}) {
     version: ASSETS_VERSION, ready: true, report, tileSize,
     manifest: { models: modelManifest, audio: audioManifest },
     models, sounds, materials,
-    placeholder(kind, o = {}) { return THREE ? buildPlaceholder(THREE, materials, kind, { ...o, tileSize }) : null; },
+    // Resolves when the background files have all landed (or failed). Owners that build once up front can await it.
+    whenAll: background,
+    // cb({ file, kinds }) each time another model becomes available; returns an unsubscribe function.
+    onLoad(cb) { listeners.add(cb); return () => listeners.delete(cb); },
+    placeholder(kind, o = {}) {
+      if (typeof o === 'number' || o === null) o = { owner: o };
+      return THREE ? buildPlaceholder(THREE, materials, kind, { ...o, tileSize }) : null;
+    },
     // The call most owners want: the model if we have one, else the procedural stand-in. Never null with THREE.
     get(kind, o = {}) { return models.get(kind, o) ?? assets.placeholder(kind, o); },
     repaint(object, owner, entry = null, o = {}) { return repaint(object, owner, entry, o); },
     fit(object, kind, o = {}) { return THREE ? fitToFootprint(THREE, object, (o.footprint ?? lookFor(kind, o.category).size * tileSize), o) : object; },
     dispose() {
       for (const s of sources.values()) s.scene.traverse((ch) => { if (ch.geometry) ch.geometry.dispose(); });
-      sources.clear(); bufferCache.clear();
+      sources.clear(); bufferCache.clear(); listeners.clear();
     },
   };
   return assets;
+}
+
+// The kinds a match can show, from its stats table (STATS.units / STATS.structures rows) plus the terrain set.
+// Returns null when there is no table, which means "use the default set".
+export function kindsFromStats(stats) {
+  if (!stats || typeof stats !== 'object') return null;
+  const out = [];
+  for (const block of [stats.units, stats.structures]) if (block && typeof block === 'object') out.push(...Object.keys(block));
+  if (stats.core) out.push('core');
+  for (const k of Object.keys(stats)) if (lookFor(k).shape !== 'unknown' && !['units', 'structures', 'match', 'crystal', 'referee'].includes(k)) out.push(k);
+  return out.length ? out : null;
+}
+
+export const DEFAULT_KINDS = Object.freeze(['worker', 'grunt', 'lancer', 'brute', 'core', 'forge', 'turret']);
+const TERRAIN_KINDS = ['floor', 'open', 'rock', 'crystal', 'shard', 'rich-shard', 'vent', 'ramp', 'cliff', 'rubble'];
+
+// A Set of manifest keys (after aliasing) worth waiting for before the first frame.
+export function wantedKinds(kinds) {
+  const list = [...(kinds ?? DEFAULT_KINDS), ...TERRAIN_KINDS];
+  const out = new Set();
+  for (const k of list) {
+    const key = kindKey(k);
+    out.add(key);
+    out.add(key.replace(/-/g, '_'));
+    const alias = MODEL_ALIASES[key];
+    if (alias) { out.add(alias); out.add(alias.replace(/-/g, '_')); }
+  }
+  return out;
 }
 
 // ---------- procedural placeholders ----------
@@ -448,7 +539,7 @@ export function buildPlaceholder(THREE, materials, kind, { owner = null, categor
         add(new THREE.SphereGeometry(r * 0.1, 8, 6), team.strip, 'strip', [0, h * 0.95, 0]);
         break;
       case 'dome':
-        add(new THREE.CylinderGeometry(r * 0.8, r * 0.85, h * 0.3, 8), team.trim, 'base', [0, h * 0.15, 0]);
+        add(new THREE.CylinderGeometry(r * 0.8, r * 0.85, h * 0.3, 8), team.trim, 'body', [0, h * 0.15, 0]);
         add(new THREE.SphereGeometry(r * 0.7, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), team.glass, 'glass', [0, h * 0.3, 0]);
         ring(r * 0.85, 0.03 * tileSize, h * 0.32);
         break;
@@ -456,6 +547,11 @@ export function buildPlaceholder(THREE, materials, kind, { owner = null, categor
         add(new THREE.CylinderGeometry(r * 0.95, r, h * 0.25, 8), team.trim, 'base', [0, h * 0.125, 0]);
         add(new THREE.BoxGeometry(fp * 0.3, h * 0.8, fp * 0.3), team.body, 'body', [-fp * 0.3, h * 0.6, -fp * 0.3]);
         ring(r * 0.7, 0.03 * tileSize, h * 0.27);
+        break;
+      case 'block-low':
+        add(new THREE.BoxGeometry(fp * 0.9, h * 0.6, fp * 0.7), team.body, 'body', [0, h * 0.3, 0]);
+        for (let i = 0; i < 3; i++) add(new THREE.BoxGeometry(fp * 0.12, h * 0.25, 0.03 * tileSize), team.glass, 'glass', [(i - 1) * fp * 0.28, h * 0.35, fp * 0.36]);
+        add(new THREE.BoxGeometry(fp * 0.9, 0.03 * tileSize, fp * 0.05), team.strip, 'strip', [0, h * 0.62, fp * 0.33]);
         break;
       case 'pump':
         add(new THREE.CylinderGeometry(r * 0.6, r * 0.7, h * 0.5, 8), team.body, 'body', [0, h * 0.25, 0]);
@@ -468,8 +564,8 @@ export function buildPlaceholder(THREE, materials, kind, { owner = null, categor
         ring(r * 0.95, 0.03 * tileSize, h * 0.1);
     }
   } else {
-    // units: body + visor/weapon + team strip; `air` kinds float on a hover offset the owner can animate.
-    const hover = look.air ? (look.hover ?? 1.2) * tileSize * 0.5 : 0;
+    // units: body + visor/weapon + team strip. Air kinds are built on the ground and lifted after the fit below.
+    const hover = 0;
     switch (look.shape) {
       case 'round':
         add(new THREE.SphereGeometry(r * 0.8, 10, 8), team.body, 'body', [0, h * 0.55, 0]).scale.set(1, 0.75, 1);
@@ -545,9 +641,13 @@ export function buildPlaceholder(THREE, materials, kind, { owner = null, categor
         ring(r * 0.6, 0.02 * tileSize, h * 0.2);
     }
   }
-  g.name = `${kindKey(kind)}-placeholder`;
-  g.userData = { kind: kindKey(kind), owner, source: 'placeholder', look };
-  return g;
+  // Same normalisation as loaded models: footprint exactly look.size tiles, centred, base on y = 0 (air kinds are
+  // then lifted by their hover height so the shadow falls below them).
+  const fitted = fitToFootprint(THREE, g, fp);
+  if (look.air && look.category === 'unit') g.position.y += (look.hover ?? 1.2) * tileSize * 0.5;
+  fitted.name = `${kindKey(kind)}-placeholder`;
+  fitted.userData = { kind: kindKey(kind), owner, source: 'placeholder', look };
+  return fitted;
 }
 
 export default loadAssets;
